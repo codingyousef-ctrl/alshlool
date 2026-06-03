@@ -319,6 +319,58 @@ table.st tr:hover td{background:var(--surface2)}
   table.st th:nth-child(4),table.st td:nth-child(4){display:none}
 }
 </style>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, setDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD4RF2k0qNQns-HdHlEje4ib--itJ7M19g",
+  authDomain: "alshlool-44292.firebaseapp.com",
+  projectId: "alshlool-44292",
+  storageBucket: "alshlool-44292.firebasestorage.app",
+  messagingSenderId: "577338530158",
+  appId: "1:577338530158:web:554d38c97a678fb893097f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const studentsCol = collection(db, 'students');
+
+// Listen to real-time updates
+onSnapshot(studentsCol, (snapshot) => {
+  students = [];
+  snapshot.forEach(d => students.push({...d.data(), _id: d.id}));
+  renderStudents();
+});
+
+// Override save function
+window.firebaseSave = async function(obj, editId) {
+  try {
+    if(editId) {
+      await setDoc(doc(db, 'students', editId), obj);
+    } else {
+      await addDoc(studentsCol, obj);
+    }
+    return true;
+  } catch(e) {
+    console.error(e);
+    return false;
+  }
+};
+
+// Override delete function
+window.firebaseDelete = async function(id) {
+  try {
+    await deleteDoc(doc(db, 'students', id));
+    return true;
+  } catch(e) {
+    console.error(e);
+    return false;
+  }
+};
+
+window.firebaseReady = true;
+</script>
 </head>
 <body>
 
@@ -417,6 +469,7 @@ table.st tr:hover td{background:var(--surface2)}
         <div class="fg"><label>تاريخ انتهاء الاشتراك *</label><input id="f-end" type="date"></div>
         <div class="fg full"><label>ملاحظات</label><input id="f-notes" type="text" placeholder="أي ملاحظات إضافية..."></div>
       </div>
+      <input type="hidden" id="f-belt" value="">
       <input type="hidden" id="f-edit-id" value="">
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
         <button class="btn-s" onclick="cancelEdit()">إلغاء</button>
@@ -655,7 +708,7 @@ function showTab(t){
     document.getElementById('nb-'+x).classList.toggle('active',x===t);
   });
   if(t==='students') renderStudents();
-  if(t==='add') buildBeltGrid(document.getElementById('f-belt').value||'');
+
 }
 
 function selectBelt(id, btn){
@@ -698,16 +751,24 @@ function saveStudent(){
     created:new Date().toISOString()
   };
   const eid=document.getElementById('f-edit-id').value;
-  if(eid!==''){
-    students[parseInt(eid)]=obj;
-    toast('تم تحديث بيانات الطالب بنجاح ✓');
+  if(window.firebaseReady){
+    window.firebaseSave(obj, eid||null).then(ok=>{
+      if(ok){
+        toast(eid?'تم تحديث بيانات الطالب بنجاح ✓':'تم تسجيل الطالب بنجاح ✓');
+        cancelEdit();
+        showTab('students');
+      } else {
+        toast('حدث خطأ، حاول مرة ثانية',true);
+      }
+    });
   } else {
-    students.push(obj);
-    toast('تم تسجيل الطالب بنجاح ✓');
+    const eidN=eid!==''?parseInt(eid):-1;
+    if(eidN>=0){ students[eidN]=obj; } else { students.push(obj); }
+    save();
+    toast(eid?'تم تحديث بيانات الطالب بنجاح ✓':'تم تسجيل الطالب بنجاح ✓');
+    cancelEdit();
+    showTab('students');
   }
-  save();
-  cancelEdit();
-  showTab('students');
 }
 
 function cancelEdit(){
@@ -715,7 +776,6 @@ function cancelEdit(){
   document.getElementById('form-title').textContent='تسجيل طالب جديد';
   document.getElementById('save-btn-lbl').textContent='حفظ التسجيل';
   ['f-name','f-gender','f-dob','f-dad','f-mom','f-start','f-end','f-notes','f-belt'].forEach(id=>document.getElementById(id).value='');
-  buildBeltGrid('');
 }
 
 function editStudent(i){
@@ -732,16 +792,22 @@ function editStudent(i){
   document.getElementById('f-belt').value=s.belt||'';
   document.getElementById('form-title').textContent='تعديل: '+s.name;
   document.getElementById('save-btn-lbl').textContent='حفظ التعديلات';
-  buildBeltGrid(s.belt||'');
   showTab('add');
 }
 
 function delStudent(i){
   if(!confirm(`هل تريد حذف ${students[i].name}؟`)) return;
-  students.splice(i,1);
-  save();
-  renderStudents();
-  toast('تم الحذف');
+  if(window.firebaseReady && students[i]._id){
+    window.firebaseDelete(students[i]._id).then(ok=>{
+      if(ok) toast('تم الحذف');
+      else toast('حدث خطأ',true);
+    });
+  } else {
+    students.splice(i,1);
+    save();
+    renderStudents();
+    toast('تم الحذف');
+  }
 }
 
 function viewStudent(i){
@@ -783,26 +849,6 @@ function toast(msg,err){
 document.getElementById('f-start').value=new Date().toISOString().split('T')[0];
 renderStudents();
 
-// Build belt grid immediately and also on DOMContentLoaded
-function initBeltGrid(){
-  const g=document.getElementById('belt-grid');
-  if(!g) return;
-  g.innerHTML='';
-  BELTS.forEach(b=>{
-    const d=document.createElement('button');
-    d.type='button';
-    d.className='belt-opt';
-    d.innerHTML=`<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${b.color};border:1px solid ${b.border};flex-shrink:0"></span>${b.label}`;
-    d.onclick=()=>{
-      document.querySelectorAll('.belt-opt').forEach(x=>x.classList.remove('sel'));
-      d.classList.add('sel');
-      document.getElementById('f-belt').value=b.id;
-    };
-    g.appendChild(d);
-  });
-}
-initBeltGrid();
-document.addEventListener('DOMContentLoaded', initBeltGrid);
 </script>
 </body>
 </html>
