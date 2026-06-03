@@ -419,7 +419,7 @@ table.st tr:hover td{background:var(--surface2)}
       </div>
       <hr class="divider">
       <div class="sec-title" style="font-size:13px"><i class="ti ti-award" style="color:#cc1a1a"></i> الحزام</div>
-      <div id="belt-grid" class="belt-grid">
+      <div id="belt-grid" class="belt-grid" style="display:grid!important;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;visibility:visible!important;opacity:1!important">
 <button type="button" class="belt-opt" onclick="selectBelt('white',this)"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#f0f0f0;border:1px solid #ccc;flex-shrink:0"></span>أبيض</button>
 <button type="button" class="belt-opt" onclick="selectBelt('yellow',this)"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#f5c518;border:1px solid #c9a000;flex-shrink:0"></span>أصفر</button>
 <button type="button" class="belt-opt" onclick="selectBelt('y-g',this)"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#a8c84a;border:1px solid #7a9e1a;flex-shrink:0"></span>أصفر وأخضر</button>
@@ -465,7 +465,7 @@ table.st tr:hover td{background:var(--surface2)}
 </div>
 
 <script>
-const PASSWORD = 'Teakwandoalshlool';
+const PASSWORD = 'Teakwando.2013';
 
 // ── Lock / Unlock ──────────────────────────────────────────
 const lockScreen = document.getElementById('lock-screen');
