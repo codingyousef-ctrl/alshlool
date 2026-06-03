@@ -319,58 +319,8 @@ table.st tr:hover td{background:var(--surface2)}
   table.st th:nth-child(4),table.st td:nth-child(4){display:none}
 }
 </style>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD4RF2k0qNQns-HdHlEje4ib--itJ7M19g",
-  authDomain: "alshlool-44292.firebaseapp.com",
-  projectId: "alshlool-44292",
-  storageBucket: "alshlool-44292.firebasestorage.app",
-  messagingSenderId: "577338530158",
-  appId: "1:577338530158:web:554d38c97a678fb893097f"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const studentsCol = collection(db, 'students');
-
-// Listen to real-time updates
-onSnapshot(studentsCol, (snapshot) => {
-  students = [];
-  snapshot.forEach(d => students.push({...d.data(), _id: d.id}));
-  renderStudents();
-});
-
-// Override save function
-window.firebaseSave = async function(obj, editId) {
-  try {
-    if(editId) {
-      await setDoc(doc(db, 'students', editId), obj);
-    } else {
-      await addDoc(studentsCol, obj);
-    }
-    return true;
-  } catch(e) {
-    console.error(e);
-    return false;
-  }
-};
-
-// Override delete function
-window.firebaseDelete = async function(id) {
-  try {
-    await deleteDoc(doc(db, 'students', id));
-    return true;
-  } catch(e) {
-    console.error(e);
-    return false;
-  }
-};
-
-window.firebaseReady = true;
-</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -502,7 +452,7 @@ window.firebaseReady = true;
 </div>
 
 <script>
-const PASSWORD = 'Teakwando.2001';
+const PASSWORD = 'Teakwando.2013';
 
 // ── Lock / Unlock ──────────────────────────────────────────
 const lockScreen = document.getElementById('lock-screen');
@@ -584,7 +534,7 @@ const manifestData = {
   icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230d0d0d'/><circle cx='50' cy='50' r='45' fill='%23cc1a1a' opacity='.2'/></svg>",sizes:"512x512",type:"image/svg+xml"}]
 };
 const mBlob = new Blob([JSON.stringify(manifestData)],{type:'application/json'});
-document.getElementById('manifest-link').href = URL.createObjectURL(mBlob);
+const ml = document.getElementById('manifest-link'); if(ml) ml.href = URL.createObjectURL(mBlob);
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault(); deferredPrompt=e; pwaBanner.classList.add('show');
 });
@@ -847,7 +797,47 @@ function toast(msg,err){
 
 // Init
 document.getElementById('f-start').value=new Date().toISOString().split('T')[0];
-renderStudents();
+
+// Firebase init
+function initFirebase() {
+  if(typeof firebase === 'undefined'){
+    console.error('Firebase not loaded, retrying...');
+    setTimeout(initFirebase, 500);
+    return;
+  }
+  try {
+    if(!firebase.apps.length){
+      firebase.initializeApp({
+        apiKey: "AIzaSyD4RF2k0qNQns-HdHlEje4ib--itJ7M19g",
+        authDomain: "alshlool-44292.firebaseapp.com",
+        projectId: "alshlool-44292",
+        storageBucket: "alshlool-44292.firebasestorage.app",
+        messagingSenderId: "577338530158",
+        appId: "1:577338530158:web:554d38c97a678fb893097f"
+      });
+    }
+    const db = firebase.firestore();
+    const col = db.collection('students');
+    col.onSnapshot((snapshot) => {
+      students = [];
+      snapshot.forEach(d => students.push({...d.data(), _id: d.id}));
+      renderStudents();
+    });
+    window.firebaseSave = async function(obj, editId) {
+      if(editId) await col.doc(editId).set(obj);
+      else await col.add(obj);
+    };
+    window.firebaseDelete = async function(id) {
+      await col.doc(id).delete();
+    };
+    window.firebaseReady = true;
+    console.log('Firebase connected!');
+  } catch(e) {
+    console.error('Firebase error:', e);
+    renderStudents();
+  }
+}
+setTimeout(initFirebase, 300);
 
 </script>
 </body>
