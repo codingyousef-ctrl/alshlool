@@ -468,18 +468,17 @@ table.st tr:hover td{background:var(--surface2)}
             <label>التاريخ *</label>
             <input id="pay-date" type="date">
           </div>
-          <div class="fg">
-            <label>سبب الدفع *</label>
-            <select id="pay-reason">
-              <option value="">اختر السبب</option>
-              <option value="اشتراك شهري">اشتراك شهري</option>
-              <option value="اشتراك فصلي">اشتراك فصلي</option>
-              <option value="اشتراك سنوي">اشتراك سنوي</option>
-              <option value="رسوم تسجيل">رسوم تسجيل</option>
-              <option value="زي رياضي">زي رياضي</option>
-              <option value="امتحان حزام">امتحان حزام</option>
-              <option value="أخرى">أخرى</option>
-            </select>
+          <div class="fg full">
+            <label>سبب الدفع * (يمكن اختيار أكثر من سبب)</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="pay-reasons-wrap">
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input type="checkbox" value="اشتراك شهري" style="width:auto;accent-color:#cc1a1a"> اشتراك شهري</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input type="checkbox" value="اشتراك فصلي" style="width:auto;accent-color:#cc1a1a"> اشتراك فصلي</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input type="checkbox" value="اشتراك سنوي" style="width:auto;accent-color:#cc1a1a"> اشتراك سنوي</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input type="checkbox" value="رسوم تسجيل" style="width:auto;accent-color:#cc1a1a"> رسوم تسجيل</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input type="checkbox" value="زي رياضي" style="width:auto;accent-color:#cc1a1a"> زي رياضي</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input type="checkbox" value="امتحان حزام" style="width:auto;accent-color:#cc1a1a"> امتحان حزام</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input type="checkbox" value="أخرى" style="width:auto;accent-color:#cc1a1a"> أخرى</label>
+            </div>
           </div>
           <div class="fg full">
             <label>ملاحظات</label>
@@ -592,6 +591,7 @@ table.st tr:hover td{background:var(--surface2)}
     </div>
   </div>
   <div class="toast-area"><div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div></div>
+  <div style="text-align:left;padding:8px 16px 12px;font-size:11px;color:var(--text2);opacity:.6">© يوسف العابد</div>
 </div>
 
 <!-- Modal -->
@@ -1108,11 +1108,15 @@ function savePayment(){
   const name = document.getElementById('pay-name').value.trim();
   const amount = document.getElementById('pay-amount').value.trim();
   const date = document.getElementById('pay-date').value;
-  const reason = document.getElementById('pay-reason').value;
+  const checked = [...document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]:checked')].map(c=>c.value);
+  const reason = checked.join(' + ');
   if(!name||!amount||!date||!reason){ toast('يرجى ملء الحقول المطلوبة *', true); return; }
   payments.push({ id: Date.now(), name, amount, date, reason, notes: document.getElementById('pay-notes').value.trim() });
   saveLocal();
-  ['pay-name','pay-amount','pay-reason','pay-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pay-name').value='';
+  document.getElementById('pay-amount').value='';
+  document.getElementById('pay-notes').value='';
+  document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]').forEach(c=>c.checked=false);
   renderPayments();
   toast('تم تسجيل الدفعة ✓');
 }
