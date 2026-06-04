@@ -319,8 +319,6 @@ table.st tr:hover td{background:var(--surface2)}
   table.st th:nth-child(4),table.st td:nth-child(4){display:none}
 }
 </style>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -452,7 +450,7 @@ table.st tr:hover td{background:var(--surface2)}
 </div>
 
 <script>
-const PASSWORD = 'Teakwando.2013';
+const PASSWORD = 'Teakwando.2001';
 
 // ── Lock / Unlock ──────────────────────────────────────────
 const lockScreen = document.getElementById('lock-screen');
@@ -798,48 +796,62 @@ function toast(msg,err){
 // Init
 document.getElementById('f-start').value=new Date().toISOString().split('T')[0];
 
-// Firebase init
-function initFirebase() {
-  if(typeof firebase === 'undefined'){
-    console.error('Firebase not loaded, retrying...');
-    setTimeout(initFirebase, 500);
-    return;
-  }
-  try {
-    if(!firebase.apps.length){
-      firebase.initializeApp({
-        apiKey: "AIzaSyD4RF2k0qNQns-HdHlEje4ib--itJ7M19g",
-        authDomain: "alshlool-44292.firebaseapp.com",
-        projectId: "alshlool-44292",
-        storageBucket: "alshlool-44292.firebasestorage.app",
-        messagingSenderId: "577338530158",
-        appId: "1:577338530158:web:554d38c97a678fb893097f"
-      });
-    }
-    const db = firebase.firestore();
-    const col = db.collection('students');
-    col.onSnapshot((snapshot) => {
-      students = [];
-      snapshot.forEach(d => students.push({...d.data(), _id: d.id}));
-      renderStudents();
-    });
-    window.firebaseSave = async function(obj, editId) {
-      if(editId) await col.doc(editId).set(obj);
-      else await col.add(obj);
-    };
-    window.firebaseDelete = async function(id) {
-      await col.doc(id).delete();
-    };
-    window.firebaseReady = true;
-    console.log('Firebase connected!');
-  } catch(e) {
-    console.error('Firebase error:', e);
-    renderStudents();
-  }
+// Firebase via REST API
+const FB_PROJECT = 'alshlool-44292';
+const FB_URL = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/students`;
+const FB_KEY = 'AIzaSyD4RF2k0qNQns-HdHlEje4ib--itJ7M19g';
+
+function toFirestore(obj){
+  const fields = {};
+  Object.keys(obj).forEach(k => {
+    if(obj[k]===null||obj[k]===undefined) fields[k]={nullValue:null};
+    else fields[k]={stringValue:String(obj[k])};
+  });
+  return {fields};
 }
-setTimeout(initFirebase, 300);
+
+function fromFirestore(doc){
+  const obj = {_id: doc.name.split('/').pop()};
+  Object.keys(doc.fields||{}).forEach(k => {
+    obj[k] = doc.fields[k].stringValue ?? doc.fields[k].nullValue ?? '';
+  });
+  return obj;
+}
+
+async function fbLoad(){
+  try {
+    const r = await fetch(`${FB_URL}?key=${FB_KEY}`);
+    const data = await r.json();
+    students = (data.documents||[]).map(fromFirestore);
+    renderStudents();
+  } catch(e){ console.error('fbLoad',e); renderStudents(); }
+}
+
+window.firebaseSave = async function(obj, editId){
+  try {
+    const body = JSON.stringify(toFirestore(obj));
+    if(editId){
+      const fields = Object.keys(obj).map(k=>`updateMask.fieldPaths=${k}`).join('&');
+      await fetch(`${FB_URL}/${editId}?${fields}&key=${FB_KEY}`, {method:'PATCH',headers:{'Content-Type':'application/json'},body});
+    } else {
+      await fetch(`${FB_URL}?key=${FB_KEY}`, {method:'POST',headers:{'Content-Type':'application/json'},body});
+    }
+    await fbLoad();
+    return true;
+  } catch(e){ console.error('fbSave',e); return false; }
+};
+
+window.firebaseDelete = async function(id){
+  try {
+    await fetch(`${FB_URL}/${id}?key=${FB_KEY}`, {method:'DELETE'});
+    await fbLoad();
+    return true;
+  } catch(e){ console.error('fbDel',e); return false; }
+};
+
+window.firebaseReady = true;
+fbLoad();
 
 </script>
 </body>
 </html>
-
