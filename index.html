@@ -610,7 +610,7 @@ function renderTable(list,cid){
   const el=document.getElementById(cid);
   if(!list.length){ el.innerHTML=`<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
   let h=`<table class="st"><thead><tr>
-    <th style="width:22%">الاسم</th><th style="width:10%">الجنس</th><th style="width:14%">هاتف الأب</th><th style="width:14%">ينتهي</th><th style="width:10%">الحالة</th><th style="width:11%">إجراءات</th>
+    <th style="width:25%">الاسم</th><th style="width:12%">الجنس</th><th style="width:20%">هاتف الأب</th><th style="width:18%">ينتهي</th><th style="width:13%">الحالة</th><th style="width:12%">إجراءات</th>
   </tr></thead><tbody>`;
   list.forEach(s=>{
     const i=students.indexOf(s);
