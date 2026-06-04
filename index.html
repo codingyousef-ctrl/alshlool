@@ -374,7 +374,6 @@ table.st tr:hover td{background:var(--surface2)}
     <button class="nb" onclick="showTab('add')" id="nb-add"><i class="ti ti-user-plus"></i> تسجيل جديد</button>
     <button class="nb" onclick="showTab('search')" id="nb-search"><i class="ti ti-search"></i> بحث</button>
     <button class="nb" onclick="showTab('payments')" id="nb-payments"><i class="ti ti-cash"></i> الدفعات</button>
-    <button class="nb" onclick="showTab('trainers')" id="nb-trainers"><i class="ti ti-medal"></i> المدربين</button>
   </div>
 
   <!-- Students Tab -->
@@ -448,9 +447,9 @@ table.st tr:hover td{background:var(--surface2)}
   <!-- Payments Tab -->
   <div class="content" id="tab-payments">
     <div class="card">
-      <div style="display:flex;gap:8px;margin-bottom:16px">
-        <button class="nb active" id="pay-sub-students" onclick="showPaySub('students',this)" style="border-radius:8px;background:#cc1a1a;color:white"><i class="ti ti-users"></i> دفعات الطلاب</button>
-        <button class="nb" id="pay-sub-trainers" onclick="showPaySub('trainers',this)" style="border-radius:8px"><i class="ti ti-medal"></i> دفعات المدربين</button>
+      <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="fb active" id="pay-sub-students" onclick="showPaySub('students',this)"><i class="ti ti-users"></i> دفعات الطلاب</button>
+        <button class="fb" id="pay-sub-trainers" onclick="showPaySub('trainers',this)"><i class="ti ti-medal"></i> المدربين</button>
       </div>
 
       <!-- Student Payments -->
@@ -494,15 +493,47 @@ table.st tr:hover td{background:var(--surface2)}
         <div class="tbl-wrap" id="payments-list"></div>
       </div>
 
-      <!-- Trainer Payments (sub) -->
+      <!-- Trainers Management inside Payments -->
       <div id="pay-trainers-section" style="display:none">
-        <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> دفعات المدربين</div>
+
+        <!-- Add Trainer -->
+        <div class="sec-title"><i class="ti ti-medal" style="color:#cc1a1a"></i> إضافة / تعديل مدرب</div>
+        <div class="form-grid" style="margin-bottom:14px">
+          <div class="fg">
+            <label>اسم المدرب *</label>
+            <input id="tr-name" type="text" placeholder="اسم المدرب">
+          </div>
+          <div class="fg">
+            <label>رقم الهاتف</label>
+            <input id="tr-phone" type="tel" placeholder="07XXXXXXXX" dir="ltr">
+          </div>
+          <div class="fg">
+            <label>الراتب الشهري (دينار)</label>
+            <input id="tr-salary" type="number" placeholder="0.00" min="0" step="0.5">
+          </div>
+          <div class="fg">
+            <label>تاريخ الانضمام</label>
+            <input id="tr-join" type="date">
+          </div>
+        </div>
+        <input type="hidden" id="tr-edit-id" value="">
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
+          <button class="btn-s" onclick="cancelTrainer()">إلغاء</button>
+          <button class="btn-p" onclick="saveTrainer()"><i class="ti ti-check"></i> <span id="tr-save-lbl">حفظ المدرب</span></button>
+        </div>
+        <hr class="divider">
+
+        <!-- Trainers list with paid/remaining -->
+        <div class="sec-title" style="font-size:13px"><i class="ti ti-users" style="color:#cc1a1a"></i> قائمة المدربين</div>
+        <div class="tbl-wrap" id="trainers-list" style="margin-bottom:16px"></div>
+        <hr class="divider">
+
+        <!-- Pay a trainer -->
+        <div class="sec-title" style="font-size:13px"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة لمدرب</div>
         <div class="form-grid" style="margin-bottom:14px">
           <div class="fg">
             <label>المدرب *</label>
-            <select id="tpay-trainer">
-              <option value="">اختر المدرب</option>
-            </select>
+            <select id="tpay-trainer"><option value="">اختر المدرب</option></select>
           </div>
           <div class="fg">
             <label>المبلغ المدفوع (دينار) *</label>
@@ -521,6 +552,7 @@ table.st tr:hover td{background:var(--surface2)}
           <button class="btn-p" onclick="saveTrainerPayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
         </div>
         <hr class="divider">
+        <div class="sec-title" style="font-size:13px"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات المدربين</div>
         <div class="tbl-wrap" id="tpayments-list"></div>
       </div>
     </div>
@@ -995,13 +1027,11 @@ function saveLocal(){
 }
 
 function showPaySub(sub, btn){
-  document.getElementById('pay-students-section').style.display = sub==='students'?'':'none';
-  document.getElementById('pay-trainers-section').style.display = sub==='trainers'?'':'none';
-  document.querySelectorAll('#tab-payments .nb').forEach(b=>{
-    b.style.background='transparent'; b.style.color='rgba(255,255,255,.55)';
-  });
-  btn.style.background='#cc1a1a'; btn.style.color='white';
-  if(sub==='trainers'){ renderTrainerPayments(); populateTrainerSelect(); }
+  document.getElementById('pay-students-section').style.display = sub==='students'?'block':'none';
+  document.getElementById('pay-trainers-section').style.display = sub==='trainers'?'block':'none';
+  document.querySelectorAll('#tab-payments .fb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(sub==='trainers'){ renderTrainers(); renderTrainerPayments(); populateTrainerSelect(); }
   else renderPayments();
 }
 
@@ -1218,9 +1248,10 @@ function delTrainerPayment(i){
 }
 
 // Init payments date
-document.getElementById('pay-date').value = new Date().toISOString().split('T')[0];
-document.getElementById('tpay-date').value = new Date().toISOString().split('T')[0];
-document.getElementById('tr-join').value = new Date().toISOString().split('T')[0];
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('pay-date').value = today;
+document.getElementById('tpay-date').value = today;
+document.getElementById('tr-join').value = today;
 
 </script>
 </body>
