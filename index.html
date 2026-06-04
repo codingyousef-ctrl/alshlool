@@ -470,7 +470,7 @@ table.st tr:hover td{background:var(--surface2)}
           </div>
           <div class="fg">
             <label>سبب الدفع *</label>
-            <select id="pay-reason">
+            <select id="pay-reason" multiple size="6">
               <option value="">اختر السبب</option>
               <option value="اشتراك شهري">اشتراك شهري</option>
               <option value="اشتراك باص">رسوم باص</option>
@@ -1105,7 +1105,9 @@ function savePayment(){
   const name = document.getElementById('pay-name').value.trim();
   const amount = document.getElementById('pay-amount').value.trim();
   const date = document.getElementById('pay-date').value;
-  const reason = document.getElementById('pay-reason').value;
+  const reason = [...document.getElementById('pay-reason').selectedOptions]
+  .map(o => o.value)
+  .join(' + ');
   if(!name||!amount||!date||!reason){ toast('يرجى ملء الحقول المطلوبة *', true); return; }
   payments.push({ id: Date.now(), name, amount, date, reason, notes: document.getElementById('pay-notes').value.trim() });
   saveLocal();
