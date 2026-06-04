@@ -468,18 +468,18 @@ table.st tr:hover td{background:var(--surface2)}
             <label>التاريخ *</label>
             <input id="pay-date" type="date">
           </div>
-          <div class="fg">
-            <label>سبب الدفع *</label>
-            <select id="pay-reason" multiple size="6">
-              <option value="">اختر السبب</option>
-              <option value="اشتراك شهري">اشتراك شهري</option>
-              <option value="اشتراك باص">رسوم باص</option>
-              <option value="رسوم تسجيل">رسوم تسجيل</option>
-              <option value="زي رياضي">زي رياضي</option>
-              <option value="فحص حزام">فحص حزام</option>
-              <option value="أخرى">أخرى</option>
-            </select>
-          </div>
+         <div class="fg">
+  <label>سبب الدفع *</label>
+
+  <div id="pay-reason" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+    <label><input type="checkbox" value="اشتراك شهري"> اشتراك شهري</label>
+    <label><input type="checkbox" value="اشتراك باص"> رسوم باص</label>
+    <label><input type="checkbox" value="رسوم تسجيل"> رسوم تسجيل</label>
+    <label><input type="checkbox" value="زي رياضي"> زي رياضي</label>
+    <label><input type="checkbox" value="فحص حزام"> فحص حزام</label>
+    <label><input type="checkbox" value="أخرى"> أخرى</label>
+  </div>
+</div>
           <div class="fg full">
             <label>ملاحظات</label>
             <input id="pay-notes" type="text" placeholder="ملاحظات إضافية...">
@@ -1105,11 +1105,12 @@ function savePayment(){
   const name = document.getElementById('pay-name').value.trim();
   const amount = document.getElementById('pay-amount').value.trim();
   const date = document.getElementById('pay-date').value;
-  const reason = [...document.getElementById('pay-reason').selectedOptions]
-  .map(o => o.value)
+  const reason = [...document.querySelectorAll('#pay-reason input:checked')]
+  .map(x => x.value)
   .join(' + ');
   if(!name||!amount||!date||!reason){ toast('يرجى ملء الحقول المطلوبة *', true); return; }
   payments.push({ id: Date.now(), name, amount, date, reason, notes: document.getElementById('pay-notes').value.trim() });
+  document.querySelectorAll('#pay-reason input').forEach(x => x.checked = false);
   saveLocal();
   ['pay-name','pay-amount','pay-reason','pay-notes'].forEach(id=>document.getElementById(id).value='');
   renderPayments();
