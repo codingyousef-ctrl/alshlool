@@ -450,7 +450,7 @@ table.st tr:hover td{background:var(--surface2)}
 </div>
 
 <script>
-const PASSWORD = 'Teakwando.2001';
+const PASSWORD = 'Teakwando.2013';
 
 // ── Lock / Unlock ──────────────────────────────────────────
 const lockScreen = document.getElementById('lock-screen');
@@ -813,7 +813,10 @@ function toFirestore(obj){
 function fromFirestore(doc){
   const obj = {_id: doc.name.split('/').pop()};
   Object.keys(doc.fields||{}).forEach(k => {
-    obj[k] = doc.fields[k].stringValue ?? doc.fields[k].nullValue ?? '';
+    const f = doc.fields[k];
+    obj[k] = f.stringValue !== undefined ? f.stringValue :
+             f.integerValue !== undefined ? f.integerValue :
+             f.booleanValue !== undefined ? f.booleanValue : '';
   });
   return obj;
 }
@@ -836,7 +839,7 @@ window.firebaseSave = async function(obj, editId){
     } else {
       await fetch(`${FB_URL}?key=${FB_KEY}`, {method:'POST',headers:{'Content-Type':'application/json'},body});
     }
-    await fbLoad();
+    fbLoad();
     return true;
   } catch(e){ console.error('fbSave',e); return false; }
 };
