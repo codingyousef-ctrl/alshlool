@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <head>
-  <meta name="author" content="اسمك">
-  <meta name="copyright" content="© 2026 اسمك. جميع الحقوق محفوظة.">
-</head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0d0d0d">
@@ -477,9 +473,11 @@ table.st tr:hover td{background:var(--surface2)}
             <select id="pay-reason">
               <option value="">اختر السبب</option>
               <option value="اشتراك شهري">اشتراك شهري</option>
-              <option value="رسوم تسجيل + رسوم باص">رسوم تسجيل + رسوم باص</option>
-              <option value="تسجيل لاول مرة +بدلة......">تسجيل لاول مرة +بدلة......</option>
-              <option value="فحص حزام">فحص حزام</option>
+              <option value="اشتراك فصلي">اشتراك فصلي</option>
+              <option value="اشتراك سنوي">اشتراك سنوي</option>
+              <option value="رسوم تسجيل">رسوم تسجيل</option>
+              <option value="زي رياضي">زي رياضي</option>
+              <option value="امتحان حزام">امتحان حزام</option>
               <option value="أخرى">أخرى</option>
             </select>
           </div>
@@ -864,10 +862,12 @@ function saveStudent(){
     created:new Date().toISOString()
   };
   const eid=document.getElementById('f-edit-id').value;
+  // eid could be a Firebase _id string or empty
+  const isEdit = eid !== '';
   if(window.firebaseReady){
-    window.firebaseSave(obj, eid||null).then(ok=>{
+    window.firebaseSave(obj, isEdit ? eid : null).then(ok=>{
       if(ok){
-        toast(eid?'تم تحديث بيانات الطالب بنجاح ✓':'تم تسجيل الطالب بنجاح ✓');
+        toast(isEdit?'تم تحديث بيانات الطالب بنجاح ✓':'تم تسجيل الطالب بنجاح ✓');
         cancelEdit();
         showTab('students');
       } else {
@@ -875,10 +875,10 @@ function saveStudent(){
       }
     });
   } else {
-    const eidN=eid!==''?parseInt(eid):-1;
+    const eidN = !isNaN(eid) && eid!=='' ? parseInt(eid) : -1;
     if(eidN>=0){ students[eidN]=obj; } else { students.push(obj); }
     save();
-    toast(eid?'تم تحديث بيانات الطالب بنجاح ✓':'تم تسجيل الطالب بنجاح ✓');
+    toast(isEdit?'تم تحديث بيانات الطالب بنجاح ✓':'تم تسجيل الطالب بنجاح ✓');
     cancelEdit();
     showTab('students');
   }
@@ -893,7 +893,7 @@ function cancelEdit(){
 
 function editStudent(i){
   const s=students[i];
-  document.getElementById('f-edit-id').value=i;
+  document.getElementById('f-edit-id').value=s._id||i;
   document.getElementById('f-name').value=s.name;
   document.getElementById('f-gender').value=s.gender;
   document.getElementById('f-dob').value=s.dob||'';
@@ -1165,9 +1165,6 @@ function printInvoice(i){
     .label{color:#666}
     .total{font-size:20px;font-weight:700;color:#cc1a1a;text-align:center;margin-top:20px}
     .footer{text-align:center;color:#999;font-size:12px;margin-top:30px}
-    <footer>
-  <p>&copy; 2026 صنع من قبل يوسف. جميع الحقوق محفوظة.</p>
-</footer>
     @media print{button{display:none}}
   </style></head><body>
   <div class="logo">
@@ -1331,8 +1328,5 @@ document.getElementById('tpay-date').value = today;
 document.getElementById('tr-join').value = today;
 
 </script>
-  <footer>
-  <p>&copy; 2026 صنع من قبل يوسف العابد. جميع الحقوق محفوظة.</p>
-</footer>
 </body>
 </html>
