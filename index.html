@@ -610,14 +610,13 @@ function renderTable(list,cid){
   const el=document.getElementById(cid);
   if(!list.length){ el.innerHTML=`<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
   let h=`<table class="st"><thead><tr>
-    <th style="width:22%">الاسم</th><th style="width:10%">الجنس</th><th style="width:19%">الحزام</th><th style="width:14%">هاتف الأب</th><th style="width:14%">ينتهي</th><th style="width:10%">الحالة</th><th style="width:11%">إجراءات</th>
+    <th style="width:22%">الاسم</th><th style="width:10%">الجنس</th><th style="width:14%">هاتف الأب</th><th style="width:14%">ينتهي</th><th style="width:10%">الحالة</th><th style="width:11%">إجراءات</th>
   </tr></thead><tbody>`;
   list.forEach(s=>{
     const i=students.indexOf(s);
     h+=`<tr>
       <td style="font-weight:600">${s.name}</td>
       <td>${gBadge(s.gender)}</td>
-      <td>${beltBadge(s.belt)}</td>
       <td dir="ltr">${s.dad||'—'}</td>
       <td>${fmtDate(s.end)}</td>
       <td>${sBadge(s.end)}</td>
