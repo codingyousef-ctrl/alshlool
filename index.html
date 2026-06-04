@@ -468,28 +468,19 @@ table.st tr:hover td{background:var(--surface2)}
             <label>التاريخ *</label>
             <input id="pay-date" type="date">
           </div>
-       .reason-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    padding:12px;
-    border:1px solid #333;
-    border-radius:10px;
-    background:#111827;
-}
+      <div class="fg">
+  <label>سبب الدفع *</label>
 
-.reason-grid label{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    margin:0;
-}
-
-.reason-grid input[type="checkbox"]{
-    width:18px;
-    height:18px;
-}
+  <div id="pay-reason" class="reason-grid">
+    <label><input type="checkbox" value="اشتراك شهري"> اشتراك شهري</label>
+    <label><input type="checkbox" value="رسوم باص"> رسوم باص</label>
+    <label><input type="checkbox" value=" رسوم تسجيل + باص"> رسوم تسجيل + باص</label>
+    <label><input type="checkbox" value="زي رياضي"> زي رياضي</label>
+    <label><input type="checkbox" value="فحص حزام"> فحص حزام</label>
+    <label><input type="checkbox" value="أخرى"> أخرى</label>
+  </div>
+</div>
+       
           <div class="fg full">
             <label>ملاحظات</label>
             <input id="pay-notes" type="text" placeholder="ملاحظات إضافية...">
@@ -1115,12 +1106,9 @@ function savePayment(){
   const name = document.getElementById('pay-name').value.trim();
   const amount = document.getElementById('pay-amount').value.trim();
   const date = document.getElementById('pay-date').value;
-  const reason = [...document.querySelectorAll('#pay-reason input:checked')]
-  .map(x => x.value)
-  .join(' + ');
+  const reason = document.getElementById('pay-reason').value;
   if(!name||!amount||!date||!reason){ toast('يرجى ملء الحقول المطلوبة *', true); return; }
   payments.push({ id: Date.now(), name, amount, date, reason, notes: document.getElementById('pay-notes').value.trim() });
-  document.querySelectorAll('#pay-reason input').forEach(x => x.checked = false);
   saveLocal();
   ['pay-name','pay-amount','pay-reason','pay-notes'].forEach(id=>document.getElementById(id).value='');
   renderPayments();
