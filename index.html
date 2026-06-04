@@ -468,18 +468,28 @@ table.st tr:hover td{background:var(--surface2)}
             <label>التاريخ *</label>
             <input id="pay-date" type="date">
           </div>
-         <div class="fg">
-  <label>سبب الدفع *</label>
+       .reason-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    padding:12px;
+    border:1px solid #333;
+    border-radius:10px;
+    background:#111827;
+}
 
-  <div id="pay-reason" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
-    <label><input type="checkbox" value="اشتراك شهري"> اشتراك شهري</label>
-    <label><input type="checkbox" value="اشتراك باص"> رسوم باص</label>
-    <label><input type="checkbox" value="رسوم تسجيل"> رسوم تسجيل</label>
-    <label><input type="checkbox" value="زي رياضي"> زي رياضي</label>
-    <label><input type="checkbox" value="فحص حزام"> فحص حزام</label>
-    <label><input type="checkbox" value="أخرى"> أخرى</label>
-  </div>
-</div>
+.reason-grid label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    margin:0;
+}
+
+.reason-grid input[type="checkbox"]{
+    width:18px;
+    height:18px;
+}
           <div class="fg full">
             <label>ملاحظات</label>
             <input id="pay-notes" type="text" placeholder="ملاحظات إضافية...">
