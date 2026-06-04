@@ -806,12 +806,20 @@ function setFilter(f,btn){
 }
 
 function showTab(t){
-  ['students','add','search'].forEach(x=>{
-    document.getElementById('tab-'+x).classList.toggle('show',x===t);
-    document.getElementById('nb-'+x).classList.toggle('active',x===t);
+  ['students','add','search','payments'].forEach(x=>{
+    const tab = document.getElementById('tab-'+x);
+    const nb = document.getElementById('nb-'+x);
+    if(tab) tab.classList.toggle('show', x===t);
+    if(nb) nb.classList.toggle('active', x===t);
   });
   if(t==='students') renderStudents();
-
+  if(t==='payments'){
+    document.getElementById('pay-students-section').style.display='block';
+    document.getElementById('pay-trainers-section').style.display='none';
+    document.querySelectorAll('#tab-payments .fb').forEach((b,i)=>{ if(i===0) b.classList.add('active'); else b.classList.remove('active'); });
+    renderPayments();
+    loadAllData().then(()=>renderPayments());
+  }
 }
 
 function selectBelt(id, btn){
@@ -1012,18 +1020,72 @@ fbLoad();
 
 
 
-// ── Payments ──────────────────────────────────────────────
+// ── Payments / Trainers Data ──────────────────────────────
 let payments = [];
 let trainerPayments = [];
 let trainers = [];
-try{ payments = JSON.parse(localStorage.getItem('shalloul_payments')||'[]'); }catch(e){}
-try{ trainerPayments = JSON.parse(localStorage.getItem('shalloul_tpayments')||'[]'); }catch(e){}
-try{ trainers = JSON.parse(localStorage.getItem('shalloul_trainers')||'[]'); }catch(e){}
 
-function saveLocal(){
+const FB_COL = {
+  payments: 'payments',
+  tpayments: 'trainerPayments',
+  trainers: 'trainers'
+};
+
+async function fbSaveDoc(colName, id, obj){
+  try{
+    await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`,{
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(toFirestore(obj))
+    });
+  }catch(e){ console.error('fbSaveDoc',e); }
+}
+
+async function fbDeleteDoc(colName, id){
+  try{
+    await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`,{method:'DELETE'});
+  }catch(e){ console.error('fbDeleteDoc',e); }
+}
+
+async function fbLoadCol(colName){
+  try{
+    const r = await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}?key=${FB_KEY}`);
+    const data = await r.json();
+    return (data.documents||[]).map(fromFirestore);
+  }catch(e){ return []; }
+}
+
+async function saveLocal(){
+  // save all three collections to Firebase
+  // payments
+  for(const p of payments){
+    if(!p._id) p._id = 'p_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
+    await fbSaveDoc('payments', p._id, p);
+  }
+  // trainerPayments
+  for(const p of trainerPayments){
+    if(!p._id) p._id = 'tp_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
+    await fbSaveDoc('trainerPayments', p._id, p);
+  }
+  // trainers
+  for(const t of trainers){
+    if(!t._id) t._id = 'tr_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
+    await fbSaveDoc('trainers', t._id, t);
+  }
+  // also keep local backup
   try{ localStorage.setItem('shalloul_payments', JSON.stringify(payments)); }catch(e){}
   try{ localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); }catch(e){}
   try{ localStorage.setItem('shalloul_trainers', JSON.stringify(trainers)); }catch(e){}
+}
+
+async function loadAllData(){
+  const [p, tp, tr] = await Promise.all([
+    fbLoadCol('payments'),
+    fbLoadCol('trainerPayments'),
+    fbLoadCol('trainers')
+  ]);
+  if(p.length) payments = p;
+  if(tp.length) trainerPayments = tp;
+  if(tr.length) trainers = tr;
 }
 
 function showPaySub(sub, btn){
@@ -1031,8 +1093,13 @@ function showPaySub(sub, btn){
   document.getElementById('pay-trainers-section').style.display = sub==='trainers'?'block':'none';
   document.querySelectorAll('#tab-payments .fb').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  if(sub==='trainers'){ renderTrainers(); renderTrainerPayments(); populateTrainerSelect(); }
-  else renderPayments();
+  if(sub==='trainers'){
+    renderTrainers(); renderTrainerPayments(); populateTrainerSelect();
+    loadAllData().then(()=>{ renderTrainers(); renderTrainerPayments(); populateTrainerSelect(); });
+  } else {
+    renderPayments();
+    loadAllData().then(()=>renderPayments());
+  }
 }
 
 function savePayment(){
@@ -1073,6 +1140,8 @@ function renderPayments(){
 
 function delPayment(i){
   if(!confirm('حذف هذه الدفعة؟')) return;
+  const p = payments[i];
+  if(p._id) fbDeleteDoc('payments', p._id);
   payments.splice(i,1);
   saveLocal();
   renderPayments();
@@ -1185,8 +1254,10 @@ function editTrainer(i){
 
 function delTrainer(i){
   if(!confirm(`حذف المدرب ${trainers[i].name}؟`)) return;
+  const t = trainers[i];
+  if(t._id) fbDeleteDoc('trainers', t._id);
   trainers.splice(i,1);
-  saveLocal();
+  try{ localStorage.setItem('shalloul_trainers', JSON.stringify(trainers)); }catch(e){}
   renderTrainers();
   toast('تم الحذف');
 }
@@ -1238,10 +1309,11 @@ function renderTrainerPayments(){
 function delTrainerPayment(i){
   if(!confirm('حذف هذه الدفعة؟')) return;
   const p = trainerPayments[i];
+  if(p._id) fbDeleteDoc('trainerPayments', p._id);
   const tidx = trainers.findIndex(t=>t.name===p.trainer);
-  if(tidx>=0) trainers[tidx].paid = String(Math.max(0, parseFloat(trainers[tidx].paid||0) - parseFloat(p.amount)));
+  if(tidx>=0){ trainers[tidx].paid = String(Math.max(0, parseFloat(trainers[tidx].paid||0) - parseFloat(p.amount))); saveLocal(); }
   trainerPayments.splice(i,1);
-  saveLocal();
+  try{ localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); }catch(e){}
   renderTrainerPayments();
   renderTrainers();
   toast('تم الحذف');
