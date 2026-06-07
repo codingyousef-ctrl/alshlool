@@ -840,6 +840,9 @@ function renderStudents(){
     
     renderTable(list, 'students-table');
     updateStats();
+
+}
+  {
   // عند تعديل بيانات الطالب، أضف هذه الأزرار في الواجهة:
 function freezeStudent(id) {
     students[id].isFrozen = true;
@@ -852,8 +855,7 @@ function unfreezeStudent(id) {
     saveLocal();
     renderStudents();
 }
-}
-
+  }
 function setFilter(f,btn){
   filter=f;
   document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
