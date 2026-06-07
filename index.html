@@ -829,11 +829,21 @@ function renderStudents(){
     let list = [...students];
     
     // الفلاتر الحالية الموجودة لديك
-    if(filter === 'active') list = list.filter(s => getStatus(s.end) === 'active');
-    else if(filter === 'soon') list = list.filter(s => getStatus(s.end) === 'soon');
-    else if(filter === 'expired') list = list.filter(s => getStatus(s.end) === 'expired');
-    else if(filter === 'm') list = list.filter(s => s.gender === 'm');
-    else if(filter === 'f') list = list.filter(s => s.gender === 'f');
+    // تأكد أن الكود مكتوب هكذا (بدون فواصل أو أقواس مفقودة):
+
+if(filter==='active') {
+    list = list.filter(s=>getStatus(s.end)==='active');
+} else if(filter==='soon') {
+    list = list.filter(s=>getStatus(s.end)==='soon');
+} else if(filter==='expired') {
+    list = list.filter(s=>getStatus(s.end)==='expired');
+} else if(filter==='m') {
+    list = list.filter(s=>s.gender==='m');
+} else if(filter==='f') {
+    list = list.filter(s=>s.gender==='f');
+} else if(filter==='frozen') { // تأكد أن هذا السطر هو الـ else if الصحيح
+    list = list.filter(s=>s.isFrozen === true);
+}
     
     // أضف هذا الشرط الجديد للفلتر "مجمد"
     else if(filter === 'frozen') list = list.filter(s => s.isFrozen === true); 
