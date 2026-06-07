@@ -824,43 +824,26 @@ function renderTable(list,cid){
   h+='</tbody></table>';
   el.innerHTML=h;
 }
-  function renderStudents(){
-    if (typeof students === 'undefined') return; // إذا لم تتحمل البيانات بعد، توقف عن التنفيذ
-    let list = [...students];
-    // ... باقي الكود
-}
 
 function renderStudents(){
-    let list = [...students];
-    
-    // استخدام switch أضمن وأكثر ترتيباً لتجنب أخطاء الـ if/else
-    switch(filter) {
-        case 'active': list = list.filter(s => getStatus(s.end) === 'active'); break;
-        case 'soon':   list = list.filter(s => getStatus(s.end) === 'soon'); break;
-        case 'expired':list = list.filter(s => getStatus(s.end) === 'expired'); break;
-        case 'm':      list = list.filter(s => s.gender === 'm'); break;
-        case 'f':      list = list.filter(s => s.gender === 'f'); break;
-        case 'frozen': list = list.filter(s => s.isFrozen === true); break;
-        default: break; // في حالة 'all' أو أي قيمة أخرى لا تفعل شيئاً
-    }
-    
-    renderTable(list, 'students-table');
-    if (typeof updateStats === 'function') updateStats();
-}
-  {
-  // عند تعديل بيانات الطالب، أضف هذه الأزرار في الواجهة:
-function freezeStudent(id) {
-    students[id].isFrozen = true;
-    saveLocal();
-    renderStudents();
-}
+    // 1. حماية: إذا لم تكن مصفوفة الطلاب موجودة، لا تفعل شيئاً (يمنع انهيار النظام عند الدخول)
+    if (typeof students === 'undefined') return;
 
-function unfreezeStudent(id) {
-    students[id].isFrozen = false;
-    saveLocal();
-    renderStudents();
+    let list = [...students];
+
+    // 2. الفلاتر (أضفنا فلتر المجمد هنا)
+    if(filter === 'active') list = list.filter(s => getStatus(s.end) === 'active');
+    else if(filter === 'soon') list = list.filter(s => getStatus(s.end) === 'soon');
+    else if(filter === 'expired') list = list.filter(s => getStatus(s.end) === 'expired');
+    else if(filter === 'm') list = list.filter(s => s.gender === 'm');
+    else if(filter === 'f') list = list.filter(s => s.gender === 'f');
+    else if(filter === 'frozen') list = list.filter(s => s.isFrozen === true); 
+
+    // 3. العرض (تأكد أن هذه الدوال موجودة في ملفك)
+    renderTable(list, 'students-table');
+    updateStats();
 }
-  }
+ 
 function setFilter(f,btn){
   filter=f;
   document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
