@@ -48,6 +48,7 @@
 [data-theme="dark"] .b-soon{background:#2a1a04;color:#e8a030}
 [data-theme="dark"] .b-m{background:#081830;color:#5090e8}
 [data-theme="dark"] .b-f{background:#280a18;color:#e870a8}
+[data-theme="dark"] .b-frozen{background:#082a30;color:#5090e8}
 [data-theme="dark"] .belt-opt.sel{background:#1a0808;color:#cc1a1a;border-color:#cc1a1a}
 [data-theme="dark"] input,[data-theme="dark"] select{background:var(--surface2);color:var(--text);border-color:var(--border)}
 
@@ -184,7 +185,7 @@ body{font-family:var(--font);direction:rtl;background:var(--bg);min-height:100vh
 .sec-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px}
 
 /* Stats */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
 .stat{
   background:var(--surface);border:0.5px solid var(--border2);
   border-radius:12px;padding:14px;text-align:center;
@@ -252,6 +253,7 @@ table.st tr:hover td{background:var(--surface2)}
 .b-soon{background:#fef3e0;color:#7a4a08}
 .b-m{background:#e4f0fc;color:#1455a0}
 .b-f{background:#fce8f4;color:#922858}
+.b-frozen{background:#e0f2f7;color:#1a6ba0}
 
 /* Belt */
 .belt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
@@ -383,6 +385,7 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="stat"><div class="stat-n" id="st-act" style="color:#2a6b10">0</div><div class="stat-l">اشتراك فعال</div></div>
       <div class="stat"><div class="stat-n" id="st-soon" style="color:#7a4a08">0</div><div class="stat-l">ينتهي قريباً</div></div>
       <div class="stat"><div class="stat-n" id="st-exp" style="color:#a01414">0</div><div class="stat-l">منتهي</div></div>
+      <div class="stat"><div class="stat-n" id="st-frozen" style="color:#1a6ba0">0</div><div class="stat-l">مجمد</div></div>
     </div>
     <div class="card">
       <div class="filter-row">
@@ -390,6 +393,7 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="fb" onclick="setFilter('active',this)">فعال</button>
         <button class="fb" onclick="setFilter('soon',this)">ينتهي قريباً</button>
         <button class="fb" onclick="setFilter('expired',this)">منتهي</button>
+        <button class="fb" onclick="setFilter('frozen',this)">مجمد</button>
         <button class="fb" onclick="setFilter('m',this)">ذكر</button>
         <button class="fb" onclick="setFilter('f',this)">أنثى</button>
       </div>
@@ -416,7 +420,7 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="sec-title" style="font-size:13px"><i class="ti ti-phone" style="color:#cc1a1a"></i> معلومات التواصل</div>
       <div class="form-grid">
         <div class="fg"><label>رقم هاتف الأب</label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr"></div>
-        <div class="fg"><label>موقع السكن</label><input id="f-mom" type="tel" placeholder="........." dir="ltr"></div>
+        <div class="fg"><label>رقم هاتف الأم</label><input id="f-mom" type="tel" placeholder="07XXXXXXXX" dir="ltr"></div>
       </div>
       <hr class="divider">
       <div class="sec-title" style="font-size:13px"><i class="ti ti-calendar" style="color:#cc1a1a"></i> الاشتراك</div>
@@ -443,25 +447,6 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="btn-s" onclick="unfreezeSubscription()" style="color: #cc1a1a; border-color: #cc1a1a;">فك التجميد</button>
     </div>
 </div>
-
-<script>
-function freezeSubscription() {
-    const days = document.getElementById('freeze-duration').value;
-    const today = new Date();
-    const expiryDate = new Date();
-    expiryDate.setDate(today.getDate() + parseInt(days));
-    
-    alert("تم تجميد الاشتراك لمدة " + days + " يوم. ينتهي التجميد في: " + expiryDate.toLocaleDateString('ar-EG'));
-    // هنا يمكنك إضافة كود الاتصال بقاعدة البيانات لتحديث حالة الطالب
-}
-
-function unfreezeSubscription() {
-    if(confirm("هل أنت متأكد من فك تجميد اشتراك الطالب؟")) {
-        alert("تم فك التجميد بنجاح.");
-        // هنا يمكنك إضافة كود الاتصال بقاعدة البيانات لتحديث حالة الطالب
-    }
-}
-</script>
         <div class="fg full"><label>ملاحظات</label><input id="f-notes" type="text" placeholder="أي ملاحظات إضافية..."></div>
       </div>
       <input type="hidden" id="f-belt" value="">
@@ -764,18 +749,34 @@ let filter = 'all';
 
 function save(){ try{ localStorage.setItem('shalloul_v2',JSON.stringify(students)); }catch(e){} }
 
-function getStatus(end){
+function getStatus(end, isFrozen, freezeEnd){
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const frozen = isFrozen === true || isFrozen === 'true';
+  if (frozen && freezeEnd) {
+    const freezeEndDateObj = new Date(freezeEnd);
+    freezeEndDateObj.setHours(0,0,0,0);
+    if (freezeEndDateObj >= today) return 'frozen';
+  }
+
   if(!end) return 'active';
-  const t=new Date(); t.setHours(0,0,0,0);
-  const d=Math.ceil((new Date(end)-t)/86400000);
-  if(d<0) return 'expired';
-  if(d<=14) return 'soon';
+  const subEndDateObj = new Date(end);
+  subEndDateObj.setHours(0,0,0,0);
+  const diffDays = Math.ceil((subEndDateObj - today) / 86400000);
+  if(diffDays < 0) return 'expired';
+  if(diffDays <= 14) return 'soon';
   return 'active';
 }
 
-function sBadge(end){
-  const s=getStatus(end);
-  const m={active:['b-act','فعال'],soon:['b-soon','ينتهي قريباً'],expired:['b-exp','منتهي']};
+function sBadge(student){
+  const s = getStatus(student.end, student.isFrozen, student.freezeEnd);
+  const m = {
+    active: ['b-act','فعال'],
+    soon: ['b-soon','ينتهي قريباً'],
+    expired: ['b-exp','منتهي'],
+    frozen: ['b-frozen','مجمد']
+  };
   return `<span class="badge ${m[s][0]}">${m[s][1]}</span>`;
 }
 
@@ -793,9 +794,10 @@ function fmtDate(d){ if(!d) return '—'; const p=d.split('-'); return `${p[2]}/
 
 function updateStats(){
   document.getElementById('st-total').textContent=students.length;
-  document.getElementById('st-act').textContent=students.filter(s=>getStatus(s.end)==='active').length;
-  document.getElementById('st-soon').textContent=students.filter(s=>getStatus(s.end)==='soon').length;
-  document.getElementById('st-exp').textContent=students.filter(s=>getStatus(s.end)==='expired').length;
+  document.getElementById('st-act').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='active').length;
+  document.getElementById('st-soon').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='soon').length;
+  document.getElementById('st-exp').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='expired').length;
+  document.getElementById('st-frozen').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='frozen').length;
 }
 
 function renderTable(list,cid){
@@ -811,7 +813,7 @@ function renderTable(list,cid){
       <td>${gBadge(s.gender)}</td>
       <td dir="ltr">${s.dad||'—'}</td>
       <td>${fmtDate(s.end)}</td>
-      <td>${sBadge(s.end)}</td>
+      <td>${sBadge(s)}</td>
       <td><div class="act-btns">
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
@@ -825,9 +827,10 @@ function renderTable(list,cid){
 
 function renderStudents(){
   let list=[...students];
-  if(filter==='active') list=list.filter(s=>getStatus(s.end)==='active');
-  else if(filter==='soon') list=list.filter(s=>getStatus(s.end)==='soon');
-  else if(filter==='expired') list=list.filter(s=>getStatus(s.end)==='expired');
+  if(filter==='active') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='active');
+  else if(filter==='soon') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='soon');
+  else if(filter==='expired') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='expired');
+  else if(filter==='frozen') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='frozen');
   else if(filter==='m') list=list.filter(s=>s.gender==='m');
   else if(filter==='f') list=list.filter(s=>s.gender==='f');
   renderTable(list,'students-list');
@@ -898,8 +901,17 @@ function saveStudent(){
     created:new Date().toISOString()
   };
   const eid=document.getElementById('f-edit-id').value;
-  // eid could be a Firebase _id string or empty
   const isEdit = eid !== '';
+  if(isEdit){
+    const idx = students.findIndex(s => (s._id || students.indexOf(s)).toString() === eid);
+    if(idx >= 0){
+      const prev = students[idx];
+      if(prev.isFrozen) obj.isFrozen = prev.isFrozen;
+      if(prev.freezeEnd) obj.freezeEnd = prev.freezeEnd;
+      if(prev.actualEndDateBeforeFreeze) obj.actualEndDateBeforeFreeze = prev.actualEndDateBeforeFreeze;
+    }
+  }
+  // eid could be a Firebase _id string or empty
   if(window.firebaseReady){
     window.firebaseSave(obj, isEdit ? eid : null).then(ok=>{
       if(ok){
@@ -959,17 +971,100 @@ function delStudent(i){
   }
 }
 
+function freezeSubscription(){
+  const studentId = document.getElementById('f-edit-id').value;
+  if(!studentId){ toast('يرجى اختيار طالب لتجميد اشتراكه', true); return; }
+  const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+  if(studentIndex === -1) return;
+
+  const student = students[studentIndex];
+  const freezeDurationDays = parseInt(document.getElementById('freeze-duration').value, 10);
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const isCurrentlyFrozen = (student.isFrozen === true || student.isFrozen === 'true') &&
+    student.freezeEnd && new Date(student.freezeEnd).setHours(0,0,0,0) >= today.getTime();
+
+  if(isCurrentlyFrozen){
+    const currentFreezeEnd = new Date(student.freezeEnd);
+    const currentSubEnd = new Date(student.end);
+    currentFreezeEnd.setHours(0,0,0,0);
+    currentSubEnd.setHours(0,0,0,0);
+
+    const newFreezeEnd = new Date(currentFreezeEnd);
+    newFreezeEnd.setDate(newFreezeEnd.getDate() + freezeDurationDays);
+    student.freezeEnd = newFreezeEnd.toISOString().split('T')[0];
+
+    const newSubEnd = new Date(currentSubEnd);
+    newSubEnd.setDate(newSubEnd.getDate() + freezeDurationDays);
+    student.end = newSubEnd.toISOString().split('T')[0];
+
+    toast(`تم تمديد تجميد اشتراك ${student.name} لمدة ${freezeDurationDays} يوم. ينتهي التجميد في: ${fmtDate(student.freezeEnd)}`);
+  } else {
+    student.isFrozen = true;
+    student.actualEndDateBeforeFreeze = student.end;
+
+    const freezeEndDate = new Date(today);
+    freezeEndDate.setDate(today.getDate() + freezeDurationDays);
+    student.freezeEnd = freezeEndDate.toISOString().split('T')[0];
+
+    const subscriptionEndDate = new Date(student.end);
+    subscriptionEndDate.setDate(subscriptionEndDate.getDate() + freezeDurationDays);
+    student.end = subscriptionEndDate.toISOString().split('T')[0];
+
+    toast(`تم تجميد اشتراك ${student.name} لمدة ${freezeDurationDays} يوم. ينتهي التجميد في: ${fmtDate(student.freezeEnd)}`);
+  }
+
+  save();
+  if(window.firebaseReady){
+    window.firebaseSave(student, student._id || studentIndex);
+  } else {
+    renderStudents();
+  }
+}
+
+function unfreezeSubscription(){
+  const studentId = document.getElementById('f-edit-id').value;
+  if(!studentId){ toast('يرجى اختيار طالب لفك تجميد اشتراكه', true); return; }
+  const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+  if(studentIndex === -1) return;
+
+  const student = students[studentIndex];
+  if(!student.isFrozen && student.isFrozen !== 'true'){
+    toast('هذا الطالب ليس لديه اشتراك مجمد', true);
+    return;
+  }
+
+  if(confirm(`هل أنت متأكد من فك تجميد اشتراك ${student.name}؟`)){
+    if(student.actualEndDateBeforeFreeze) student.end = student.actualEndDateBeforeFreeze;
+    student.isFrozen = false;
+    delete student.freezeEnd;
+    delete student.actualEndDateBeforeFreeze;
+
+    save();
+    if(window.firebaseReady){
+      window.firebaseSave(student, student._id || studentIndex);
+    } else {
+      renderStudents();
+    }
+    toast('تم فك التجميد بنجاح.');
+  }
+}
+
 function viewStudent(i){
   const s=students[i];
   document.getElementById('modal-title').textContent=s.name;
   document.getElementById('modal-body').innerHTML=`
-    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${sBadge(s.end)} ${beltBadge(s.belt)}</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${sBadge(s)} ${beltBadge(s.belt)}</div>
     <div class="detail-row"><span class="dk">الاسم</span><span style="font-weight:600">${s.name}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الميلاد</span><span>${fmtDate(s.dob)}</span></div>
     <div class="detail-row"><span class="dk">هاتف الأب</span><span dir="ltr">${s.dad||'—'}</span></div>
     <div class="detail-row"><span class="dk">هاتف الأم</span><span dir="ltr">${s.mom||'—'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ التسجيل</span><span>${fmtDate(s.start)}</span></div>
     <div class="detail-row"><span class="dk">انتهاء الاشتراك</span><span>${fmtDate(s.end)}</span></div>
+    <div class="detail-row"><span class="dk">حالة التجميد</span><span>${(s.isFrozen === true || s.isFrozen === 'true') ? `مجمد حتى ${fmtDate(s.freezeEnd)}` : 'غير مجمد'}</span></div>
+    <div class="detail-row"><span class="dk">تاريخ الانتهاء الأصلي</span><span>${s.actualEndDateBeforeFreeze ? fmtDate(s.actualEndDateBeforeFreeze) : '—'}</span></div>
     <div class="detail-row"><span class="dk">ملاحظات</span><span>${s.notes||'—'}</span></div>
     <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end">
       <button class="btn-s" onclick="closeModal()">إغلاق</button>
@@ -1006,6 +1101,7 @@ function toFirestore(obj){
   const fields = {};
   Object.keys(obj).forEach(k => {
     if(obj[k]===null||obj[k]===undefined) fields[k]={nullValue:null};
+    else if(typeof obj[k]==='boolean') fields[k]={booleanValue:obj[k]};
     else fields[k]={stringValue:String(obj[k])};
   });
   return {fields};
