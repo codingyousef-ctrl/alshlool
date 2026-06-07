@@ -423,6 +423,45 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="form-grid">
         <div class="fg"><label>تاريخ التسجيل *</label><input id="f-start" type="date"></div>
         <div class="fg"><label>تاريخ انتهاء الاشتراك *</label><input id="f-end" type="date"></div>
+        <div class="card">
+    <div class="sec-title"><i class="ti ti-snowflake"></i> إعدادات التجميد</div>
+    <div class="form-grid">
+        <div class="fg">
+            <label>مدة التجميد</label>
+            <select id="freeze-duration">
+                <option value="7">أسبوع واحد</option>
+                <option value="14">أسبوعين</option>
+                <option value="21">ثلاثة أسابيع</option>
+                <option value="30">شهر واحد</option>
+            </select>
+        </div>
+        <div class="fg" style="justify-content: flex-end;">
+            <button class="btn-p" onclick="freezeSubscription()" style="background: #1a7a1a;">تجميد الاشتراك</button>
+        </div>
+    </div>
+    <div class="fg" style="margin-top: 10px;">
+        <button class="btn-s" onclick="unfreezeSubscription()" style="color: #cc1a1a; border-color: #cc1a1a;">فك التجميد</button>
+    </div>
+</div>
+
+<script>
+function freezeSubscription() {
+    const days = document.getElementById('freeze-duration').value;
+    const today = new Date();
+    const expiryDate = new Date();
+    expiryDate.setDate(today.getDate() + parseInt(days));
+    
+    alert("تم تجميد الاشتراك لمدة " + days + " يوم. ينتهي التجميد في: " + expiryDate.toLocaleDateString('ar-EG'));
+    // هنا يمكنك إضافة كود الاتصال بقاعدة البيانات لتحديث حالة الطالب
+}
+
+function unfreezeSubscription() {
+    if(confirm("هل أنت متأكد من فك تجميد اشتراك الطالب؟")) {
+        alert("تم فك التجميد بنجاح.");
+        // هنا يمكنك إضافة كود الاتصال بقاعدة البيانات لتحديث حالة الطالب
+    }
+}
+</script>
         <div class="fg full"><label>ملاحظات</label><input id="f-notes" type="text" placeholder="أي ملاحظات إضافية..."></div>
       </div>
       <input type="hidden" id="f-belt" value="">
