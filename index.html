@@ -383,7 +383,6 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="stat"><div class="stat-n" id="st-act" style="color:#2a6b10">0</div><div class="stat-l">اشتراك فعال</div></div>
       <div class="stat"><div class="stat-n" id="st-soon" style="color:#7a4a08">0</div><div class="stat-l">ينتهي قريباً</div></div>
       <div class="stat"><div class="stat-n" id="st-exp" style="color:#a01414">0</div><div class="stat-l">منتهي</div></div>
-      
     </div>
     <div class="card">
       <div class="filter-row">
@@ -393,8 +392,6 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="fb" onclick="setFilter('expired',this)">منتهي</button>
         <button class="fb" onclick="setFilter('m',this)">ذكر</button>
         <button class="fb" onclick="setFilter('f',this)">أنثى</button>
-
-
       </div>
       <div class="tbl-wrap" id="students-list"></div>
     </div>
@@ -453,7 +450,7 @@ function freezeSubscription() {
     const today = new Date();
     const expiryDate = new Date();
     expiryDate.setDate(today.getDate() + parseInt(days));
-
+    
     alert("تم تجميد الاشتراك لمدة " + days + " يوم. ينتهي التجميد في: " + expiryDate.toLocaleDateString('ar-EG'));
     // هنا يمكنك إضافة كود الاتصال بقاعدة البيانات لتحديث حالة الطالب
 }
@@ -776,14 +773,10 @@ function getStatus(end){
   return 'active';
 }
 
-function sBadge(end, status) { // أضفنا status هنا
-    if (status === 'مجمد') return `<span class="badge b-frozen">مجمد</span>`; // السطر الجديد
-
-    let s = getStatus(end);
-    if(s === 'active') return `<span class="badge b-act">نشط</span>`;
-    if(s === 'soon') return `<span class="badge b-soon">قريب الانتهاء</span>`;
-    if(s === 'expired') return `<span class="badge b-exp">منتهي</span>`;
-    return '';
+function sBadge(end){
+  const s=getStatus(end);
+  const m={active:['b-act','فعال'],soon:['b-soon','ينتهي قريباً'],expired:['b-exp','منتهي']};
+  return `<span class="badge ${m[s][0]}">${m[s][1]}</span>`;
 }
 
 function gBadge(g){ return g==='m'?`<span class="badge b-m">ذكر</span>`:`<span class="badge b-f">أنثى</span>`; }
@@ -818,8 +811,8 @@ function renderTable(list,cid){
       <td>${gBadge(s.gender)}</td>
       <td dir="ltr">${s.dad||'—'}</td>
       <td>${fmtDate(s.end)}</td>
-       <td>${sBadge(s.end, s.status)}</td>
-       <td><div class="act-btns">
+      <td>${sBadge(s.end)}</td>
+      <td><div class="act-btns">
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
@@ -835,10 +828,8 @@ function renderStudents(){
   if(filter==='active') list=list.filter(s=>getStatus(s.end)==='active');
   else if(filter==='soon') list=list.filter(s=>getStatus(s.end)==='soon');
   else if(filter==='expired') list=list.filter(s=>getStatus(s.end)==='expired');
- else if(filter==='frozen') list=list.filter(s=>s.status==='frozen');
   else if(filter==='m') list=list.filter(s=>s.gender==='m');
   else if(filter==='f') list=list.filter(s=>s.gender==='f');
-  else if(filter==='frozen') list=list.filter(s=>s.status==='مجمد');
   renderTable(list,'students-list');
   updateStats();
 }
@@ -906,22 +897,6 @@ function saveStudent(){
     belt:document.getElementById('f-belt').value,
     created:new Date().toISOString()
   };
-  const freezeDuration = document.getElementById('freeze-duration').value;
-  if(!name||!gender||!start||!end||!freezeDuration ){ toast('يرجى ملء الحقول المطلوبة *',true); return; }
- const obj = {
-    name, gender,
-    dob: document.getElementById('f-dob').value,
-    dad: document.getElementById('f-dad').value.trim(),
-    mom: document.getElementById('f-mom').value.trim(),
-    start, end, freezeDuration, // أضفنا freezeDuration هنا
-    
-    // أضف هذا السطر فقط:
-    status: (freezeDuration && freezeDuration !== "0") ? 'مجمد' : 'active',
-    
-    notes: document.getElementById('f-notes').value.trim(),
-    belt: document.getElementById('f-belt').value,
-    created: new Date().toISOString()
-};
   const eid=document.getElementById('f-edit-id').value;
   // eid could be a Firebase _id string or empty
   const isEdit = eid !== '';
@@ -1230,8 +1205,6 @@ function printInvoice(i){
     .label{color:#666}
     .total{font-size:20px;font-weight:700;color:#cc1a1a;text-align:center;margin-top:20px}
     .footer{text-align:center;color:#999;font-size:12px;margin-top:30px}
-.b-frozen { background: #e0e7ff; color: #3730a3; }
-[data-theme="dark"] .b-frozen { background: #1e1b4b; color: #818cf8; }
     @media print{button{display:none}}
   </style></head><body>
   <div class="logo">
@@ -1394,19 +1367,6 @@ document.getElementById('pay-date').value = today;
 document.getElementById('tpay-date').value = today;
 document.getElementById('tr-join').value = today;
 
-  //فلتر الت
-// إضافة فلتر "مجمد" لقائمة الطلاب
-function filterStudentsByStatus(status) {
-    const tableBody = document.getElementById('students-table-body'); // أو المتغير الذي يحمل الجدول عندك
-    // قم هنا بعمل حلقة (loop) على مصفوفة الطلاب وعرض فقط من حالته تساوي 'مجمد'
-    console.log("عرض الطلاب بحالة: " + status);
-}
-
-// دالة تحديث الحالة (تستخدمها عند الضغط على زر تأكيد التجميد أو فك التجميد)
-function updateSubscriptionStatus(studentId, newStatus) {
-    // هنا ضع الكود الخاص بتعديل بيانات الطالب في المصفوفة أو قاعدة البيانات
-    alert("تم تغيير حالة الطالب إلى: " + newStatus);
-}
 </script>
 </body>
 </html>
