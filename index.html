@@ -476,6 +476,25 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="fb" id="pay-sub-trainers" onclick="showPaySub('trainers',this)"><i class="ti ti-medal"></i> المدربين</button>
       </div>
 
+      <div id="pay-date-search" style="margin-bottom:16px;padding-bottom:16px;border-bottom:0.5px solid var(--border2)">
+        <div class="sec-title"><i class="ti ti-calendar-search" style="color:#cc1a1a"></i> بحث بالتاريخ</div>
+        <div class="form-grid">
+          <div class="fg">
+            <label>من تاريخ</label>
+            <input id="pay-search-from" type="date">
+          </div>
+          <div class="fg">
+            <label>إلى تاريخ</label>
+            <input id="pay-search-to" type="date">
+          </div>
+          <div class="fg" style="justify-content:flex-end;flex-direction:row;align-items:flex-end;gap:8px">
+            <button class="btn-p" onclick="searchPaymentsByDate()"><i class="ti ti-search"></i> بحث</button>
+            <button class="btn-s" onclick="clearPaymentSearch()">إظهار الكل</button>
+          </div>
+        </div>
+        <div id="pay-search-results" style="display:none;margin-top:14px"></div>
+      </div>
+
       <!-- Student Payments -->
       <div id="pay-students-section">
         <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> دفعات الطلاب</div>
@@ -1158,6 +1177,103 @@ fbLoad();
 let payments = [];
 let trainerPayments = [];
 let trainers = [];
+let paySearchActive = false;
+
+function inDateRange(dateStr, from, to){
+  if(!dateStr) return false;
+  const d = dateStr.split('T')[0];
+  if(from && d < from) return false;
+  if(to && d > to) return false;
+  return true;
+}
+
+function searchPaymentsByDate(){
+  const from = document.getElementById('pay-search-from').value;
+  const to = document.getElementById('pay-search-to').value;
+  if(!from && !to){ toast('يرجى اختيار تاريخ البداية أو النهاية', true); return; }
+  if(from && to && from > to){ toast('تاريخ البداية يجب أن يكون قبل تاريخ النهاية', true); return; }
+
+  paySearchActive = true;
+  document.getElementById('pay-students-section').style.display = 'none';
+  document.getElementById('pay-trainers-section').style.display = 'none';
+
+  const studentResults = payments.map((p,i)=>({...p, _type:'student', _idx:i}))
+    .filter(p=>inDateRange(p.date, from, to));
+  const trainerResults = trainerPayments.map((p,i)=>({...p, _type:'trainer', _idx:i, name:p.trainer}))
+    .filter(p=>inDateRange(p.date, from, to));
+  const all = [...studentResults, ...trainerResults].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  renderPaymentSearchResults(all, from, to);
+}
+
+function renderPaymentSearchResults(list, from, to){
+  const el = document.getElementById('pay-search-results');
+  el.style.display = 'block';
+
+  const rangeLabel = `${from ? fmtDate(from) : '—'} → ${to ? fmtDate(to) : '—'}`;
+  const studentCount = list.filter(p=>p._type==='student').length;
+  const trainerCount = list.filter(p=>p._type==='trainer').length;
+  const total = list.reduce((sum,p)=>sum + parseFloat(p.amount||0), 0);
+
+  if(!list.length){
+    el.innerHTML = `<div class="empty"><i class="ti ti-search-off" style="font-size:32px;display:block;margin-bottom:8px"></i>لا توجد دفعات في الفترة ${rangeLabel}</div>`;
+    return;
+  }
+
+  let h = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+    <span class="badge b-m">طلاب: ${studentCount}</span>
+    <span class="badge b-f">مدربين: ${trainerCount}</span>
+    <span class="badge b-act">الإجمالي: ${total.toFixed(2)} د.أ</span>
+    <span style="font-size:12px;color:var(--text2);align-self:center">${rangeLabel}</span>
+  </div>`;
+  h += `<table class="st"><thead><tr>
+    <th style="width:10%">النوع</th><th style="width:20%">الاسم</th><th style="width:14%">المبلغ</th><th style="width:22%">التفاصيل</th><th style="width:14%">التاريخ</th><th style="width:12%">ملاحظات</th><th style="width:8%">إجراءات</th>
+  </tr></thead><tbody>`;
+
+  list.forEach(p=>{
+    const typeBadge = p._type==='student'
+      ? `<span class="badge b-m">طالب</span>`
+      : `<span class="badge b-f">مدرب</span>`;
+    const details = p._type==='student' ? (p.reason||'—') : 'راتب مدرب';
+    const actions = p._type==='student'
+      ? `<button class="ib" onclick="printInvoice(${p._idx})" title="طباعة"><i class="ti ti-printer"></i></button>
+         <button class="ib del" onclick="delPaymentFromSearch('student',${p._idx})" title="حذف"><i class="ti ti-trash"></i></button>`
+      : `<button class="ib del" onclick="delPaymentFromSearch('trainer',${p._idx})" title="حذف"><i class="ti ti-trash"></i></button>`;
+
+    h+=`<tr>
+      <td>${typeBadge}</td>
+      <td style="font-weight:600">${p.name||p.trainer}</td>
+      <td><span style="color:#2a6b10;font-weight:700">${p.amount} د.أ</span></td>
+      <td>${details}</td>
+      <td>${fmtDate(p.date)}</td>
+      <td>${p.notes||'—'}</td>
+      <td><div class="act-btns">${actions}</div></td>
+    </tr>`;
+  });
+
+  h+='</tbody></table>';
+  el.innerHTML = h;
+}
+
+function clearPaymentSearch(){
+  paySearchActive = false;
+  document.getElementById('pay-search-from').value = '';
+  document.getElementById('pay-search-to').value = '';
+  document.getElementById('pay-search-results').style.display = 'none';
+  const isTrainers = document.getElementById('pay-sub-trainers').classList.contains('active');
+  document.getElementById('pay-students-section').style.display = isTrainers ? 'none' : 'block';
+  document.getElementById('pay-trainers-section').style.display = isTrainers ? 'block' : 'none';
+  if(isTrainers){
+    renderTrainers(); renderTrainerPayments(); populateTrainerSelect();
+  } else {
+    renderPayments();
+  }
+}
+
+function delPaymentFromSearch(type, idx){
+  if(type==='student') delPayment(idx);
+  else delTrainerPayment(idx);
+}
 
 const FB_COL = {
   payments: 'payments',
@@ -1223,6 +1339,12 @@ async function loadAllData(){
 }
 
 function showPaySub(sub, btn){
+  if(paySearchActive){
+    paySearchActive = false;
+    document.getElementById('pay-search-from').value = '';
+    document.getElementById('pay-search-to').value = '';
+    document.getElementById('pay-search-results').style.display = 'none';
+  }
   document.getElementById('pay-students-section').style.display = sub==='students'?'block':'none';
   document.getElementById('pay-trainers-section').style.display = sub==='trainers'?'block':'none';
   document.querySelectorAll('#tab-payments .fb').forEach(b=>b.classList.remove('active'));
@@ -1282,7 +1404,8 @@ function delPayment(i){
   if(p._id) fbDeleteDoc('payments', p._id);
   payments.splice(i,1);
   saveLocal();
-  renderPayments();
+  if(paySearchActive) searchPaymentsByDate();
+  else renderPayments();
   toast('تم الحذف');
 }
 
@@ -1452,8 +1575,8 @@ function delTrainerPayment(i){
   if(tidx>=0){ trainers[tidx].paid = String(Math.max(0, parseFloat(trainers[tidx].paid||0) - parseFloat(p.amount))); saveLocal(); }
   trainerPayments.splice(i,1);
   try{ localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); }catch(e){}
-  renderTrainerPayments();
-  renderTrainers();
+  if(paySearchActive) searchPaymentsByDate();
+  else { renderTrainerPayments(); renderTrainers(); }
   toast('تم الحذف');
 }
 
