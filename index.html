@@ -383,7 +383,7 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="stat"><div class="stat-n" id="st-act" style="color:#2a6b10">0</div><div class="stat-l">اشتراك فعال</div></div>
       <div class="stat"><div class="stat-n" id="st-soon" style="color:#7a4a08">0</div><div class="stat-l">ينتهي قريباً</div></div>
       <div class="stat"><div class="stat-n" id="st-exp" style="color:#a01414">0</div><div class="stat-l">منتهي</div></div>
-
+      
     </div>
     <div class="card">
       <div class="filter-row">
@@ -785,7 +785,6 @@ function sBadge(end, status) { // أضفنا status هنا
     if(s === 'active') return `<span class="badge b-act">نشط</span>`;
     if(s === 'soon') return `<span class="badge b-soon">قريب الانتهاء</span>`;
     if(s === 'expired') return `<span class="badge b-exp">منتهي</span>`;
-  if (student.status === 'مجمد') return '<span class="badge b-frozen">مجمد</span>';
     return '';
 }
 
@@ -826,7 +825,6 @@ function renderTable(list,cid){
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
-      
       </div></td>
     </tr>`;
   });
@@ -836,8 +834,6 @@ function renderTable(list,cid){
 
 function renderStudents(){
   let list=[...students];
-  if(filter === 'frozen') {
-        list = list.filter(s => s.status === 'مجمد');
   if(filter==='active') list=list.filter(s=>getStatus(s.end)==='active');
   else if(filter==='soon') list=list.filter(s=>getStatus(s.end)==='soon');
   else if(filter==='expired') list=list.filter(s=>getStatus(s.end)==='expired');
@@ -845,9 +841,6 @@ function renderStudents(){
   else if(filter==='m') list=list.filter(s=>s.gender==='m');
   else if(filter==='f') list=list.filter(s=>s.gender==='f');
   else if(filter==='frozen') list=list.filter(s=>s.status==='مجمد');
-else if(filter==='m') list=list.filter(s=>s.gender==='m');
-else if(filter==='f') list=list.filter(s=>s.gender==='f');
-else if(filter==='frozen') list=list.filter(s=>s.status==='مجمد');
   renderTable(list,'students-list');
   updateStats();
 }
@@ -904,6 +897,17 @@ function saveStudent(){
   const gender=document.getElementById('f-gender').value;
   const start=document.getElementById('f-start').value;
   const end=document.getElementById('f-end').value;
+  if(!name||!gender||!start||!end){ toast('يرجى ملء الحقول المطلوبة *',true); return; }
+  const obj={
+    name,gender,
+    dob:document.getElementById('f-dob').value,
+    dad:document.getElementById('f-dad').value.trim(),
+    mom:document.getElementById('f-mom').value.trim(),
+    start,end,
+    notes:document.getElementById('f-notes').value.trim(),
+    belt:document.getElementById('f-belt').value,
+    created:new Date().toISOString()
+  };
   const freezeDuration = document.getElementById('freeze-duration').value;
   if(!name||!gender||!start||!end||!freezeDuration ){ toast('يرجى ملء الحقول المطلوبة *',true); return; }
  const obj = {
@@ -912,10 +916,10 @@ function saveStudent(){
     dad: document.getElementById('f-dad').value.trim(),
     mom: document.getElementById('f-mom').value.trim(),
     start, end, freezeDuration, // أضفنا freezeDuration هنا
-
+    
     // أضف هذا السطر فقط:
     status: (freezeDuration && freezeDuration !== "0") ? 'مجمد' : 'active',
-
+    
     notes: document.getElementById('f-notes').value.trim(),
     belt: document.getElementById('f-belt').value,
     created: new Date().toISOString()
@@ -987,7 +991,6 @@ function viewStudent(i){
   document.getElementById('modal-title').textContent=s.name;
   document.getElementById('modal-body').innerHTML=`
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${sBadge(s.end)} ${beltBadge(s.belt)}</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${<td>${sBadge(s)}</td>} ${beltBadge(s.belt)}</div>
     <div class="detail-row"><span class="dk">الاسم</span><span style="font-weight:600">${s.name}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الميلاد</span><span>${fmtDate(s.dob)}</span></div>
     <div class="detail-row"><span class="dk">هاتف الأب</span><span dir="ltr">${s.dad||'—'}</span></div>
