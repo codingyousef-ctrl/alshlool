@@ -392,6 +392,7 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="fb" onclick="setFilter('expired',this)">منتهي</button>
         <button class="fb" onclick="setFilter('m',this)">ذكر</button>
         <button class="fb" onclick="setFilter('f',this)">أنثى</button>
+        <button class="fb" onclick="filterStudents('frozen')">مجمد</button>
       </div>
       <div class="tbl-wrap" id="students-list"></div>
     </div>
@@ -804,7 +805,8 @@ function renderTable(list,cid){
   let h=`<table class="st"><thead><tr>
     <th style="width:25%">الاسم</th><th style="width:12%">الجنس</th><th style="width:20%">هاتف الأب</th><th style="width:18%">ينتهي</th><th style="width:13%">الحالة</th><th style="width:12%">إجراءات</th>
   </tr></thead><tbody>`;
-  list.forEach(s=>{
+  list.forEach(s=>{ // استبدل السطر الذي يعرض الحالة (عادة td الخاص بالحالة) بهذا الكود:
+<td style="text-align:center">${s.isFrozen ? '<span class="badge b-frozen">مجمد</span>' : sBadge(s.end)}</td>
     const i=students.indexOf(s);
     h+=`<tr>
       <td style="font-weight:600">${s.name}</td>
@@ -824,14 +826,20 @@ function renderTable(list,cid){
 }
 
 function renderStudents(){
-  let list=[...students];
-  if(filter==='active') list=list.filter(s=>getStatus(s.end)==='active');
-  else if(filter==='soon') list=list.filter(s=>getStatus(s.end)==='soon');
-  else if(filter==='expired') list=list.filter(s=>getStatus(s.end)==='expired');
-  else if(filter==='m') list=list.filter(s=>s.gender==='m');
-  else if(filter==='f') list=list.filter(s=>s.gender==='f');
-  renderTable(list,'students-list');
-  updateStats();
+    let list = [...students];
+    
+    // الفلاتر الحالية الموجودة لديك
+    if(filter === 'active') list = list.filter(s => getStatus(s.end) === 'active');
+    else if(filter === 'soon') list = list.filter(s => getStatus(s.end) === 'soon');
+    else if(filter === 'expired') list = list.filter(s => getStatus(s.end) === 'expired');
+    else if(filter === 'm') list = list.filter(s => s.gender === 'm');
+    else if(filter === 'f') list = list.filter(s => s.gender === 'f');
+    
+    // أضف هذا الشرط الجديد للفلتر "مجمد"
+    else if(filter === 'frozen') list = list.filter(s => s.isFrozen === true); 
+    
+    renderTable(list, 'students-table');
+    updateStats();
 }
 
 function setFilter(f,btn){
@@ -1205,6 +1213,8 @@ function printInvoice(i){
     .label{color:#666}
     .total{font-size:20px;font-weight:700;color:#cc1a1a;text-align:center;margin-top:20px}
     .footer{text-align:center;color:#999;font-size:12px;margin-top:30px}
+    .b-frozen {background:#f0f0f0; color:#555;}
+[data-theme="dark"] .b-frozen {background:#333; color:#aaa;}
     @media print{button{display:none}}
   </style></head><body>
   <div class="logo">
