@@ -761,7 +761,7 @@ const BELTS = [
 
 let students = [];
 try{ students = JSON.parse(localStorage.getItem('shalloul_v2')||'[]'); }catch(e){}
-let filter = 'all';
+let filter = 'all'; // يجب أن يكون معرفاً قبل استخدام أي دالة
 
 function save(){ try{ localStorage.setItem('shalloul_v2',JSON.stringify(students)); }catch(e){} }
 
@@ -824,33 +824,28 @@ function renderTable(list,cid){
   h+='</tbody></table>';
   el.innerHTML=h;
 }
+  function renderStudents(){
+    if (typeof students === 'undefined') return; // إذا لم تتحمل البيانات بعد، توقف عن التنفيذ
+    let list = [...students];
+    // ... باقي الكود
+}
 
 function renderStudents(){
     let list = [...students];
     
-    // الفلاتر الحالية الموجودة لديك
-    // تأكد أن الكود مكتوب هكذا (بدون فواصل أو أقواس مفقودة):
-
-if(filter==='active') {
-    list = list.filter(s=>getStatus(s.end)==='active');
-} else if(filter==='soon') {
-    list = list.filter(s=>getStatus(s.end)==='soon');
-} else if(filter==='expired') {
-    list = list.filter(s=>getStatus(s.end)==='expired');
-} else if(filter==='m') {
-    list = list.filter(s=>s.gender==='m');
-} else if(filter==='f') {
-    list = list.filter(s=>s.gender==='f');
-} else if(filter==='frozen') { // تأكد أن هذا السطر هو الـ else if الصحيح
-    list = list.filter(s=>s.isFrozen === true);
-}
-    
-    // أضف هذا الشرط الجديد للفلتر "مجمد"
-    else if(filter === 'frozen') list = list.filter(s => s.isFrozen === true); 
+    // استخدام switch أضمن وأكثر ترتيباً لتجنب أخطاء الـ if/else
+    switch(filter) {
+        case 'active': list = list.filter(s => getStatus(s.end) === 'active'); break;
+        case 'soon':   list = list.filter(s => getStatus(s.end) === 'soon'); break;
+        case 'expired':list = list.filter(s => getStatus(s.end) === 'expired'); break;
+        case 'm':      list = list.filter(s => s.gender === 'm'); break;
+        case 'f':      list = list.filter(s => s.gender === 'f'); break;
+        case 'frozen': list = list.filter(s => s.isFrozen === true); break;
+        default: break; // في حالة 'all' أو أي قيمة أخرى لا تفعل شيئاً
+    }
     
     renderTable(list, 'students-table');
-    updateStats();
-
+    if (typeof updateStats === 'function') updateStats();
 }
   {
   // عند تعديل بيانات الطالب، أضف هذه الأزرار في الواجهة:
