@@ -383,7 +383,7 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="stat"><div class="stat-n" id="st-act" style="color:#2a6b10">0</div><div class="stat-l">اشتراك فعال</div></div>
       <div class="stat"><div class="stat-n" id="st-soon" style="color:#7a4a08">0</div><div class="stat-l">ينتهي قريباً</div></div>
       <div class="stat"><div class="stat-n" id="st-exp" style="color:#a01414">0</div><div class="stat-l">منتهي</div></div>
-      
+
     </div>
     <div class="card">
       <div class="filter-row">
@@ -394,9 +394,9 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="fb" onclick="setFilter('m',this)">ذكر</button>
         <button class="fb" onclick="setFilter('f',this)">أنثى</button>
         <button class="fb" onclick="setFilter('frozen', this)">مجمد</button>
-        
 
-        
+
+
       </div>
       <div class="tbl-wrap" id="students-list"></div>
     </div>
@@ -455,7 +455,7 @@ function freezeSubscription() {
     const today = new Date();
     const expiryDate = new Date();
     expiryDate.setDate(today.getDate() + parseInt(days));
-    
+
     alert("تم تجميد الاشتراك لمدة " + days + " يوم. ينتهي التجميد في: " + expiryDate.toLocaleDateString('ar-EG'));
     // هنا يمكنك إضافة كود الاتصال بقاعدة البيانات لتحديث حالة الطالب
 }
@@ -780,7 +780,7 @@ function getStatus(end){
 
 function sBadge(end, status) { // أضفنا status هنا
     if (status === 'مجمد') return `<span class="badge b-frozen">مجمد</span>`; // السطر الجديد
-    
+
     let s = getStatus(end);
     if(s === 'active') return `<span class="badge b-act">نشط</span>`;
     if(s === 'soon') return `<span class="badge b-soon">قريب الانتهاء</span>`;
@@ -842,6 +842,9 @@ function renderStudents(){
   else if(filter==='soon') list=list.filter(s=>getStatus(s.end)==='soon');
   else if(filter==='expired') list=list.filter(s=>getStatus(s.end)==='expired');
  else if(filter==='frozen') list=list.filter(s=>s.status==='frozen');
+  else if(filter==='m') list=list.filter(s=>s.gender==='m');
+  else if(filter==='f') list=list.filter(s=>s.gender==='f');
+  else if(filter==='frozen') list=list.filter(s=>s.status==='مجمد');
 else if(filter==='m') list=list.filter(s=>s.gender==='m');
 else if(filter==='f') list=list.filter(s=>s.gender==='f');
 else if(filter==='frozen') list=list.filter(s=>s.status==='مجمد');
@@ -908,12 +911,11 @@ function saveStudent(){
     dob: document.getElementById('f-dob').value,
     dad: document.getElementById('f-dad').value.trim(),
     mom: document.getElementById('f-mom').value.trim(),
-    start, end, 
-   freezeDuration:freezeDuration, // أضفنا freezeDuration هنا
-    
+    start, end, freezeDuration, // أضفنا freezeDuration هنا
+
     // أضف هذا السطر فقط:
     status: (freezeDuration && freezeDuration !== "0") ? 'مجمد' : 'active',
-    
+
     notes: document.getElementById('f-notes').value.trim(),
     belt: document.getElementById('f-belt').value,
     created: new Date().toISOString()
@@ -984,6 +986,7 @@ function viewStudent(i){
   const s=students[i];
   document.getElementById('modal-title').textContent=s.name;
   document.getElementById('modal-body').innerHTML=`
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${sBadge(s.end)} ${beltBadge(s.belt)}</div>
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${<td>${sBadge(s)}</td>} ${beltBadge(s.belt)}</div>
     <div class="detail-row"><span class="dk">الاسم</span><span style="font-weight:600">${s.name}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الميلاد</span><span>${fmtDate(s.dob)}</span></div>
