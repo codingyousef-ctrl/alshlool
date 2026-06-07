@@ -383,6 +383,7 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="stat"><div class="stat-n" id="st-act" style="color:#2a6b10">0</div><div class="stat-l">اشتراك فعال</div></div>
       <div class="stat"><div class="stat-n" id="st-soon" style="color:#7a4a08">0</div><div class="stat-l">ينتهي قريباً</div></div>
       <div class="stat"><div class="stat-n" id="st-exp" style="color:#a01414">0</div><div class="stat-l">منتهي</div></div>
+      
     </div>
     <div class="card">
       <div class="filter-row">
@@ -896,17 +897,22 @@ function saveStudent(){
   const gender=document.getElementById('f-gender').value;
   const start=document.getElementById('f-start').value;
   const end=document.getElementById('f-end').value;
-  if(!name||!gender||!start||!end){ toast('يرجى ملء الحقول المطلوبة *',true); return; }
-  const obj={
-    name,gender,
-    dob:document.getElementById('f-dob').value,
-    dad:document.getElementById('f-dad').value.trim(),
-    mom:document.getElementById('f-mom').value.trim(),
-    start,end,
-    notes:document.getElementById('f-notes').value.trim(),
-    belt:document.getElementById('f-belt').value,
-    created:new Date().toISOString()
-  };
+  const freezeDuration = document.getElementById('freeze-duration').value;
+  if(!name||!gender||!start||!end||!freezeDuration ){ toast('يرجى ملء الحقول المطلوبة *',true); return; }
+ const obj = {
+    name, gender,
+    dob: document.getElementById('f-dob').value,
+    dad: document.getElementById('f-dad').value.trim(),
+    mom: document.getElementById('f-mom').value.trim(),
+    start, end, freezeDuration, // أضفنا freezeDuration هنا
+    
+    // أضف هذا السطر فقط:
+    status: (freezeDuration && freezeDuration !== "0") ? 'مجمد' : 'active',
+    
+    notes: document.getElementById('f-notes').value.trim(),
+    belt: document.getElementById('f-belt').value,
+    created: new Date().toISOString()
+};
   const eid=document.getElementById('f-edit-id').value;
   // eid could be a Firebase _id string or empty
   const isEdit = eid !== '';
