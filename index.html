@@ -908,7 +908,8 @@ function saveStudent(){
     dob: document.getElementById('f-dob').value,
     dad: document.getElementById('f-dad').value.trim(),
     mom: document.getElementById('f-mom').value.trim(),
-    start, end, freezeDuration, // أضفنا freezeDuration هنا
+    start, end, 
+   freezeDuration:freezeDuration, // أضفنا freezeDuration هنا
     
     // أضف هذا السطر فقط:
     status: (freezeDuration && freezeDuration !== "0") ? 'مجمد' : 'active',
