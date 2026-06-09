@@ -49,6 +49,7 @@
 [data-theme="dark"] .b-m{background:#081830;color:#5090e8}
 [data-theme="dark"] .b-f{background:#280a18;color:#e870a8}
 [data-theme="dark"] .b-frozen{background:#082a30;color:#5090e8}
+[data-theme="dark"] .b-stopped{background:#2a1a04;color:#e8a030}
 [data-theme="dark"] .belt-opt.sel{background:#1a0808;color:#cc1a1a;border-color:#cc1a1a}
 [data-theme="dark"] input,[data-theme="dark"] select{background:var(--surface2);color:var(--text);border-color:var(--border)}
 
@@ -185,7 +186,7 @@ body{font-family:var(--font);direction:rtl;background:var(--bg);min-height:100vh
 .sec-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px}
 
 /* Stats */
-.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
 .stat{
   background:var(--surface);border:0.5px solid var(--border2);
   border-radius:12px;padding:14px;text-align:center;
@@ -254,6 +255,7 @@ table.st tr:hover td{background:var(--surface2)}
 .b-m{background:#e4f0fc;color:#1455a0}
 .b-f{background:#fce8f4;color:#922858}
 .b-frozen{background:#e0f2f7;color:#1a6ba0}
+.b-stopped{background:#fef3e0;color:#a04010}
 
 /* Belt */
 .belt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
@@ -386,6 +388,7 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="stat"><div class="stat-n" id="st-soon" style="color:#7a4a08">0</div><div class="stat-l">ينتهي قريباً</div></div>
       <div class="stat"><div class="stat-n" id="st-exp" style="color:#a01414">0</div><div class="stat-l">منتهي</div></div>
       <div class="stat"><div class="stat-n" id="st-frozen" style="color:#1a6ba0">0</div><div class="stat-l">مجمد</div></div>
+      <div class="stat"><div class="stat-n" id="st-stopped" style="color:#a04010">0</div><div class="stat-l">متوقف</div></div>
     </div>
     <div class="card">
       <div class="filter-row">
@@ -394,9 +397,9 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="fb" onclick="setFilter('soon',this)">ينتهي قريباً</button>
         <button class="fb" onclick="setFilter('expired',this)">منتهي</button>
         <button class="fb" onclick="setFilter('frozen',this)">مجمد</button>
+        <button class="fb" onclick="setFilter('stopped',this)">متوقف</button>
         <button class="fb" onclick="setFilter('m',this)">ذكر</button>
         <button class="fb" onclick="setFilter('f',this)">أنثى</button>
-        <button class="fb" onclick="setFilter('frozen',this)">مجمد</button>
 
       </div>
       <div class="tbl-wrap" id="students-list"></div>
@@ -449,6 +452,15 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="btn-s" onclick="unfreezeSubscription()" style="color: #cc1a1a; border-color: #cc1a1a;">فك التجميد</button>
     </div>
 </div>
+        <div class="card">
+    <div class="sec-title"><i class="ti ti-player-pause"></i> إيقاف عن النادي</div>
+    <div class="form-grid">
+        <div class="fg" style="flex-direction:row;gap:8px;flex-wrap:wrap">
+            <button class="btn-p" id="btn-stop-student" onclick="stopStudent()" style="background:#a04010;display:none">إيقاف عن النادي</button>
+            <button class="btn-s" id="btn-resume-student" onclick="resumeStudent()" style="color:#2a6b10;border-color:#2a6b10;display:none">إعادة تفعيل</button>
+        </div>
+    </div>
+</div>
         <div class="fg full"><label>ملاحظات</label><input id="f-notes" type="text" placeholder="أي ملاحظات إضافية..."></div>
       </div>
       <input type="hidden" id="f-belt" value="">
@@ -468,7 +480,6 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="tbl-wrap" id="search-results"></div>
     </div>
   </div>
-
 
   <!-- Payments Tab -->
   <div class="content" id="tab-payments">
@@ -770,7 +781,13 @@ let filter = 'all';
 
 function save(){ try{ localStorage.setItem('shalloul_v2',JSON.stringify(students)); }catch(e){} }
 
-function getStatus(end, isFrozen, freezeEnd){
+function isStudentStopped(student){
+  return student && (student.isStopped === true || student.isStopped === 'true');
+}
+
+function getStatus(end, isFrozen, freezeEnd, isStopped){
+  if(isStopped === true || isStopped === 'true') return 'stopped';
+
   const today = new Date();
   today.setHours(0,0,0,0);
 
@@ -791,12 +808,13 @@ function getStatus(end, isFrozen, freezeEnd){
 }
 
 function sBadge(student){
-  const s = getStatus(student.end, student.isFrozen, student.freezeEnd);
+  const s = getStatus(student.end, student.isFrozen, student.freezeEnd, student.isStopped);
   const m = {
     active: ['b-act','فعال'],
     soon: ['b-soon','ينتهي قريباً'],
     expired: ['b-exp','منتهي'],
-    frozen: ['b-frozen','مجمد']
+    frozen: ['b-frozen','مجمد'],
+    stopped: ['b-stopped','متوقف']
   };
   return `<span class="badge ${m[s][0]}">${m[s][1]}</span>`;
 }
@@ -815,10 +833,11 @@ function fmtDate(d){ if(!d) return '—'; const p=d.split('-'); return `${p[2]}/
 
 function updateStats(){
   document.getElementById('st-total').textContent=students.length;
-  document.getElementById('st-act').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='active').length;
-  document.getElementById('st-soon').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='soon').length;
-  document.getElementById('st-exp').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='expired').length;
-  document.getElementById('st-frozen').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='frozen').length;
+  document.getElementById('st-act').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='active').length;
+  document.getElementById('st-soon').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='soon').length;
+  document.getElementById('st-exp').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='expired').length;
+  document.getElementById('st-frozen').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='frozen').length;
+  document.getElementById('st-stopped').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='stopped').length;
 }
 
 function renderTable(list,cid){
@@ -848,10 +867,11 @@ function renderTable(list,cid){
 
 function renderStudents(){
   let list=[...students];
-  if(filter==='active') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='active');
-  else if(filter==='soon') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='soon');
-  else if(filter==='expired') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='expired');
-  else if(filter==='frozen') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='frozen');
+  if(filter==='active') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='active');
+  else if(filter==='soon') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='soon');
+  else if(filter==='expired') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='expired');
+  else if(filter==='frozen') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='frozen');
+  else if(filter==='stopped') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='stopped');
   else if(filter==='m') list=list.filter(s=>s.gender==='m');
   else if(filter==='f') list=list.filter(s=>s.gender==='f');
   renderTable(list,'students-list');
@@ -930,6 +950,8 @@ function saveStudent(){
       if(prev.isFrozen) obj.isFrozen = prev.isFrozen;
       if(prev.freezeEnd) obj.freezeEnd = prev.freezeEnd;
       if(prev.actualEndDateBeforeFreeze) obj.actualEndDateBeforeFreeze = prev.actualEndDateBeforeFreeze;
+      if(prev.isStopped) obj.isStopped = prev.isStopped;
+      if(prev.stoppedAt) obj.stoppedAt = prev.stoppedAt;
     }
   }
   // eid could be a Firebase _id string or empty
@@ -958,6 +980,72 @@ function cancelEdit(){
   document.getElementById('form-title').textContent='تسجيل طالب جديد';
   document.getElementById('save-btn-lbl').textContent='حفظ التسجيل';
   ['f-name','f-gender','f-dob','f-dad','f-mom','f-start','f-end','f-notes','f-belt'].forEach(id=>document.getElementById(id).value='');
+  updateStopButtons(null);
+}
+
+function updateStopButtons(student){
+  const stopBtn = document.getElementById('btn-stop-student');
+  const resumeBtn = document.getElementById('btn-resume-student');
+  if(!stopBtn || !resumeBtn) return;
+  if(!student){
+    stopBtn.style.display = 'none';
+    resumeBtn.style.display = 'none';
+    return;
+  }
+  const stopped = isStudentStopped(student);
+  stopBtn.style.display = stopped ? 'none' : 'inline-flex';
+  resumeBtn.style.display = stopped ? 'inline-flex' : 'none';
+}
+
+function persistStudent(student, studentIndex){
+  save();
+  if(window.firebaseReady){
+    window.firebaseSave(student, student._id || studentIndex);
+  } else {
+    renderStudents();
+  }
+}
+
+function stopStudent(){
+  const studentId = document.getElementById('f-edit-id').value;
+  if(!studentId){ toast('يرجى اختيار طالب من قائمة التعديل أولاً', true); return; }
+  const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+  if(studentIndex === -1) return;
+
+  const student = students[studentIndex];
+  if(isStudentStopped(student)){
+    toast('هذا الطالب متوقف بالفعل عن النادي', true);
+    return;
+  }
+
+  if(confirm(`هل تريد إيقاف ${student.name} عن النادي؟`)){
+    student.isStopped = true;
+    student.stoppedAt = new Date().toISOString().split('T')[0];
+    persistStudent(student, studentIndex);
+    updateStopButtons(student);
+    toast(`تم إيقاف ${student.name} عن النادي`);
+  }
+}
+
+function resumeStudent(){
+  const studentId = document.getElementById('f-edit-id').value;
+  if(!studentId){ toast('يرجى اختيار طالب من قائمة التعديل أولاً', true); return; }
+  const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+  if(studentIndex === -1) return;
+
+  const student = students[studentIndex];
+  if(!isStudentStopped(student)){
+    toast('هذا الطالب غير متوقف عن النادي', true);
+    return;
+  }
+
+  if(confirm(`هل تريد إعادة تفعيل ${student.name}؟`)){
+    student.isStopped = false;
+    delete student.stoppedAt;
+    persistStudent(student, studentIndex);
+    updateStopButtons(student);
+    toast(`تم إعادة تفعيل ${student.name}`);
+  }
 }
 
 function editStudent(i){
@@ -974,6 +1062,7 @@ function editStudent(i){
   document.getElementById('f-belt').value=s.belt||'';
   document.getElementById('form-title').textContent='تعديل: '+s.name;
   document.getElementById('save-btn-lbl').textContent='حفظ التعديلات';
+  updateStopButtons(s);
   showTab('add');
 }
 
@@ -1084,6 +1173,7 @@ function viewStudent(i){
     <div class="detail-row"><span class="dk">هاتف الأم</span><span dir="ltr">${s.mom||'—'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ التسجيل</span><span>${fmtDate(s.start)}</span></div>
     <div class="detail-row"><span class="dk">انتهاء الاشتراك</span><span>${fmtDate(s.end)}</span></div>
+    <div class="detail-row"><span class="dk">حالة الإيقاف</span><span>${isStudentStopped(s) ? `متوقف عن النادي${s.stoppedAt ? ' منذ ' + fmtDate(s.stoppedAt) : ''}` : 'نشط'}</span></div>
     <div class="detail-row"><span class="dk">حالة التجميد</span><span>${(s.isFrozen === true || s.isFrozen === 'true') ? `مجمد حتى ${fmtDate(s.freezeEnd)}` : 'غير مجمد'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الانتهاء الأصلي</span><span>${s.actualEndDateBeforeFreeze ? fmtDate(s.actualEndDateBeforeFreeze) : '—'}</span></div>
     <div class="detail-row"><span class="dk">ملاحظات</span><span>${s.notes||'—'}</span></div>
@@ -1172,8 +1262,6 @@ window.firebaseDelete = async function(id){
 
 window.firebaseReady = true;
 fbLoad();
-
-
 
 // ── Payments / Trainers Data ──────────────────────────────
 let payments = [];
