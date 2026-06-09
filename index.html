@@ -786,7 +786,7 @@ function getStatus(end, isFrozen, freezeEnd){
   subEndDateObj.setHours(0,0,0,0);
   const diffDays = Math.ceil((subEndDateObj - today) / 86400000);
   if(diffDays < 0) return 'expired';
-  if(diffDays <= 14) return 'soon';
+  if(diffDays <= 3) return 'soon';
   return 'active';
 }
 
