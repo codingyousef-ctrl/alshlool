@@ -187,7 +187,6 @@ body{font-family:var(--font);direction:rtl;background:var(--bg);min-height:100vh
 
 /* Stats */
 .stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
-.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
 .stat{
   background:var(--surface);border:0.5px solid var(--border2);
   border-radius:12px;padding:14px;text-align:center;
@@ -389,7 +388,7 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="stat"><div class="stat-n" id="st-soon" style="color:#7a4a08">0</div><div class="stat-l">ينتهي قريباً</div></div>
       <div class="stat"><div class="stat-n" id="st-exp" style="color:#a01414">0</div><div class="stat-l">منتهي</div></div>
       <div class="stat"><div class="stat-n" id="st-frozen" style="color:#1a6ba0">0</div><div class="stat-l">مجمد</div></div>
-      <div class="stat"><div class="stat-n" id="st-stopped" style="color:#a04010">0</div><div class="stat-l">متوقف</div></div>      <div class="stat"><div class="stat-n" id="st-stopped" style="color:#a04010">0</div><div class="stat-l">متوقف</div></div>
+      <div class="stat"><div class="stat-n" id="st-stopped" style="color:#a04010">0</div><div class="stat-l">متوقف</div></div>
     </div>
     <div class="card">
       <div class="filter-row">
@@ -398,10 +397,9 @@ table.st tr:hover td{background:var(--surface2)}
         <button class="fb" onclick="setFilter('soon',this)">ينتهي قريباً</button>
         <button class="fb" onclick="setFilter('expired',this)">منتهي</button>
         <button class="fb" onclick="setFilter('frozen',this)">مجمد</button>
-        <button class="fb" onclick="setFilter('stopped',this)">متوقف</button>        <button class="fb" onclick="setFilter('stopped',this)">متوقف</button>
+        <button class="fb" onclick="setFilter('stopped',this)">متوقف</button>
         <button class="fb" onclick="setFilter('m',this)">ذكر</button>
         <button class="fb" onclick="setFilter('f',this)">أنثى</button>
-        <button class="fb" onclick="setFilter('frozen',this)">مجمد</button>
 
       </div>
       <div class="tbl-wrap" id="students-list"></div>
@@ -427,9 +425,8 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="sec-title" style="font-size:13px"><i class="ti ti-phone" style="color:#cc1a1a"></i> معلومات التواصل</div>
       <div class="form-grid">
         <div class="fg"><label>رقم هاتف </label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr"></div>
+        <div class="fg"><label>موقع السكن</label><input id="f-mom" type="tel" placeholder="07XXXXXXXX" dir="ltr"></div>
         <div class="fg"><label>موقع السكن</label><input id="f-mom" type="tel" placeholder="اربد....الحي الشرقي / سال" dir="ltr"></div>
-        <div class="fg"><label>رقم هاتف الأب</label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr"></div>
-        <div class="fg"><label>رقم هاتف الأم</label><input id="f-mom" type="tel" placeholder="07XXXXXXXX" dir="ltr"></div>
       </div>
       <hr class="divider">
       <div class="sec-title" style="font-size:13px"><i class="ti ti-calendar" style="color:#cc1a1a"></i> الاشتراك</div>
@@ -484,7 +481,6 @@ table.st tr:hover td{background:var(--surface2)}
       <div class="tbl-wrap" id="search-results"></div>
     </div>
   </div>
-
 
   <!-- Payments Tab -->
   <div class="content" id="tab-payments">
@@ -793,7 +789,6 @@ function isStudentStopped(student){
 function getStatus(end, isFrozen, freezeEnd, isStopped){
   if(isStopped === true || isStopped === 'true') return 'stopped';
 
-function getStatus(end, isFrozen, freezeEnd){
   const today = new Date();
   today.setHours(0,0,0,0);
 
@@ -815,14 +810,12 @@ function getStatus(end, isFrozen, freezeEnd){
 
 function sBadge(student){
   const s = getStatus(student.end, student.isFrozen, student.freezeEnd, student.isStopped);
-  const s = getStatus(student.end, student.isFrozen, student.freezeEnd);
   const m = {
     active: ['b-act','فعال'],
     soon: ['b-soon','ينتهي قريباً'],
     expired: ['b-exp','منتهي'],
     frozen: ['b-frozen','مجمد'],
-    stopped: ['b-stopped','متوقف']    stopped: ['b-stopped','متوقف']
-    frozen: ['b-frozen','مجمد']
+    stopped: ['b-stopped','متوقف']
   };
   return `<span class="badge ${m[s][0]}">${m[s][1]}</span>`;
 }
@@ -846,10 +839,6 @@ function updateStats(){
   document.getElementById('st-exp').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='expired').length;
   document.getElementById('st-frozen').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='frozen').length;
   document.getElementById('st-stopped').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='stopped').length;
-  document.getElementById('st-act').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='active').length;
-  document.getElementById('st-soon').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='soon').length;
-  document.getElementById('st-exp').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='expired').length;
-  document.getElementById('st-frozen').textContent=students.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='frozen').length;
 }
 
 function renderTable(list,cid){
@@ -884,10 +873,6 @@ function renderStudents(){
   else if(filter==='expired') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='expired');
   else if(filter==='frozen') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='frozen');
   else if(filter==='stopped') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd,s.isStopped)==='stopped');
-  if(filter==='active') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='active');
-  else if(filter==='soon') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='soon');
-  else if(filter==='expired') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='expired');
-  else if(filter==='frozen') list=list.filter(s=>getStatus(s.end,s.isFrozen,s.freezeEnd)==='frozen');
   else if(filter==='m') list=list.filter(s=>s.gender==='m');
   else if(filter==='f') list=list.filter(s=>s.gender==='f');
   renderTable(list,'students-list');
@@ -1030,7 +1015,7 @@ function stopStudent(){
 
   const student = students[studentIndex];
   if(isStudentStopped(student)){
-    toast('هذا الطالب متوقف بالفعل عن النادي', true);    toast('هذا الطالب متوقف بالفعل عن النادي', true);
+    toast('هذا الطالب متوقف بالفعل عن النادي', true);
     return;
   }
 
@@ -1051,7 +1036,7 @@ function resumeStudent(){
 
   const student = students[studentIndex];
   if(!isStudentStopped(student)){
-    toast('هذا الطالب غير متوقف عن النادي', true);    toast('هذا الطالب غير متوقف عن النادي', true);
+    toast('هذا الطالب غير متوقف عن النادي', true);
     return;
   }
 
@@ -1189,7 +1174,7 @@ function viewStudent(i){
     <div class="detail-row"><span class="dk">هاتف الأم</span><span dir="ltr">${s.mom||'—'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ التسجيل</span><span>${fmtDate(s.start)}</span></div>
     <div class="detail-row"><span class="dk">انتهاء الاشتراك</span><span>${fmtDate(s.end)}</span></div>
-    <div class="detail-row"><span class="dk">حالة الإيقاف</span><span>${isStudentStopped(s) ? `متوقف عن النادي${s.stoppedAt ? ' منذ ' + fmtDate(s.stoppedAt) : ''}` : 'نشط'}</span></div>    <div class="detail-row"><span class="dk">حالة الإيقاف</span><span>${isStudentStopped(s) ? `متوقف عن النادي${s.stoppedAt ? ' منذ ' + fmtDate(s.stoppedAt) : ''}` : 'نشط'}</span></div>
+    <div class="detail-row"><span class="dk">حالة الإيقاف</span><span>${isStudentStopped(s) ? `متوقف عن النادي${s.stoppedAt ? ' منذ ' + fmtDate(s.stoppedAt) : ''}` : 'نشط'}</span></div>
     <div class="detail-row"><span class="dk">حالة التجميد</span><span>${(s.isFrozen === true || s.isFrozen === 'true') ? `مجمد حتى ${fmtDate(s.freezeEnd)}` : 'غير مجمد'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الانتهاء الأصلي</span><span>${s.actualEndDateBeforeFreeze ? fmtDate(s.actualEndDateBeforeFreeze) : '—'}</span></div>
     <div class="detail-row"><span class="dk">ملاحظات</span><span>${s.notes||'—'}</span></div>
@@ -1278,8 +1263,6 @@ window.firebaseDelete = async function(id){
 
 window.firebaseReady = true;
 fbLoad();
-
-
 
 // ── Payments / Trainers Data ──────────────────────────────
 let payments = [];
