@@ -33,6 +33,7 @@
       --jordan-black: #0d0d0d;
       --font: 'Cairo', sans-serif;
     }
+
     [data-theme="dark"] {
       --bg: #111118;
       --surface: #1c1c26;
@@ -971,9 +972,7 @@
         </div>
         <div class="tbl-wrap" id="students-list"></div>
       </div>
-
     </div>
-
 
     <!-- Add Tab -->
     <div class="content" id="tab-add">
@@ -1003,7 +1002,6 @@
         </div>
         <hr class="divider">
         <div class="sec-title" style="font-size:13px"><i class="ti ti-calendar" style="color:#cc1a1a"></i> الاشتراك
-
         </div>
         <div class="form-grid">
           <div class="fg"><label>تاريخ التسجيل *</label><input id="f-start" type="date"></div>
@@ -1042,6 +1040,7 @@
         </div>
       </div>
     </div>
+
     <!-- Search Tab -->
     <div class="content" id="tab-search">
       <div class="card">
@@ -1051,6 +1050,8 @@
         <div class="tbl-wrap" id="search-results"></div>
       </div>
     </div>
+
+
     <!-- Payments Tab -->
     <div class="content" id="tab-payments">
       <div class="card">
@@ -1127,13 +1128,10 @@
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
             <button class="btn-p" onclick="savePayment()"><i class="ti ti-plus"></i> إضافة دفعة</button>
-
           </div>
           <hr class="divider">
           <div class="tbl-wrap" id="payments-list"></div>
         </div>
-
-
 
         <!-- Trainers Management inside Payments -->
         <div id="pay-trainers-section" style="display:none">
@@ -1197,7 +1195,6 @@
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
             <button class="btn-p" onclick="saveTrainerPayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
-
           </div>
           <hr class="divider">
           <div class="sec-title" style="font-size:13px"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات
@@ -1212,11 +1209,21 @@
       <div class="card" style="margin-bottom:14px">
         <div class="sec-title"><i class="ti ti-medal" style="color:#cc1a1a"></i> إضافة مدرب</div>
         <div class="form-grid">
-
           <div class="fg">
             <label>اسم المدرب *</label>
             <input id="tr-name" type="text" placeholder="اسم المدرب">
-@@ -571,288 +1227,219 @@ <h1>مركز الشلول للتايكوندو</h1>
+          </div>
+          <div class="fg">
+            <label>رقم الهاتف</label>
+            <input id="tr-phone" type="tel" placeholder="07XXXXXXXX" dir="ltr">
+          </div>
+          <div class="fg">
+            <label>الراتب الشهري (دينار)</label>
+            <input id="tr-salary" type="number" placeholder="0.00" min="0" step="0.5">
+          </div>
+          <div class="fg">
+            <label>تاريخ الانضمام</label>
+            <input id="tr-join" type="date">
           </div>
         </div>
         <input type="hidden" id="tr-edit-id" value="">
@@ -1229,12 +1236,10 @@
       <div class="card">
         <div class="sec-title"><i class="ti ti-users" style="color:#cc1a1a"></i> قائمة المدربين</div>
         <div class="tbl-wrap" id="trainers-list"></div>
-
       </div>
     </div>
     <div class="toast-area">
       <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
-
     </div>
   </div>
 
@@ -1247,11 +1252,10 @@
       </div>
       <div id="modal-body"></div>
     </div>
-
   </div>
 
   <script>
-    const PASSWORD = '1122';
+    const PASSWORD = 'Teakwando.2013';
 
     // ── Lock / Unlock ──────────────────────────────────────────
     const lockScreen = document.getElementById('lock-screen');
@@ -1373,6 +1377,10 @@
 
     function save() { try { localStorage.setItem('shalloul_v2', JSON.stringify(students)); } catch (e) { } }
 
+    function isStudentStopped(student) {
+      return student && (student.isStopped === true || student.isStopped === 'true');
+    }
+
     function getStatus(end, isFrozen, freezeEnd) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -1436,10 +1444,11 @@
       <td style="font-weight:600">${s.name}</td>
       <td>${gBadge(s.gender)}</td>
       <td dir="ltr">${s.dad || '—'}</td>
-      <td>${fmtDate(s.end)}</td>
+      <td>${isStudentStopped(s) ? '—' : fmtDate(s.end)}</td>
       <td>${sBadge(s)}</td>
       <td><div class="act-btns">
-@@ -861,649 +1448,588 @@ <h1>مركز الشلول للتايكوندو</h1>
+        <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
+        <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
       </div></td>
     </tr>`;
@@ -1674,7 +1683,6 @@
         }
         toast('تم فك التجميد بنجاح.');
       }
-
     }
 
     function viewStudent(i) {
@@ -1688,7 +1696,6 @@
     <div class="detail-row"><span class="dk">هاتف الأم</span><span dir="ltr">${s.mom || '—'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ التسجيل</span><span>${fmtDate(s.start)}</span></div>
     <div class="detail-row"><span class="dk">انتهاء الاشتراك</span><span>${fmtDate(s.end)}</span></div>
-
     <div class="detail-row"><span class="dk">حالة التجميد</span><span>${(s.isFrozen === true || s.isFrozen === 'true') ? `مجمد حتى ${fmtDate(s.freezeEnd)}` : 'غير مجمد'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الانتهاء الأصلي</span><span>${s.actualEndDateBeforeFreeze ? fmtDate(s.actualEndDateBeforeFreeze) : '—'}</span></div>
     <div class="detail-row"><span class="dk">ملاحظات</span><span>${s.notes || '—'}</span></div>
@@ -1713,7 +1720,6 @@
       document.getElementById('toast-msg').textContent = msg;
       t.className = 'toast show' + (err ? ' err' : '');
       setTimeout(() => t.className = 'toast', 2800);
-
     }
 
     // Init
@@ -1778,6 +1784,9 @@
 
     window.firebaseReady = true;
     fbLoad();
+
+
+
     // ── Payments / Trainers Data ──────────────────────────────
     let payments = [];
     let trainerPayments = [];
@@ -2028,7 +2037,21 @@
   <title>فاتورة</title>
   <style>
     body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;padding:40px;color:#111;direction:rtl}
-@@ -1525,62 +2051,62 @@ <h2>مركز الشلول للتايكوندو</h2>
+    .logo{text-align:center;margin-bottom:20px}
+    .logo h2{font-size:22px;margin:0;color:#cc1a1a}
+    .logo p{color:#666;font-size:13px;margin:4px 0}
+    hr{border:none;border-top:2px solid #cc1a1a;margin:16px 0}
+    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:14px}
+    .label{color:#666}
+    .total{font-size:20px;font-weight:700;color:#cc1a1a;text-align:center;margin-top:20px}
+    .footer{text-align:center;color:#999;font-size:12px;margin-top:30px}
+    @media print{button{display:none}}
+  </style></head><body>
+  <div class="logo">
+    <h2>مركز الشلول للتايكوندو</h2>
+    <p>فاتورة دفع</p>
+  </div>
+  <hr>
   <div class="row"><span class="label">اسم الطالب</span><span><b>${p.name}</b></span></div>
   <div class="row"><span class="label">سبب الدفع</span><span>${p.reason}</span></div>
   <div class="row"><span class="label">التاريخ</span><span>${fmtDate(p.date)}</span></div>
@@ -2091,7 +2114,8 @@
       <td>${salary} د.أ</td>
       <td style="color:#2a6b10;font-weight:600">${paid} د.أ</td>
       <td style="color:${remColor};font-weight:600">${remaining} د.أ</td>
-@@ -1589,94 +2115,95 @@ <h2>مركز الشلول للتايكوندو</h2>
+      <td><div class="act-btns">
+        <button class="ib" onclick="editTrainer(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
         <button class="ib del" onclick="delTrainer(${i})" title="حذف"><i class="ti ti-trash"></i></button>
       </div></td>
     </tr>`;
