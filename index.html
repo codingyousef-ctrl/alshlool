@@ -1377,10 +1377,6 @@
 
     function save() { try { localStorage.setItem('shalloul_v2', JSON.stringify(students)); } catch (e) { } }
 
-    function isStudentStopped(student) {
-      return student && (student.isStopped === true || student.isStopped === 'true');
-    }
-
     function getStatus(end, isFrozen, freezeEnd) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -1444,7 +1440,7 @@
       <td style="font-weight:600">${s.name}</td>
       <td>${gBadge(s.gender)}</td>
       <td dir="ltr">${s.dad || '—'}</td>
-      <td>${isStudentStopped(s) ? '—' : fmtDate(s.end)}</td>
+      <td>${fmtDate(s.end)}</td>
       <td>${sBadge(s)}</td>
       <td><div class="act-btns">
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
