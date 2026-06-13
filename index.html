@@ -1001,7 +1001,7 @@
         <div class="form-grid">
           <div class="fg"><label>رقم هاتف الأب</label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr">
           </div>
-          <div class="fg"><label>رقم هاتف الأم</label><input id="f-mom" type="tel" placeholder="07XXXXXXXX" dir="ltr">
+          <div class="fg"><label>مكان السكن</label><input id="f-location" type="tel" placeholder="اربد..الحي الشرقي" dir="ltr">
           </div>
         </div>
         <hr class="divider">
@@ -1531,7 +1531,7 @@
         name, gender,
         dob: document.getElementById('f-dob').value,
         dad: document.getElementById('f-dad').value.trim(),
-        mom: document.getElementById('f-mom').value.trim(),
+        location: document.getElementById('f-location').value.trim(),
         start, end,
         notes: document.getElementById('f-notes').value.trim(),
         belt: document.getElementById('f-belt').value,
@@ -1573,7 +1573,7 @@
       document.getElementById('f-edit-id').value = '';
       document.getElementById('form-title').textContent = 'تسجيل طالب جديد';
       document.getElementById('save-btn-lbl').textContent = 'حفظ التسجيل';
-      ['f-name', 'f-gender', 'f-dob', 'f-dad', 'f-mom', 'f-start', 'f-end', 'f-notes', 'f-belt'].forEach(id => document.getElementById(id).value = '');
+      ['f-name', 'f-gender', 'f-dob', 'f-dad', 'f-location', 'f-start', 'f-end', 'f-notes', 'f-belt'].forEach(id => document.getElementById(id).value = '');
     }
 
     function editStudent(i) {
@@ -1583,7 +1583,7 @@
       document.getElementById('f-gender').value = s.gender;
       document.getElementById('f-dob').value = s.dob || '';
       document.getElementById('f-dad').value = s.dad || '';
-      document.getElementById('f-mom').value = s.mom || '';
+      document.getElementById('f-location').value = s.location || '';
       document.getElementById('f-start').value = s.start || '';
       document.getElementById('f-end').value = s.end || '';
       document.getElementById('f-notes').value = s.notes || '';
