@@ -1060,8 +1060,7 @@
               class="ti ti-users"></i> دفعات الطلاب</button>
           <button class="fb" id="pay-sub-trainers" onclick="showPaySub('trainers',this)"><i class="ti ti-medal"></i>
             المدربين</button>
-          <button class="fb" id="pay-sub-search" onclick="showPaySub('search',this)"><i
-              class="ti ti-calendar-search"></i>
+          <button class="fb" id="pay-sub-search" onclick="showPaySub('search',this)"><i class="ti ti-calendar-search"></i>
             بحث بالتاريخ</button>
         </div>
 
@@ -1794,20 +1793,20 @@
     let trainers = [];
     let paySearchActive = false;
 
-    function isPaySearchTab() {
+    function isPaySearchTab(){
       const btn = document.getElementById('pay-sub-search');
       return btn && btn.classList.contains('active');
     }
 
-    function renderSearchPaymentTable(list, type) {
-      if (!list.length) {
+    function renderSearchPaymentTable(list, type){
+      if(!list.length){
         return `<div class="empty" style="padding:20px 0"><i class="ti ti-receipt-off" style="font-size:28px;display:block;margin-bottom:6px"></i>لا توجد دفعات</div>`;
       }
       const isStudent = type === 'student';
       let h = `<table class="st"><thead><tr>
-    <th style="width:${isStudent ? '22%' : '25%'}">الاسم</th><th style="width:14%">المبلغ</th><th style="width:${isStudent ? '24%' : '20%'}">التفاصيل</th><th style="width:14%">التاريخ</th><th style="width:14%">ملاحظات</th><th style="width:12%">إجراءات</th>
+    <th style="width:${isStudent?'22%':'25%'}">الاسم</th><th style="width:14%">المبلغ</th><th style="width:${isStudent?'24%':'20%'}">التفاصيل</th><th style="width:14%">التاريخ</th><th style="width:14%">ملاحظات</th><th style="width:12%">إجراءات</th>
   </tr></thead><tbody>`;
-      list.forEach(p => {
+      list.forEach(p=>{
         const details = isStudent ? (p.reason || '—') : 'راتب مدرب';
         const amountColor = isStudent ? '#2a6b10' : '#a01414';
         const actions = isStudent
