@@ -999,7 +999,7 @@
         <div class="sec-title" style="font-size:13px"><i class="ti ti-phone" style="color:#cc1a1a"></i> معلومات التواصل
         </div>
         <div class="form-grid">
-          <div class="fg"><label>رقم هاتف الأب</label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr">
+          <div class="fg"><label>رقم هاتف </label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr">
           </div>
           <div class="fg"><label>مكان السكن</label><input id="f-location" type="tel" placeholder="اربد..الحي الشرقي" dir="ltr">
           </div>
@@ -1440,7 +1440,7 @@
       const el = document.getElementById(cid);
       if (!list.length) { el.innerHTML = `<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
       let h = `<table class="st"><thead><tr>
-    <th style="width:25%">الاسم</th><th style="width:12%">الجنس</th><th style="width:20%">هاتف الأب</th><th style="width:18%">ينتهي</th><th style="width:13%">الحالة</th><th style="width:12%">إجراءات</th>
+    <th style="width:25%">الاسم</th><th style="width:12%">الجنس</th><th style="width:20%">رقم الهاتف</th><th style="width:18%">ينتهي</th><th style="width:13%">الحالة</th><th style="width:12%">إجراءات</th>
   </tr></thead><tbody>`;
       list.forEach(s => {
         const i = students.indexOf(s);
@@ -1696,8 +1696,8 @@
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${sBadge(s)} ${beltBadge(s.belt)}</div>
     <div class="detail-row"><span class="dk">الاسم</span><span style="font-weight:600">${s.name}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الميلاد</span><span>${fmtDate(s.dob)}</span></div>
-    <div class="detail-row"><span class="dk">هاتف الأب</span><span dir="ltr">${s.dad || '—'}</span></div>
-    <div class="detail-row"><span class="dk">هاتف الأم</span><span dir="ltr">${s.mom || '—'}</span></div>
+    <div class="detail-row"><span class="dk">رقم الهاتف</span><span dir="ltr">${s.dad || '—'}</span></div>
+    <div class="detail-row"><span class="dk">مكان السكن</span><span dir="ltr">${s.Location || '—'}</span></div>
     <div class="detail-row"><span class="dk">تاريخ التسجيل</span><span>${fmtDate(s.start)}</span></div>
     <div class="detail-row"><span class="dk">انتهاء الاشتراك</span><span>${fmtDate(s.end)}</span></div>
     <div class="detail-row"><span class="dk">حالة التجميد</span><span>${(s.isFrozen === true || s.isFrozen === 'true') ? `مجمد حتى ${fmtDate(s.freezeEnd)}` : 'غير مجمد'}</span></div>
