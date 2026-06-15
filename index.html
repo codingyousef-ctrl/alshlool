@@ -958,7 +958,7 @@
           <div class="stat-l">مجمد</div>
         </div>
         <div class="stat">
-          <div class="stat-n" id="stat-stopped" style="color:#800517">0</div>
+          <div class="stat-n" id="stat-stopped">0</div>
           <div class="stat-l">متوقف</div></div>
       </div>
     
@@ -968,10 +968,10 @@
           <button class="fb" onclick="setFilter('active',this)">فعال</button>
           <button class="fb" onclick="setFilter('soon',this)">ينتهي قريباً</button>
           <button class="fb" onclick="setFilter('expired',this)">منتهي</button>
-          <button class="fb" onclick="setFilter('frozen',this)">متوقف</button>
           <button class="fb" onclick="setFilter('m',this)">ذكر</button>
           <button class="fb" onclick="setFilter('f',this)">أنثى</button>
           <button class="fb" onclick="setFilter('frozen',this)">مجمد</button>
+          <button class="fb" onclick="setFilter('stopped',this)">متوقف</button>
 
         </div>
         <div class="tbl-wrap" id="students-list"></div>
@@ -1546,6 +1546,16 @@
           if (prev.isFrozen) obj.isFrozen = prev.isFrozen;
           if (prev.freezeEnd) obj.freezeEnd = prev.freezeEnd;
           if (prev.actualEndDateBeforeFreeze) obj.actualEndDateBeforeFreeze = prev.actualEndDateBeforeFreeze;
+          // هذا الكود يوضع مكان كود التاريخ والزر الحالي في دالة المودال
+if (student.status !== 'stopped') {
+    detailsHTML += `<div>تاريخ انتهاء الاشتراك: ${student.expiryDate}</div>`;
+}
+
+if (student.status === 'stopped') {
+    detailsHTML += `<button class="ib" onclick="updateStudentStatus('${student.id}', 'active')">إعادة تفعيل</button>`;
+} else {
+    detailsHTML += `<button class="ib" onclick="updateStudentStatus('${student.id}', 'stopped')">إيقاف عن النادي</button>`;
+}
         }
       }
       // eid could be a Firebase _id string or empty
@@ -2211,6 +2221,37 @@
     document.getElementById('tpay-date').value = today;
     document.getElementById('tr-join').value = today;
 
+   // 1. دالة تغيير الحالة (لتبديل الطالب بين متوقف ومفعل)
+function updateStudentStatus(id, newStatus) {
+    const student = students.find(s => s.id === id);
+    if (student) {
+        student.status = newStatus;
+        saveLocal();
+        // هنا نقوم باستدعاء الدوال المسؤولة عن الرسم (تأكد من اسم الدالة عندك، قد تكون renderTable أو renderStudents)
+        renderTable(); 
+        updateAllStats(); 
+        closeModal();
+    }
+}
+
+
+function renderStats() {
+    document.getElementById('stat-stopped').innerText = students.filter(s => s.status === 'stopped').length;
+}
+
+function filterStudents(status, btn) {
+    document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+
+    const filtered = (status === 'all') ? students : students.filter(s => s.status === status);
+    renderTable(filtered);
+}
+    function updateAllStats() {
+    document.getElementById('stat-all').innerText = students.length;
+    document.getElementById('stat-active').innerText = students.filter(s => s.status === 'active').length;
+    document.getElementById('stat-frozen').innerText = students.filter(s => s.status === 'frozen').length;
+    document.getElementById('stat-stopped').innerText = students.filter(s => s.status === 'stopped').length;
+}
   </script>
 </body>
 
