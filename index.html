@@ -1065,7 +1065,7 @@
               </div>
             </div>
             <div id="stop-reactivate-btns" style="display:none;gap:8px">
-              <button class="btn-s" id="btn-stop-student" onclick="stopStudent()" style="color:#FF5C36;"><i class="ti ti-player-stop"></i> إيقاف عن النادي</button>
+              <button class="btn-s" id="btn-stop-student" onclick="stopStudent()" style="color:#6a1a9a;border-color:#6a1a9a"><i class="ti ti-player-stop"></i> إيقاف عن النادي</button>
               <button class="btn-s" id="btn-reactivate-student" onclick="reactivateStudent()" style="color:#1a7a1a;border-color:#1a7a1a;display:none"><i class="ti ti-refresh"></i> إعادة تفعيل</button>
             </div>
           </div>
@@ -1192,49 +1192,13 @@
         <!-- Trainers Management inside Payments -->
         <div id="pay-trainers-section" style="display:none">
 
-          <!-- Add Trainer -->
-          <div class="sec-title"><i class="ti ti-medal" style="color:#cc1a1a"></i> إضافة / تعديل مدرب</div>
-          <div class="form-grid" style="margin-bottom:14px">
-            <div class="fg">
-              <label>اسم المدرب *</label>
-              <input id="tr-name" type="text" placeholder="اسم المدرب">
-            </div>
-            <div class="fg">
-              <label>رقم الهاتف</label>
-              <input id="tr-phone" type="tel" placeholder="07XXXXXXXX" dir="ltr">
-            </div>
-            <div class="fg">
-              <label>الراتب الشهري (دينار)</label>
-              <input id="tr-salary" type="number" placeholder="0.00" min="0" step="0.5">
-            </div>
-            <div class="fg">
-              <label>تاريخ الانضمام</label>
-              <input id="tr-join" type="date">
-            </div>
-          </div>
-          <input type="hidden" id="tr-edit-id" value="">
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
-            <button class="btn-s" onclick="cancelTrainer()">إلغاء</button>
-            <button class="btn-p" onclick="saveTrainer()"><i class="ti ti-check"></i> <span id="tr-save-lbl">حفظ
-                المدرب</span></button>
-          </div>
-          <hr class="divider">
-
-          <!-- Trainers list with paid/remaining -->
-          <div class="sec-title" style="font-size:13px"><i class="ti ti-users" style="color:#cc1a1a"></i> قائمة المدربين
-          </div>
-          <div class="tbl-wrap" id="trainers-list" style="margin-bottom:16px"></div>
-          <hr class="divider">
-
           <!-- Pay a trainer -->
           <div class="sec-title" style="font-size:13px"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة
             لمدرب</div>
           <div class="form-grid" style="margin-bottom:14px">
             <div class="fg">
-              <label>المدرب *</label>
-              <select id="tpay-trainer">
-                <option value="">اختر المدرب</option>
-              </select>
+              <label>اسم المدرب *</label>
+              <input id="tpay-name" type="text" placeholder="اسم المدرب">
             </div>
             <div class="fg">
               <label>المبلغ المدفوع (دينار) *</label>
@@ -1244,9 +1208,9 @@
               <label>التاريخ *</label>
               <input id="tpay-date" type="date">
             </div>
-            <div class="fg">
-              <label>ملاحظات</label>
-              <input id="tpay-notes" type="text" placeholder="ملاحظات...">
+            <div class="fg full">
+              <label>السبب</label>
+              <input id="tpay-notes" type="text" placeholder="السبب...">
             </div>
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
@@ -2311,8 +2275,8 @@
       document.querySelectorAll('#tab-payments .fb').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       if (sub === 'trainers') {
-        renderTrainers(); renderTrainerPayments(); populateTrainerSelect();
-        loadAllData().then(() => { renderTrainers(); renderTrainerPayments(); populateTrainerSelect(); });
+        renderTrainerPayments();
+        loadAllData().then(() => renderTrainerPayments());
       } else if (sub === 'students') {
         renderPayments();
         loadAllData().then(() => renderPayments());
@@ -2490,28 +2454,15 @@
       toast('تم الحذف');
     }
 
-    function populateTrainerSelect() {
-      const sel = document.getElementById('tpay-trainer');
-      sel.innerHTML = '<option value="">اختر المدرب</option>';
-      trainers.forEach((t, i) => {
-        sel.innerHTML += `<option value="${i}">${t.name}</option>`;
-      });
-    }
-
-    function saveTrainerPayment() {
-      const tidx = document.getElementById('tpay-trainer').value;
+function saveTrainerPayment() {
+      const name = document.getElementById('tpay-name').value.trim();
       const amount = document.getElementById('tpay-amount').value.trim();
       const date = document.getElementById('tpay-date').value;
-      if (tidx === '' || !amount || !date) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
-      const t = trainers[parseInt(tidx)];
-      trainerPayments.push({ id: Date.now(), trainer: t.name, amount, date, notes: document.getElementById('tpay-notes').value.trim() });
-      // Update paid amount
-      trainers[parseInt(tidx)].paid = String(parseFloat(t.paid || 0) + parseFloat(amount));
+      if (!name || !amount || !date) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
+      trainerPayments.push({ id: Date.now(), trainer: name, amount, date, notes: document.getElementById('tpay-notes').value.trim() });
       saveLocal();
-      ['tpay-amount', 'tpay-notes'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('tpay-trainer').value = '';
+      ['tpay-name', 'tpay-amount', 'tpay-notes'].forEach(id => document.getElementById(id).value = '');
       renderTrainerPayments();
-      renderTrainers();
       toast('تم تسجيل الدفعة ✓');
     }
 
@@ -2538,12 +2489,10 @@
       if (!confirm('حذف هذه الدفعة؟')) return;
       const p = trainerPayments[i];
       if (p._id) fbDeleteDoc('trainerPayments', p._id);
-      const tidx = trainers.findIndex(t => t.name === p.trainer);
-      if (tidx >= 0) { trainers[tidx].paid = String(Math.max(0, parseFloat(trainers[tidx].paid || 0) - parseFloat(p.amount))); saveLocal(); }
       trainerPayments.splice(i, 1);
       try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
       if (isPaySearchTab() || paySearchActive) searchPaymentsByDate();
-      else { renderTrainerPayments(); renderTrainers(); }
+      else renderTrainerPayments();
       toast('تم الحذف');
     }
 
