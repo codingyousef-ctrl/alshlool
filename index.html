@@ -1027,6 +1027,8 @@
         <div class="form-grid">
           <div class="fg"><label>تاريخ التسجيل *</label><input id="f-start" type="date"></div>
           <div class="fg"><label>تاريخ انتهاء الاشتراك *</label><input id="f-end" type="date"></div>
+        </div>
+        <div class="form-grid">
           <div class="card">
             <div class="sec-title"><i class="ti ti-snowflake"></i> إعدادات التجميد</div>
             <div class="form-grid">
@@ -1049,46 +1051,34 @@
                 التجميد</button>
             </div>
           </div>
-          <div id="stop-reactivate-btns" style="display:none;gap:8px;margin-top:12px">
-          <button class="btn-s" id="btn-stop-student" onclick="stopStudent()" style="color:#FF5C36;"><i class="ti ti-player-stop"></i> إيقاف عن النادي</button>
-          <button class="btn-s" id="btn-reactivate-student" onclick="reactivateStudent()" style="color:#1a7a1a;border-color:#1a7a1a;display:none"><i class="ti ti-refresh"></i> إعادة تفعيل</button>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
-          <button class="btn-s" onclick="cancelEdit()">إلغاء</button>
-          <button class="btn-p" onclick="saveStudent()"><i class="ti ti-check"></i> <span id="save-btn-lbl">حفظ
-              التسجيل</span></button>
-        </div>
-          <div class="fg full" style="background:var(--surface2);border-radius:10px;padding:12px;border:0.5px solid var(--border2)">
-            <label style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;display:block"><i class="ti ti-shirt" style="color:#cc1a1a"></i> البدلة</label>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div class="card">
+            <div class="sec-title"><i class="ti ti-shirt" style="color:#cc1a1a"></i> البدلة</div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer">
                 <input type="checkbox" id="f-suit-received" style="width:auto;accent-color:#cc1a1a" onchange="toggleSuitSize()"> استلم بدلة
               </label>
               <div id="suit-size-wrap" style="display:none;align-items:center;gap:8px">
                 <label style="font-size:12px;color:var(--text2)">المقاس:</label>
-                <select id="f-suit-size" style="padding:5px 10px;font-size:13px;width:auto">
+                <select id="f-suit-size" style="padding:5px 10px;font-size:13px;width:auto" onfocus="populateSuitSizeOptions()">
                   <option value="">اختر المقاس</option>
-                  <option value="90">90</option>
-                  <option value="100">100</option>
-                  <option value="110">110</option>
-                  <option value="120">120</option>
-                  <option value="130">130</option>
-                  <option value="140">140</option>
-                  <option value="150">150</option>
-                  <option value="160">160</option>
-                  <option value="170">170</option>
-                  <option value="180">180</option>
-                  <option value="190">190</option>
                 </select>
               </div>
             </div>
+            <div id="stop-reactivate-btns" style="display:none;gap:8px">
+              <button class="btn-s" id="btn-stop-student" onclick="stopStudent()" style="color:#6a1a9a;border-color:#6a1a9a"><i class="ti ti-player-stop"></i> إيقاف عن النادي</button>
+              <button class="btn-s" id="btn-reactivate-student" onclick="reactivateStudent()" style="color:#1a7a1a;border-color:#1a7a1a;display:none"><i class="ti ti-refresh"></i> إعادة تفعيل</button>
+            </div>
           </div>
-        </div>
           <div class="fg full"><label>ملاحظات</label><input id="f-notes" type="text" placeholder="أي ملاحظات إضافية...">
           </div>
-          
+        </div>
         <input type="hidden" id="f-belt" value="">
         <input type="hidden" id="f-edit-id" value="">
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+          <button class="btn-s" onclick="cancelEdit()">إلغاء</button>
+          <button class="btn-p" onclick="saveStudent()"><i class="ti ti-check"></i> <span id="save-btn-lbl">حفظ
+              التسجيل</span></button>
+        </div>
       </div>
     </div>
 
@@ -1600,6 +1590,19 @@
       const suitReceived = document.getElementById('f-suit-received').checked;
       const suitSize = suitReceived ? document.getElementById('f-suit-size').value : '';
       if (suitReceived && !suitSize) { toast('يرجى اختيار مقاس البدلة', true); return; }
+      if (suitReceived && suitSize) {
+        const eidCheck = document.getElementById('f-edit-id').value;
+        let prevSizeCheck = '';
+        if (eidCheck !== '') {
+          const idxCheck = students.findIndex(s => (s._id || students.indexOf(s)).toString() === eidCheck);
+          if (idxCheck >= 0) prevSizeCheck = students[idxCheck].suitSize || '';
+        }
+        const stockQty = suitsInventory[String(suitSize)] || 0;
+        if (stockQty <= 0 && prevSizeCheck !== suitSize) {
+          toast(`مقاس ${suitSize} غير متوفر في المخزون`, true);
+          return;
+        }
+      }
       const obj = {
         name, gender,
         dob: document.getElementById('f-dob').value,
@@ -1693,6 +1696,7 @@
       // Populate suit fields
       const suitRec = s.suitReceived === 'true' || s.suitReceived === true;
       document.getElementById('f-suit-received').checked = suitRec;
+      populateSuitSizeOptions(s.suitSize || '');
       document.getElementById('f-suit-size').value = s.suitSize || '';
       document.getElementById('suit-size-wrap').style.display = suitRec ? 'flex' : 'none';
       // Show stop/reactivate buttons
@@ -1952,7 +1956,30 @@
     function toggleSuitSize() {
       const checked = document.getElementById('f-suit-received').checked;
       document.getElementById('suit-size-wrap').style.display = checked ? 'flex' : 'none';
-      if (!checked) document.getElementById('f-suit-size').value = '';
+      if (checked) populateSuitSizeOptions();
+      else document.getElementById('f-suit-size').value = '';
+    }
+
+    function populateSuitSizeOptions(keepSize) {
+      const sel = document.getElementById('f-suit-size');
+      if (!sel) return;
+      const currentVal = keepSize !== undefined ? keepSize : sel.value;
+      sel.innerHTML = '<option value="">اختر المقاس</option>';
+      SUIT_SIZES.forEach(size => {
+        const qty = suitsInventory[String(size)] || 0;
+        const outOfStock = qty <= 0;
+        const opt = document.createElement('option');
+        opt.value = String(size);
+        opt.textContent = outOfStock ? `${size} — انتهى` : `${size} (${qty})`;
+        // Allow keeping a previously-saved size selected even if it's now out of stock (editing existing record),
+        // but otherwise disable out-of-stock sizes from being selected.
+        if (outOfStock && String(size) !== String(currentVal)) {
+          opt.disabled = true;
+          opt.style.textDecoration = 'line-through';
+        }
+        sel.appendChild(opt);
+      });
+      sel.value = currentVal || '';
     }
 
     async function loadSuitsInventory() {
@@ -2072,12 +2099,22 @@
       saveSuitQty(size, n).then(() => { renderSuitsGrid(); toast(`تم تحديث مقاس ${size}: ${n} قطعة`); });
     }
 
+    async function deleteSuitLogEntry(id) {
+      if (!confirm('هل تريد حذف هذا السجل؟')) return;
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_LOG}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
+        suitsLog = suitsLog.filter(l => l._id !== id);
+        renderSuitsLog();
+        toast('تم حذف السجل');
+      } catch (e) { toast('حدث خطأ أثناء الحذف', true); }
+    }
+
     function renderSuitsLog() {
       const el = document.getElementById('suits-log');
       if (!el) return;
       if (!suitsLog.length) { el.innerHTML = '<div class="empty">لا يوجد سجل بدلات</div>'; return; }
       let h = `<table class="st"><thead><tr>
-        <th style="width:30%">الطالب</th><th style="width:15%">المقاس</th><th style="width:20%">العملية</th><th style="width:25%">التاريخ</th>
+        <th style="width:26%">الطالب</th><th style="width:14%">المقاس</th><th style="width:18%">العملية</th><th style="width:22%">التاريخ</th><th style="width:10%"></th>
       </tr></thead><tbody>`;
       suitsLog.forEach(log => {
         const color = log.action === 'صرف' ? '#a01414' : '#2a6b10';
@@ -2086,6 +2123,7 @@
           <td><span style="background:#e8f5e0;color:#2a6b10;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${log.size}</span></td>
           <td><span style="color:${color};font-weight:600">${log.action}</span></td>
           <td>${fmtDate(log.date)}</td>
+          <td><button onclick="deleteSuitLogEntry('${log._id}')" style="background:none;border:none;cursor:pointer;color:#a01414;font-size:16px" title="حذف"><i class="ti ti-trash"></i></button></td>
         </tr>`;
       });
       h += '</tbody></table>';
