@@ -853,7 +853,9 @@
       }
 
       table.st th:nth-child(4),
-      table.st td:nth-child(4) {
+      table.st td:nth-child(4),
+      table.st th:nth-child(5),
+      table.st td:nth-child(5) {
         display: none
       }
     }
@@ -1021,6 +1023,10 @@
               dir="ltr">
           </div>
         </div>
+        <hr class="divider">
+        <div class="sec-title" style="font-size:13px"><i class="ti ti-medal" style="color:#cc1a1a"></i> الحزام
+        </div>
+        <div class="belt-grid" id="belt-grid"></div>
         <hr class="divider">
         <div class="sec-title" style="font-size:13px"><i class="ti ti-calendar" style="color:#cc1a1a"></i> الاشتراك
         </div>
@@ -1462,13 +1468,14 @@
       const el = document.getElementById(cid);
       if (!list.length) { el.innerHTML = `<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
       let h = `<table class="st"><thead><tr>
-    <th style="width:25%">الاسم</th><th style="width:12%">الجنس</th><th style="width:20%">رقم الهاتف</th><th style="width:18%">ينتهي</th><th style="width:13%">الحالة</th><th style="width:12%">إجراءات</th>
+    <th style="width:22%">الاسم</th><th style="width:11%">الجنس</th><th style="width:14%">الحزام</th><th style="width:18%">رقم الهاتف</th><th style="width:15%">ينتهي</th><th style="width:10%">الحالة</th><th style="width:10%">إجراءات</th>
   </tr></thead><tbody>`;
       list.forEach(s => {
         const i = students.indexOf(s);
         h += `<tr>
       <td style="font-weight:600">${s.name}</td>
       <td>${gBadge(s.gender)}</td>
+      <td>${beltBadge(s.belt)}</td>
       <td dir="ltr">${s.dad || '—'}</td>
       <td>${(isStudentStopped(s) || getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen') ? '—' : fmtDate(s.end)}</td>
       <td>${sBadge(s)}</td>
@@ -1659,6 +1666,7 @@
       document.getElementById('f-suit-received').checked = false;
       document.getElementById('f-suit-size').value = '';
       document.getElementById('suit-size-wrap').style.display = 'none';
+      buildBeltGrid('');
       const stopBtns = document.getElementById('stop-reactivate-btns');
       if (stopBtns) stopBtns.style.display = 'none';
     }
@@ -1675,6 +1683,7 @@
       document.getElementById('f-end').value = s.end || '';
       document.getElementById('f-notes').value = s.notes || '';
       document.getElementById('f-belt').value = s.belt || '';
+      buildBeltGrid(s.belt || '');
       document.getElementById('form-title').textContent = 'تعديل: ' + s.name;
       document.getElementById('save-btn-lbl').textContent = 'حفظ التعديلات';
       // Populate suit fields
@@ -2116,6 +2125,8 @@
 
     // Init suits on page load
     loadSuitsInventory();
+    // Init belt grid (empty/new student state)
+    buildBeltGrid('');
 
     // ── Payments / Trainers Data ──────────────────────────────
     let payments = [];
