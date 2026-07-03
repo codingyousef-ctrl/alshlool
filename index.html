@@ -699,6 +699,18 @@
       color: #8b0000
     }
 
+    .sort-opt {
+      padding: 10px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text);
+      border-bottom: 0.5px solid var(--border2);
+      transition: background .1s;
+    }
+    .sort-opt:last-child { border-bottom: none }
+    .sort-opt:hover { background: var(--surface2) }
+    .sort-opt.active { font-weight: 700; color: #cc1a1a }
+
     /* Actions */
     .act-btns {
       display: flex;
@@ -992,14 +1004,21 @@
           <button class="fb" onclick="setFilter('f',this)">أنثى</button>
 
         </div>
-        <div class="filter-row" style="margin-top:6px;border-top:0.5px solid var(--border2);padding-top:8px">
-          <span style="font-size:11px;color:var(--text2);align-self:center">ترتيب:</span>
-          <button class="fb" id="sort-newest" onclick="setSort('newest',this)">🕒 الأجدد</button>
-          <button class="fb" id="sort-oldest" onclick="setSort('oldest',this)">🕒 الأقدم</button>
-          <button class="fb" id="sort-end-asc" onclick="setSort('end-asc',this)">📅 انتهاء ↑</button>
-          <button class="fb" id="sort-end-desc" onclick="setSort('end-desc',this)">📅 انتهاء ↓</button>
-          <button class="fb" id="sort-belt-asc" onclick="setSort('belt-asc',this)">🥋 حزام ↑</button>
-          <button class="fb" id="sort-belt-desc" onclick="setSort('belt-desc',this)">🥋 حزام ↓</button>
+        <div style="display:flex;justify-content:flex-start;margin-top:8px;position:relative">
+          <button id="sort-toggle-btn" onclick="toggleSortMenu()" class="btn-s" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:6px">
+            <i class="ti ti-arrows-sort"></i> <span id="sort-label">ترتيب</span> <i class="ti ti-chevron-down" style="font-size:10px"></i>
+          </button>
+          <div id="sort-menu" style="display:none;position:absolute;top:calc(100% + 4px);right:auto;left:0;z-index:200;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;min-width:180px;box-shadow:0 8px 24px #0003;overflow:hidden">
+            <div onclick="setSort('newest-reg')" class="sort-opt" data-key="newest-reg">🆕 الأجدد بالتسجيل</div>
+            <div onclick="setSort('oldest-reg')" class="sort-opt" data-key="oldest-reg">🕰 الأقدم بالتسجيل</div>
+            <div onclick="setSort('newest-sub')" class="sort-opt" data-key="newest-sub">📅 الأجدد بالاشتراك</div>
+            <div onclick="setSort('oldest-sub')" class="sort-opt" data-key="oldest-sub">📅 الأقدم بالاشتراك</div>
+            <div onclick="setSort('end-asc')" class="sort-opt" data-key="end-asc">⬆ انتهاء الاشتراك ↑</div>
+            <div onclick="setSort('end-desc')" class="sort-opt" data-key="end-desc">⬇ انتهاء الاشتراك ↓</div>
+            <div onclick="setSort('belt-asc')" class="sort-opt" data-key="belt-asc">🥋 الحزام (أبيض → أسود)</div>
+            <div onclick="setSort('belt-desc')" class="sort-opt" data-key="belt-desc">🥋 الحزام (أسود → أبيض)</div>
+            <div onclick="setSort(null)" class="sort-opt" data-key="none" style="color:#a01414;border-top:0.5px solid var(--border2)">✕ إلغاء الترتيب</div>
+          </div>
         </div>
         <div class="tbl-wrap" id="students-list"></div>
       </div>
@@ -1158,30 +1177,41 @@
         <!-- Student Payments -->
         <div id="pay-students-section">
           <!-- Subscription Renewal Box -->
-          <div style="background:var(--surface2);border:1px solid #cc1a1a33;border-radius:12px;padding:14px;margin-bottom:16px">
-            <div class="sec-title" style="font-size:13px;margin-bottom:10px"><i class="ti ti-refresh" style="color:#cc1a1a"></i> تجديد اشتراك طالب</div>
-            <div class="form-grid">
-              <div class="fg full" style="position:relative">
-                <label>اسم الطالب</label>
-                <input id="renew-search" type="text" placeholder="ابحث عن طالب..." autocomplete="off" oninput="renewSearch()" onclick="renewSearch()">
-                <div id="renew-dropdown" style="display:none;position:absolute;z-index:100;background:var(--surface);border:1px solid var(--border2);border-radius:10px;max-height:180px;overflow-y:auto;width:calc(100% - 2px);box-shadow:0 4px 16px #0002;margin-top:2px"></div>
-              </div>
-              <div class="fg" id="renew-info-wrap" style="display:none">
-                <label>انتهاء الاشتراك الحالي</label>
-                <input id="renew-current-end" type="text" disabled style="background:var(--surface2);color:var(--text2)">
-              </div>
-              <div class="fg" id="renew-new-end-wrap" style="display:none">
-                <label>تاريخ الانتهاء الجديد *</label>
-                <input id="renew-new-end" type="date">
-              </div>
-              <div class="fg" id="renew-amount-wrap" style="display:none">
-                <label>مبلغ الدفعة (دينار)</label>
-                <input id="renew-amount" type="number" placeholder="0.00" min="0" step="0.5">
-              </div>
+          <div style="background:var(--surface2);border:1.5px solid #cc1a1a44;border-radius:14px;padding:16px;margin-bottom:18px">
+            <div style="font-size:13px;font-weight:700;color:#cc1a1a;margin-bottom:12px;display:flex;align-items:center;gap:6px"><i class="ti ti-refresh"></i> تجديد اشتراك طالب</div>
+
+            <!-- Search field -->
+            <div style="position:relative;margin-bottom:10px">
+              <input id="renew-search" type="text" placeholder="🔍 اكتب اسم الطالب للبحث..." autocomplete="off"
+                oninput="renewSearch()" onclick="renewSearch()"
+                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;box-sizing:border-box">
+              <div id="renew-dropdown"
+                style="display:none;position:absolute;top:calc(100% + 4px);right:0;left:0;z-index:200;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px #0003"></div>
             </div>
-            <div id="renew-action-wrap" style="display:none;margin-top:10px;gap:8px;align-items:center">
-              <button class="btn-p" onclick="renewStudent()" style="background:#1a7a1a"><i class="ti ti-check"></i> تجديد وتسجيل دفعة</button>
-              <button class="btn-s" onclick="clearRenew()">إلغاء</button>
+
+            <!-- Selected student card -->
+            <div id="renew-selected-card" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:none;align-items:center;gap:12px">
+              <div style="flex:1">
+                <div id="renew-card-name" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px"></div>
+                <div style="font-size:12px;color:var(--text2)">انتهاء الاشتراك الحالي: <span id="renew-card-end" style="font-weight:600;color:#a01414"></span></div>
+              </div>
+              <div id="renew-card-belt"></div>
+              <button onclick="clearRenew()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:18px;padding:2px 4px" title="إلغاء">×</button>
+            </div>
+
+            <!-- New end date + amount row (shown after selection) -->
+            <div id="renew-fields-wrap" style="display:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                <div>
+                  <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:5px">تاريخ الانتهاء الجديد *</label>
+                  <input id="renew-new-end" type="date" style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:5px">مبلغ الدفعة (دينار)</label>
+                  <input id="renew-amount" type="number" placeholder="0.00" min="0" step="0.5" style="width:100%;box-sizing:border-box">
+                </div>
+              </div>
+              <button class="btn-p" onclick="renewStudent()" style="background:#1a7a1a;width:100%"><i class="ti ti-check"></i> تجديد الاشتراك وتسجيل الدفعة</button>
             </div>
           </div>
           <hr class="divider">
@@ -2369,50 +2399,66 @@
     // ── Sort ──────────────────────────────────────────────────
     let currentSort = null;
 
-    function setSort(mode, btn) {
-      if (currentSort === mode) {
-        currentSort = null;
-        btn.classList.remove('active');
-      } else {
-        currentSort = mode;
-        document.querySelectorAll('[id^="sort-"]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      }
+    const SORT_LABELS = {
+      'newest-reg': '🆕 الأجدد بالتسجيل',
+      'oldest-reg': '🕰 الأقدم بالتسجيل',
+      'newest-sub': '📅 الأجدد بالاشتراك',
+      'oldest-sub': '📅 الأقدم بالاشتراك',
+      'end-asc':    '⬆ انتهاء الاشتراك ↑',
+      'end-desc':   '⬇ انتهاء الاشتراك ↓',
+      'belt-asc':   '🥋 الحزام ↑',
+      'belt-desc':  '🥋 الحزام ↓',
+    };
+
+    function toggleSortMenu() {
+      const m = document.getElementById('sort-menu');
+      m.style.display = m.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function setSort(mode) {
+      document.getElementById('sort-menu').style.display = 'none';
+      currentSort = mode;
+      document.querySelectorAll('.sort-opt').forEach(el => {
+        el.classList.toggle('active', el.dataset.key === mode);
+      });
+      const lbl = document.getElementById('sort-label');
+      lbl.textContent = mode && SORT_LABELS[mode] ? SORT_LABELS[mode] : 'ترتيب';
+      const btn = document.getElementById('sort-toggle-btn');
+      btn.style.borderColor = mode ? '#cc1a1a' : '';
+      btn.style.color = mode ? '#cc1a1a' : '';
       renderStudents();
     }
 
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#sort-toggle-btn') && !e.target.closest('#sort-menu')) {
+        const m = document.getElementById('sort-menu');
+        if (m) m.style.display = 'none';
+      }
+      if (!e.target.closest('#renew-search') && !e.target.closest('#renew-dropdown')) {
+        const dd = document.getElementById('renew-dropdown');
+        if (dd) dd.style.display = 'none';
+      }
+    });
     function applySort(list) {
       if (!currentSort) return list;
-      const BELT_IDX = { white:0,'yellow':1,'y-g':2,'green':3,'g-b':4,'blue':5,'b-br':6,'brown':7,'br-r':8,'red':9,'black':10 };
+      const BELT_IDX = { white:0,yellow:1,'y-g':2,green:3,'g-b':4,blue:5,'b-br':6,brown:7,'br-r':8,red:9,black:10 };
       const cl = list.slice();
-      if (currentSort === 'newest') {
-        cl.sort((a,b)=>{
-          const da = a.created ? new Date(a.created).getTime() : 0;
-          const db = b.created ? new Date(b.created).getTime() : 0;
-          return db - da;
-        });
-      } else if (currentSort === 'oldest') {
-        cl.sort((a,b)=>{
-          const da = a.created ? new Date(a.created).getTime() : 0;
-          const db = b.created ? new Date(b.created).getTime() : 0;
-          return da - db;
-        });
+      if (currentSort === 'newest-reg') {
+        cl.sort((a,b) => (b.created ? new Date(b.created).getTime() : 0) - (a.created ? new Date(a.created).getTime() : 0));
+      } else if (currentSort === 'oldest-reg') {
+        cl.sort((a,b) => (a.created ? new Date(a.created).getTime() : Infinity) - (b.created ? new Date(b.created).getTime() : Infinity));
+      } else if (currentSort === 'newest-sub') {
+        cl.sort((a,b) => (b.end ? new Date(b.end).getTime() : 0) - (a.end ? new Date(a.end).getTime() : 0));
+      } else if (currentSort === 'oldest-sub') {
+        cl.sort((a,b) => (a.end ? new Date(a.end).getTime() : Infinity) - (b.end ? new Date(b.end).getTime() : Infinity));
       } else if (currentSort === 'end-asc') {
-        cl.sort((a,b)=>{
-          const da = a.end ? new Date(a.end).getTime() : Infinity;
-          const db = b.end ? new Date(b.end).getTime() : Infinity;
-          return da - db;
-        });
+        cl.sort((a,b) => (a.end ? new Date(a.end).getTime() : Infinity) - (b.end ? new Date(b.end).getTime() : Infinity));
       } else if (currentSort === 'end-desc') {
-        cl.sort((a,b)=>{
-          const da = a.end ? new Date(a.end).getTime() : 0;
-          const db = b.end ? new Date(b.end).getTime() : 0;
-          return db - da;
-        });
+        cl.sort((a,b) => (b.end ? new Date(b.end).getTime() : 0) - (a.end ? new Date(a.end).getTime() : 0));
       } else if (currentSort === 'belt-asc') {
-        cl.sort((a,b)=> (BELT_IDX[a.belt]??99) - (BELT_IDX[b.belt]??99));
+        cl.sort((a,b) => (BELT_IDX[a.belt]??99) - (BELT_IDX[b.belt]??99));
       } else if (currentSort === 'belt-desc') {
-        cl.sort((a,b)=> (BELT_IDX[b.belt]??-1) - (BELT_IDX[a.belt]??-1));
+        cl.sort((a,b) => (BELT_IDX[b.belt]??-1) - (BELT_IDX[a.belt]??-1));
       }
       return cl;
     }
@@ -2423,14 +2469,20 @@
     function renewSearch() {
       const q = document.getElementById('renew-search').value.trim().toLowerCase();
       const dd = document.getElementById('renew-dropdown');
-      if (!q) { dd.style.display = 'none'; clearRenew(true); return; }
+      if (!q) { dd.style.display = 'none'; return; }
       const matches = students.map((s,i)=>({s,i})).filter(({s})=>s.name.toLowerCase().includes(q)).slice(0,8);
-      if (!matches.length) { dd.style.display = 'none'; return; }
+      if (!matches.length) {
+        dd.innerHTML = '<div style="padding:12px 14px;color:var(--text2);font-size:13px">لا توجد نتائج</div>';
+        dd.style.display = 'block'; return;
+      }
       dd.innerHTML = matches.map(({s,i})=>`
-        <div onclick="selectRenewStudent(${i})" style="padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--border2);display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-          <span style="font-weight:600;flex:1">${s.name}</span>
-          ${beltBadge(s.belt)}
-          <span style="font-size:11px;color:var(--text2)">${fmtDate(s.end)}</span>
+        <div onclick="selectRenewStudent(${i})"
+          style="padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--border2);display:flex;align-items:center;gap:10px;background:var(--surface)"
+          onmouseover="this.style.background='var(--surface2)'"
+          onmouseout="this.style.background='var(--surface)'">
+          <span style="font-size:14px;font-weight:700;color:var(--text);flex:1">${s.name}</span>
+          ${s.belt ? beltBadge(s.belt) : ''}
+          <span style="font-size:11px;color:var(--text2);white-space:nowrap">${fmtDate(s.end)}</span>
         </div>`).join('');
       dd.style.display = 'block';
     }
@@ -2440,15 +2492,14 @@
       const s = students[i];
       document.getElementById('renew-search').value = s.name;
       document.getElementById('renew-dropdown').style.display = 'none';
-      document.getElementById('renew-current-end').value = s.end ? fmtDate(s.end) : 'غير محدد';
-      // Set default new end date to +1 month from current end (or today)
+      document.getElementById('renew-card-name').textContent = s.name;
+      document.getElementById('renew-card-end').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
+      document.getElementById('renew-card-belt').innerHTML = s.belt ? beltBadge(s.belt) : '';
+      document.getElementById('renew-selected-card').style.display = 'flex';
       const base = s.end ? new Date(s.end) : new Date();
       base.setMonth(base.getMonth() + 1);
       document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
-      ['renew-info-wrap','renew-new-end-wrap','renew-amount-wrap','renew-action-wrap'].forEach(id=>{
-        const el = document.getElementById(id);
-        if (el) el.style.display = id === 'renew-action-wrap' ? 'flex' : 'block';
-      });
+      document.getElementById('renew-fields-wrap').style.display = 'block';
     }
 
     async function renewStudent() {
@@ -2457,43 +2508,31 @@
       const amount = document.getElementById('renew-amount').value.trim();
       if (!newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
       const s = students[renewStudentIdx];
-      // Update student end date
       s.end = newEnd;
       save();
       if (window.firebaseReady) window.firebaseSave(s, s._id || renewStudentIdx);
-      // Optionally register a payment
       if (amount) {
         const today = new Date().toISOString().split('T')[0];
-        const newPayment = { id: Date.now(), name: s.name, amount, date: today, reason: 'تجديد اشتراك', notes: `تجديد حتى ${fmtDate(newEnd)}` };
+        const newPayment = { id: Date.now(), name: s.name, amount, date: today, reason: 'تجديد اشتراك', notes: 'تجديد حتى ' + fmtDate(newEnd) };
         newPayment._id = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
         payments.push(newPayment);
         await saveNewPayment(newPayment);
       }
-      toast(`تم تجديد اشتراك ${s.name} حتى ${fmtDate(newEnd)} ✓`);
+      toast('تم تجديد اشتراك ' + s.name + ' حتى ' + fmtDate(newEnd) + ' ✓');
       clearRenew();
       renderStudents();
     }
 
-    function clearRenew(keepSearch) {
+    function clearRenew() {
       renewStudentIdx = null;
-      if (!keepSearch) document.getElementById('renew-search').value = '';
+      document.getElementById('renew-search').value = '';
       document.getElementById('renew-dropdown').style.display = 'none';
-      document.getElementById('renew-current-end').value = '';
+      document.getElementById('renew-selected-card').style.display = 'none';
+      document.getElementById('renew-fields-wrap').style.display = 'none';
       document.getElementById('renew-new-end').value = '';
       document.getElementById('renew-amount').value = '';
-      ['renew-info-wrap','renew-new-end-wrap','renew-amount-wrap','renew-action-wrap'].forEach(id=>{
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-      });
     }
 
-    // close dropdown on outside click
-    document.addEventListener('click', e => {
-      if (!e.target.closest('#renew-search') && !e.target.closest('#renew-dropdown')) {
-        const dd = document.getElementById('renew-dropdown');
-        if (dd) dd.style.display = 'none';
-      }
-    });
 
     async function savePayment() {
       const name = document.getElementById('pay-name').value.trim();
