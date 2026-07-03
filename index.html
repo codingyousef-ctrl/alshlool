@@ -992,6 +992,15 @@
           <button class="fb" onclick="setFilter('f',this)">أنثى</button>
 
         </div>
+        <div class="filter-row" style="margin-top:6px;border-top:0.5px solid var(--border2);padding-top:8px">
+          <span style="font-size:11px;color:var(--text2);align-self:center">ترتيب:</span>
+          <button class="fb" id="sort-newest" onclick="setSort('newest',this)">🕒 الأجدد</button>
+          <button class="fb" id="sort-oldest" onclick="setSort('oldest',this)">🕒 الأقدم</button>
+          <button class="fb" id="sort-end-asc" onclick="setSort('end-asc',this)">📅 انتهاء ↑</button>
+          <button class="fb" id="sort-end-desc" onclick="setSort('end-desc',this)">📅 انتهاء ↓</button>
+          <button class="fb" id="sort-belt-asc" onclick="setSort('belt-asc',this)">🥋 حزام ↑</button>
+          <button class="fb" id="sort-belt-desc" onclick="setSort('belt-desc',this)">🥋 حزام ↓</button>
+        </div>
         <div class="tbl-wrap" id="students-list"></div>
       </div>
     </div>
@@ -1148,6 +1157,34 @@
 
         <!-- Student Payments -->
         <div id="pay-students-section">
+          <!-- Subscription Renewal Box -->
+          <div style="background:var(--surface2);border:1px solid #cc1a1a33;border-radius:12px;padding:14px;margin-bottom:16px">
+            <div class="sec-title" style="font-size:13px;margin-bottom:10px"><i class="ti ti-refresh" style="color:#cc1a1a"></i> تجديد اشتراك طالب</div>
+            <div class="form-grid">
+              <div class="fg full" style="position:relative">
+                <label>اسم الطالب</label>
+                <input id="renew-search" type="text" placeholder="ابحث عن طالب..." autocomplete="off" oninput="renewSearch()" onclick="renewSearch()">
+                <div id="renew-dropdown" style="display:none;position:absolute;z-index:100;background:var(--surface);border:1px solid var(--border2);border-radius:10px;max-height:180px;overflow-y:auto;width:calc(100% - 2px);box-shadow:0 4px 16px #0002;margin-top:2px"></div>
+              </div>
+              <div class="fg" id="renew-info-wrap" style="display:none">
+                <label>انتهاء الاشتراك الحالي</label>
+                <input id="renew-current-end" type="text" disabled style="background:var(--surface2);color:var(--text2)">
+              </div>
+              <div class="fg" id="renew-new-end-wrap" style="display:none">
+                <label>تاريخ الانتهاء الجديد *</label>
+                <input id="renew-new-end" type="date">
+              </div>
+              <div class="fg" id="renew-amount-wrap" style="display:none">
+                <label>مبلغ الدفعة (دينار)</label>
+                <input id="renew-amount" type="number" placeholder="0.00" min="0" step="0.5">
+              </div>
+            </div>
+            <div id="renew-action-wrap" style="display:none;margin-top:10px;gap:8px;align-items:center">
+              <button class="btn-p" onclick="renewStudent()" style="background:#1a7a1a"><i class="ti ti-check"></i> تجديد وتسجيل دفعة</button>
+              <button class="btn-s" onclick="clearRenew()">إلغاء</button>
+            </div>
+          </div>
+          <hr class="divider">
           <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> دفعات الطلاب</div>
           <div class="form-grid" style="margin-bottom:14px">
             <div class="fg">
@@ -1518,14 +1555,14 @@
       else if (filter === 'stopped') list = list.filter(s => isStudentStopped(s));
       else if (filter === 'm') list = list.filter(s => s.gender === 'm');
       else if (filter === 'f') list = list.filter(s => s.gender === 'f');
-      list = sortStudentsList(list);
+      list = currentSort ? applySort(list) : sortStudentsList(list);
       renderTable(list, 'students-list');
       updateStats();
     }
 
     function setFilter(f, btn) {
       filter = f;
-      document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filter-row:first-child .fb').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       renderStudents();
     }
@@ -2328,6 +2365,135 @@
         });
       }
     }
+
+    // ── Sort ──────────────────────────────────────────────────
+    let currentSort = null;
+
+    function setSort(mode, btn) {
+      if (currentSort === mode) {
+        currentSort = null;
+        btn.classList.remove('active');
+      } else {
+        currentSort = mode;
+        document.querySelectorAll('[id^="sort-"]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      renderStudents();
+    }
+
+    function applySort(list) {
+      if (!currentSort) return list;
+      const BELT_IDX = { white:0,'yellow':1,'y-g':2,'green':3,'g-b':4,'blue':5,'b-br':6,'brown':7,'br-r':8,'red':9,'black':10 };
+      const cl = list.slice();
+      if (currentSort === 'newest') {
+        cl.sort((a,b)=>{
+          const da = a.created ? new Date(a.created).getTime() : 0;
+          const db = b.created ? new Date(b.created).getTime() : 0;
+          return db - da;
+        });
+      } else if (currentSort === 'oldest') {
+        cl.sort((a,b)=>{
+          const da = a.created ? new Date(a.created).getTime() : 0;
+          const db = b.created ? new Date(b.created).getTime() : 0;
+          return da - db;
+        });
+      } else if (currentSort === 'end-asc') {
+        cl.sort((a,b)=>{
+          const da = a.end ? new Date(a.end).getTime() : Infinity;
+          const db = b.end ? new Date(b.end).getTime() : Infinity;
+          return da - db;
+        });
+      } else if (currentSort === 'end-desc') {
+        cl.sort((a,b)=>{
+          const da = a.end ? new Date(a.end).getTime() : 0;
+          const db = b.end ? new Date(b.end).getTime() : 0;
+          return db - da;
+        });
+      } else if (currentSort === 'belt-asc') {
+        cl.sort((a,b)=> (BELT_IDX[a.belt]??99) - (BELT_IDX[b.belt]??99));
+      } else if (currentSort === 'belt-desc') {
+        cl.sort((a,b)=> (BELT_IDX[b.belt]??-1) - (BELT_IDX[a.belt]??-1));
+      }
+      return cl;
+    }
+
+    // ── Subscription Renewal ──────────────────────────────────
+    let renewStudentIdx = null;
+
+    function renewSearch() {
+      const q = document.getElementById('renew-search').value.trim().toLowerCase();
+      const dd = document.getElementById('renew-dropdown');
+      if (!q) { dd.style.display = 'none'; clearRenew(true); return; }
+      const matches = students.map((s,i)=>({s,i})).filter(({s})=>s.name.toLowerCase().includes(q)).slice(0,8);
+      if (!matches.length) { dd.style.display = 'none'; return; }
+      dd.innerHTML = matches.map(({s,i})=>`
+        <div onclick="selectRenewStudent(${i})" style="padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--border2);display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+          <span style="font-weight:600;flex:1">${s.name}</span>
+          ${beltBadge(s.belt)}
+          <span style="font-size:11px;color:var(--text2)">${fmtDate(s.end)}</span>
+        </div>`).join('');
+      dd.style.display = 'block';
+    }
+
+    function selectRenewStudent(i) {
+      renewStudentIdx = i;
+      const s = students[i];
+      document.getElementById('renew-search').value = s.name;
+      document.getElementById('renew-dropdown').style.display = 'none';
+      document.getElementById('renew-current-end').value = s.end ? fmtDate(s.end) : 'غير محدد';
+      // Set default new end date to +1 month from current end (or today)
+      const base = s.end ? new Date(s.end) : new Date();
+      base.setMonth(base.getMonth() + 1);
+      document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
+      ['renew-info-wrap','renew-new-end-wrap','renew-amount-wrap','renew-action-wrap'].forEach(id=>{
+        const el = document.getElementById(id);
+        if (el) el.style.display = id === 'renew-action-wrap' ? 'flex' : 'block';
+      });
+    }
+
+    async function renewStudent() {
+      if (renewStudentIdx === null) return;
+      const newEnd = document.getElementById('renew-new-end').value;
+      const amount = document.getElementById('renew-amount').value.trim();
+      if (!newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
+      const s = students[renewStudentIdx];
+      // Update student end date
+      s.end = newEnd;
+      save();
+      if (window.firebaseReady) window.firebaseSave(s, s._id || renewStudentIdx);
+      // Optionally register a payment
+      if (amount) {
+        const today = new Date().toISOString().split('T')[0];
+        const newPayment = { id: Date.now(), name: s.name, amount, date: today, reason: 'تجديد اشتراك', notes: `تجديد حتى ${fmtDate(newEnd)}` };
+        newPayment._id = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+        payments.push(newPayment);
+        await saveNewPayment(newPayment);
+      }
+      toast(`تم تجديد اشتراك ${s.name} حتى ${fmtDate(newEnd)} ✓`);
+      clearRenew();
+      renderStudents();
+    }
+
+    function clearRenew(keepSearch) {
+      renewStudentIdx = null;
+      if (!keepSearch) document.getElementById('renew-search').value = '';
+      document.getElementById('renew-dropdown').style.display = 'none';
+      document.getElementById('renew-current-end').value = '';
+      document.getElementById('renew-new-end').value = '';
+      document.getElementById('renew-amount').value = '';
+      ['renew-info-wrap','renew-new-end-wrap','renew-amount-wrap','renew-action-wrap'].forEach(id=>{
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    // close dropdown on outside click
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#renew-search') && !e.target.closest('#renew-dropdown')) {
+        const dd = document.getElementById('renew-dropdown');
+        if (dd) dd.style.display = 'none';
+      }
+    });
 
     async function savePayment() {
       const name = document.getElementById('pay-name').value.trim();
