@@ -1004,21 +1004,24 @@
           <button class="fb" onclick="setFilter('f',this)">أنثى</button>
 
         </div>
-        <div style="display:flex;justify-content:flex-start;margin-top:8px;position:relative">
-          <button id="sort-toggle-btn" onclick="toggleSortMenu()" class="btn-s" style="font-size:12px;padding:6px 12px;display:flex;align-items:center;gap:6px">
-            <i class="ti ti-arrows-sort"></i> <span id="sort-label">ترتيب</span> <i class="ti ti-chevron-down" style="font-size:10px"></i>
-          </button>
-          <div id="sort-menu" style="display:none;position:absolute;top:calc(100% + 4px);right:auto;left:0;z-index:200;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;min-width:180px;box-shadow:0 8px 24px #0003;overflow:hidden">
-            <div onclick="setSort('newest-reg')" class="sort-opt" data-key="newest-reg">🆕 الأجدد بالتسجيل</div>
-            <div onclick="setSort('oldest-reg')" class="sort-opt" data-key="oldest-reg">🕰 الأقدم بالتسجيل</div>
-            <div onclick="setSort('newest-sub')" class="sort-opt" data-key="newest-sub">📅 الأجدد بالاشتراك</div>
-            <div onclick="setSort('oldest-sub')" class="sort-opt" data-key="oldest-sub">📅 الأقدم بالاشتراك</div>
-            <div onclick="setSort('end-asc')" class="sort-opt" data-key="end-asc">⬆ انتهاء الاشتراك ↑</div>
-            <div onclick="setSort('end-desc')" class="sort-opt" data-key="end-desc">⬇ انتهاء الاشتراك ↓</div>
-            <div onclick="setSort('belt-asc')" class="sort-opt" data-key="belt-asc">🥋 الحزام (أبيض → أسود)</div>
-            <div onclick="setSort('belt-desc')" class="sort-opt" data-key="belt-desc">🥋 الحزام (أسود → أبيض)</div>
-            <div onclick="setSort(null)" class="sort-opt" data-key="none" style="color:#a01414;border-top:0.5px solid var(--border2)">✕ إلغاء الترتيب</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px 4px;position:relative">
+          <div style="position:relative">
+            <button id="sort-toggle-btn" onclick="toggleSortMenu()" class="btn-s" style="font-size:12px;padding:5px 11px;display:flex;align-items:center;gap:5px">
+              <i class="ti ti-arrows-sort"></i> <span id="sort-label">ترتيب</span> <i class="ti ti-chevron-down" style="font-size:10px"></i>
+            </button>
+            <div id="sort-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:200;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;min-width:190px;box-shadow:0 8px 24px #0003;overflow:hidden">
+              <div onclick="setSort('newest-reg')" class="sort-opt" data-key="newest-reg">🆕 الأجدد بالتسجيل</div>
+              <div onclick="setSort('oldest-reg')" class="sort-opt" data-key="oldest-reg">🕰 الأقدم بالتسجيل</div>
+              <div onclick="setSort('newest-sub')" class="sort-opt" data-key="newest-sub">📅 الأجدد بالاشتراك</div>
+              <div onclick="setSort('oldest-sub')" class="sort-opt" data-key="oldest-sub">📅 الأقدم بالاشتراك</div>
+              <div onclick="setSort('end-asc')" class="sort-opt" data-key="end-asc">⬆ انتهاء الاشتراك ↑</div>
+              <div onclick="setSort('end-desc')" class="sort-opt" data-key="end-desc">⬇ انتهاء الاشتراك ↓</div>
+              <div onclick="setSort('belt-asc')" class="sort-opt" data-key="belt-asc">🥋 الحزام (أبيض → أسود)</div>
+              <div onclick="setSort('belt-desc')" class="sort-opt" data-key="belt-desc">🥋 الحزام (أسود → أبيض)</div>
+              <div onclick="setSort(null)" class="sort-opt" data-key="none" style="color:#a01414;border-top:0.5px solid var(--border2)">✕ إلغاء الترتيب</div>
+            </div>
           </div>
+          <span id="students-count" style="font-size:12px;color:var(--text2)"></span>
         </div>
         <div class="tbl-wrap" id="students-list"></div>
       </div>
@@ -1586,6 +1589,8 @@
       else if (filter === 'm') list = list.filter(s => s.gender === 'm');
       else if (filter === 'f') list = list.filter(s => s.gender === 'f');
       list = currentSort ? applySort(list) : sortStudentsList(list);
+      const countEl = document.getElementById('students-count');
+      if (countEl) countEl.textContent = list.length + ' طالب';
       renderTable(list, 'students-list');
       updateStats();
     }
@@ -2541,15 +2546,20 @@
       const checked = [...document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]:checked')].map(c => c.value);
       const reason = checked.join(' + ');
       if (!name || !amount || !date || !reason) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
-      const newPayment = { id: Date.now(), name, amount, date, reason, notes: document.getElementById('pay-notes').value.trim() };
-      payments.push(newPayment);
+      const newPayment = {
+        _id: 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        id: Date.now(), name, amount, date, reason,
+        notes: document.getElementById('pay-notes').value.trim()
+      };
+      payments.unshift(newPayment);
       document.getElementById('pay-name').value = '';
       document.getElementById('pay-amount').value = '';
       document.getElementById('pay-notes').value = '';
       document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]').forEach(c => c.checked = false);
       renderPayments();
       toast('تم تسجيل الدفعة ✓');
-      await saveNewPayment(newPayment);
+      await fbSaveDoc('payments', newPayment._id, newPayment);
+      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
     }
 
     async function saveNewPayment(p) {
@@ -2711,12 +2721,17 @@ async function saveTrainerPayment() {
       const amount = document.getElementById('tpay-amount').value.trim();
       const date = document.getElementById('tpay-date').value;
       if (!name || !amount || !date) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
-      const newPayment = { id: Date.now(), trainer: name, amount, date, notes: document.getElementById('tpay-notes').value.trim() };
-      trainerPayments.push(newPayment);
+      const newPayment = {
+        _id: 'tp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        id: Date.now(), trainer: name, amount, date,
+        notes: document.getElementById('tpay-notes').value.trim()
+      };
+      trainerPayments.unshift(newPayment);
       ['tpay-name', 'tpay-amount', 'tpay-notes'].forEach(id => document.getElementById(id).value = '');
       renderTrainerPayments();
       toast('تم تسجيل الدفعة ✓');
-      await saveNewTrainerPayment(newPayment);
+      await fbSaveDoc('trainerPayments', newPayment._id, newPayment);
+      try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
     }
 
     async function saveNewTrainerPayment(p) {
