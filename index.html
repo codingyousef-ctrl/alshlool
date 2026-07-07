@@ -1018,8 +1018,6 @@
           <div onclick="setSort('oldest-reg')" class="sort-opt" data-key="oldest-reg">🕰 الأقدم بالتسجيل</div>
           <div onclick="setSort('newest-sub')" class="sort-opt" data-key="newest-sub">📅 الأجدد بالاشتراك</div>
           <div onclick="setSort('oldest-sub')" class="sort-opt" data-key="oldest-sub">📅 الأقدم بالاشتراك</div>
-          <div onclick="setSort('end-asc')" class="sort-opt" data-key="end-asc">⬆ انتهاء الاشتراك ↑</div>
-          <div onclick="setSort('end-desc')" class="sort-opt" data-key="end-desc">⬇ انتهاء الاشتراك ↓</div>
           <div onclick="setSort('belt-asc')" class="sort-opt" data-key="belt-asc">🥋 الحزام (أبيض → أسود)</div>
           <div onclick="setSort('belt-desc')" class="sort-opt" data-key="belt-desc">🥋 الحزام (أسود → أبيض)</div>
           <div onclick="setSort(null)" class="sort-opt" data-key="none" style="color:#a01414;border-top:0.5px solid var(--border2)">✕ إلغاء الترتيب</div>
@@ -1188,23 +1186,39 @@
             </div>
 
             <!-- Student search -->
-            <label> اسم الطالب *</label>
-            <div style="position:relative;margin-bottom:10px">
-              <input id="pay-name" type="text" placeholder="🔍 اكتب اسم الطالب..." autocomplete="off"
-                oninput="payNameSearch()" onclick="payNameSearch()"
+            <div style="position:relative;margin-bottom:8px">
+              <input id="pay-name" type="text" placeholder="🔍 الطالب الأول..." autocomplete="off"
+                oninput="payNameSearch(1)" onclick="payNameSearch(1)"
                 style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;box-sizing:border-box">
-              <div id="pay-name-dropdown"
-                style="display:none;position:fixed;z-index:9999;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px #0003;min-width:260px"></div>
+              <div id="pay-name-dropdown" style="display:none;position:fixed;z-index:9999;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px #0003;min-width:260px"></div>
             </div>
 
-            <!-- Selected student card -->
-            <div id="pay-selected-card" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:12px;align-items:center;gap:12px">
+            <!-- Selected card 1 -->
+            <div id="pay-selected-card" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:8px;align-items:center;gap:12px">
               <div style="flex:1">
                 <div id="pay-card-name" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:2px"></div>
                 <div style="font-size:12px;color:var(--text2)">انتهاء الاشتراك: <span id="pay-card-end" style="font-weight:600;color:#a01414"></span></div>
               </div>
               <div id="pay-card-belt"></div>
-              <button onclick="clearPaySelected()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;line-height:1;padding:2px 4px">×</button>
+              <button onclick="clearPaySelected(1)" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;line-height:1;padding:2px 4px">×</button>
+            </div>
+
+            <!-- Student 2 search -->
+            <div style="position:relative;margin-bottom:8px">
+              <input id="pay-name2" type="text" placeholder="🔍 طالب ثانٍ (اختياري)..." autocomplete="off"
+                oninput="payNameSearch(2)" onclick="payNameSearch(2)"
+                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;box-sizing:border-box">
+              <div id="pay-name-dropdown2" style="display:none;position:fixed;z-index:9999;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:200px;overflow-y:auto;box-shadow:0 8px 24px #0003;min-width:260px"></div>
+            </div>
+
+            <!-- Selected card 2 -->
+            <div id="pay-selected-card2" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:10px;align-items:center;gap:12px">
+              <div style="flex:1">
+                <div id="pay-card-name2" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:2px"></div>
+                <div style="font-size:12px;color:var(--text2)">انتهاء الاشتراك: <span id="pay-card-end2" style="font-weight:600;color:#a01414"></span></div>
+              </div>
+              <div id="pay-card-belt2"></div>
+              <button onclick="clearPaySelected(2)" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;line-height:1;padding:2px 4px">×</button>
             </div>
 
             <!-- Payment fields -->
@@ -1250,9 +1264,7 @@
               </div>
             </div>
 
-            <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
-            <button class="btn-p" onclick="savePayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
-          </div>
+            <button class="btn-p" onclick="savePayment()" style="width:100%"><i class="ti ti-plus"></i> تسجيل الدفعة</button>
           </div>
 
           <hr class="divider">
@@ -1561,13 +1573,10 @@
     }
 
     function sortStudentsList(list) {
+      // Default: last registered (created) first
       return list.slice().sort((a, b) => {
-        const sa = STATUS_ORDER[studentSortKey(a)];
-        const sb = STATUS_ORDER[studentSortKey(b)];
-        if (sa !== sb) return sa - sb;
-        // Within same status: newest subscription end date first
-        const da = a.end ? new Date(a.end).getTime() : 0;
-        const db = b.end ? new Date(b.end).getTime() : 0;
+        const da = a.created ? new Date(a.created).getTime() : 0;
+        const db = b.created ? new Date(b.created).getTime() : 0;
         return db - da;
       });
     }
@@ -1683,6 +1692,8 @@
           if (prev.freezeEnd) obj.freezeEnd = prev.freezeEnd;
           if (prev.actualEndDateBeforeFreeze) obj.actualEndDateBeforeFreeze = prev.actualEndDateBeforeFreeze;
           if (prev.isStopped) obj.isStopped = prev.isStopped;
+          // Preserve original created timestamp on edit — only new registrations get a new timestamp
+          if (prev.created) obj.created = prev.created;
           prevSuitReceived = prev.suitReceived === 'true' || prev.suitReceived === true;
           prevSuitSize = prev.suitSize || '';
         }
@@ -2402,8 +2413,6 @@
       'oldest-reg': '🕰 الأقدم بالتسجيل',
       'newest-sub': '📅 الأجدد بالاشتراك',
       'oldest-sub': '📅 الأقدم بالاشتراك',
-      'end-asc':    '⬆ انتهاء الاشتراك ↑',
-      'end-desc':   '⬇ انتهاء الاشتراك ↓',
       'belt-asc':   '🥋 الحزام ↑',
       'belt-desc':  '🥋 الحزام ↓',
     };
@@ -2444,6 +2453,10 @@
         const dd = document.getElementById('pay-name-dropdown');
         if (dd) dd.style.display = 'none';
       }
+      if (!e.target.closest('#pay-name2') && !e.target.closest('#pay-name-dropdown2')) {
+        const dd = document.getElementById('pay-name-dropdown2');
+        if (dd) dd.style.display = 'none';
+      }
     });
     function applySort(list) {
       if (!currentSort) return list;
@@ -2457,10 +2470,6 @@
         cl.sort((a,b) => (b.end ? new Date(b.end).getTime() : 0) - (a.end ? new Date(a.end).getTime() : 0));
       } else if (currentSort === 'oldest-sub') {
         cl.sort((a,b) => (a.end ? new Date(a.end).getTime() : Infinity) - (b.end ? new Date(b.end).getTime() : Infinity));
-      } else if (currentSort === 'end-asc') {
-        cl.sort((a,b) => (a.end ? new Date(a.end).getTime() : Infinity) - (b.end ? new Date(b.end).getTime() : Infinity));
-      } else if (currentSort === 'end-desc') {
-        cl.sort((a,b) => (b.end ? new Date(b.end).getTime() : 0) - (a.end ? new Date(a.end).getTime() : 0));
       } else if (currentSort === 'belt-asc') {
         cl.sort((a,b) => (BELT_IDX[a.belt]??99) - (BELT_IDX[b.belt]??99));
       } else if (currentSort === 'belt-desc') {
@@ -2471,19 +2480,23 @@
 
     // ── Subscription Renewal ──────────────────────────────────
     // ── Unified payment name search + renewal ────────────────
+    // ── Dual student payment search ──────────────────────────
     let paySelectedIdx = null;
+    let paySelectedIdx2 = null;
 
-    function payNameSearch() {
-      const q = document.getElementById('pay-name').value.trim().toLowerCase();
-      const dd = document.getElementById('pay-name-dropdown');
-      const inp = document.getElementById('pay-name');
+    function payNameSearch(n) {
+      const inputId = n === 2 ? 'pay-name2' : 'pay-name';
+      const ddId = n === 2 ? 'pay-name-dropdown2' : 'pay-name-dropdown';
+      const q = document.getElementById(inputId).value.trim().toLowerCase();
+      const dd = document.getElementById(ddId);
+      const inp = document.getElementById(inputId);
       if (!q) { dd.style.display = 'none'; return; }
       const matches = students.map((s,i)=>({s,i})).filter(({s})=>s.name.toLowerCase().includes(q)).slice(0,8);
       if (!matches.length) {
         dd.innerHTML = '<div style="padding:12px 14px;color:var(--text2);font-size:13px">لا توجد نتائج</div>';
       } else {
         dd.innerHTML = matches.map(({s,i})=>`
-          <div onclick="selectPayStudent(${i})"
+          <div onclick="selectPayStudent(${i},${n})"
             style="padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--border2);display:flex;align-items:center;gap:10px;background:var(--surface)"
             onmouseover="this.style.background='var(--surface2)'"
             onmouseout="this.style.background='var(--surface)'">
@@ -2492,7 +2505,6 @@
             <span style="font-size:11px;color:var(--text2);white-space:nowrap">${fmtDate(s.end)}</span>
           </div>`).join('');
       }
-      // Position: stretch full width under the input, clamped to viewport
       const r = inp.getBoundingClientRect();
       dd.style.top = (r.bottom + 4) + 'px';
       dd.style.left = r.left + 'px';
@@ -2502,32 +2514,48 @@
       dd.style.display = 'block';
     }
 
-    function selectPayStudent(i) {
-      paySelectedIdx = i;
+    function selectPayStudent(i, n) {
       const s = students[i];
-      document.getElementById('pay-name').value = s.name;
-      document.getElementById('pay-name-dropdown').style.display = 'none';
-      document.getElementById('pay-card-name').textContent = s.name;
-      document.getElementById('pay-card-end').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
-      document.getElementById('pay-card-belt').innerHTML = s.belt ? beltBadge(s.belt) : '';
-      document.getElementById('pay-selected-card').style.display = 'flex';
-      // Update renewal current end
-      document.getElementById('pay-renew-current').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
-      if (document.getElementById('pay-renew-toggle').checked) {
-        const base = s.end ? new Date(s.end) : new Date();
-        base.setMonth(base.getMonth() + 1);
-        document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
+      if (n === 2) {
+        paySelectedIdx2 = i;
+        document.getElementById('pay-name2').value = s.name;
+        document.getElementById('pay-name-dropdown2').style.display = 'none';
+        document.getElementById('pay-card-name2').textContent = s.name;
+        document.getElementById('pay-card-end2').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
+        document.getElementById('pay-card-belt2').innerHTML = s.belt ? beltBadge(s.belt) : '';
+        document.getElementById('pay-selected-card2').style.display = 'flex';
+      } else {
+        paySelectedIdx = i;
+        document.getElementById('pay-name').value = s.name;
+        document.getElementById('pay-name-dropdown').style.display = 'none';
+        document.getElementById('pay-card-name').textContent = s.name;
+        document.getElementById('pay-card-end').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
+        document.getElementById('pay-card-belt').innerHTML = s.belt ? beltBadge(s.belt) : '';
+        document.getElementById('pay-selected-card').style.display = 'flex';
+        document.getElementById('pay-renew-current').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
+        if (document.getElementById('pay-renew-toggle').checked) {
+          const base = s.end ? new Date(s.end) : new Date();
+          base.setMonth(base.getMonth() + 1);
+          document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
+        }
       }
     }
 
-    function clearPaySelected() {
-      paySelectedIdx = null;
-      document.getElementById('pay-name').value = '';
-      document.getElementById('pay-name-dropdown').style.display = 'none';
-      document.getElementById('pay-selected-card').style.display = 'none';
-      document.getElementById('pay-renew-toggle').checked = false;
-      document.getElementById('pay-renew-fields').style.display = 'none';
-      document.getElementById('renew-new-end').value = '';
+    function clearPaySelected(n) {
+      if (n === 2) {
+        paySelectedIdx2 = null;
+        document.getElementById('pay-name2').value = '';
+        document.getElementById('pay-name-dropdown2').style.display = 'none';
+        document.getElementById('pay-selected-card2').style.display = 'none';
+      } else {
+        paySelectedIdx = null;
+        document.getElementById('pay-name').value = '';
+        document.getElementById('pay-name-dropdown').style.display = 'none';
+        document.getElementById('pay-selected-card').style.display = 'none';
+        document.getElementById('pay-renew-toggle').checked = false;
+        document.getElementById('pay-renew-fields').style.display = 'none';
+        document.getElementById('renew-new-end').value = '';
+      }
     }
 
     function toggleRenewFields() {
@@ -2543,44 +2571,56 @@
     }
 
     async function savePayment() {
-      const name = document.getElementById('pay-name').value.trim();
+      const name1 = document.getElementById('pay-name').value.trim();
+      const name2 = document.getElementById('pay-name2').value.trim();
       const amount = document.getElementById('pay-amount').value.trim();
       const date = document.getElementById('pay-date').value;
       const checked = [...document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]:checked')].map(c => c.value);
       const reason = checked.join(' + ');
-      if (!name || !amount || !date || !reason) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
-      // Handle renewal if checked
+      const names = [name1, name2].filter(Boolean);
+      if (!names.length || !amount || !date || !reason) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
       const doRenew = document.getElementById('pay-renew-toggle').checked;
       const newEnd = doRenew ? document.getElementById('renew-new-end').value : null;
       if (doRenew && !newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
-      const newPayment = {
+      const notes = (doRenew && newEnd ? 'تجديد حتى ' + fmtDate(newEnd) + (document.getElementById('pay-notes').value.trim() ? ' | ' : '') : '') + document.getElementById('pay-notes').value.trim();
+
+      // Build all payment objects first
+      const newPayments = names.map(name => ({
         _id: 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-        id: Date.now(), name, amount, date, reason,
-        notes: (doRenew && newEnd ? 'تجديد حتى ' + fmtDate(newEnd) + ' | ' : '') + document.getElementById('pay-notes').value.trim()
-      };
-      payments.unshift(newPayment);
-      // Reset form
-      clearPaySelected();
+        id: Date.now(), name, amount, date, reason, notes
+      }));
+
+      // Add to array and render IMMEDIATELY (synchronous — no awaits yet)
+      newPayments.forEach(p => payments.unshift(p));
+      renderPayments();
+      toast('تم تسجيل الدفعة ✓');
+
+      // Reset form immediately
+      clearPaySelected(1);
+      clearPaySelected(2);
       document.getElementById('pay-amount').value = '';
       document.getElementById('pay-notes').value = '';
       document.getElementById('pay-date').value = '';
       document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]').forEach(c => c.checked = false);
-      renderPayments();
-      toast('تم تسجيل الدفعة ✓');
-      // Save payment to Firebase
-      await fbSaveDoc('payments', newPayment._id, newPayment);
-      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
-      // Renew subscription if checked
+
+      // Renew subscription for student 1 if checked (also synchronous update)
       if (doRenew && newEnd && paySelectedIdx !== null) {
         const s = students[paySelectedIdx];
         if (s) {
           s.end = newEnd;
           save();
-          if (window.firebaseReady) window.firebaseSave(s, s._id || paySelectedIdx);
           renderStudents();
           toast('تم تجديد اشتراك ' + s.name + ' حتى ' + fmtDate(newEnd) + ' ✓');
+          // Firebase in background
+          if (window.firebaseReady) window.firebaseSave(s, s._id || paySelectedIdx);
         }
       }
+
+      // Save all to Firebase in background (after UI is already updated)
+      for (const p of newPayments) {
+        await fbSaveDoc('payments', p._id, p);
+      }
+      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch(e) {}
     }
 
 
@@ -2748,10 +2788,12 @@ async function saveTrainerPayment() {
         id: Date.now(), trainer: name, amount, date,
         notes: document.getElementById('tpay-notes').value.trim()
       };
+      // Add to array and render IMMEDIATELY
       trainerPayments.unshift(newPayment);
       ['tpay-name', 'tpay-amount', 'tpay-notes'].forEach(id => document.getElementById(id).value = '');
       renderTrainerPayments();
       toast('تم تسجيل الدفعة ✓');
+      // Save to Firebase in background
       await fbSaveDoc('trainerPayments', newPayment._id, newPayment);
       try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
     }
