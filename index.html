@@ -1186,6 +1186,7 @@
             </div>
 
             <!-- Student search -->
+            <label>اسم الطالب *</label>
             <div style="position:relative;margin-bottom:8px">
               <input id="pay-name" type="text" placeholder="🔍 الطالب الأول..." autocomplete="off"
                 oninput="payNameSearch(1)" onclick="payNameSearch(1)"
@@ -1194,7 +1195,6 @@
             </div>
 
             <!-- Selected card 1 -->
-                          <label>اسم الطالب *</label>
             <div id="pay-selected-card" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:8px;align-items:center;gap:12px">
               <div style="flex:1">
                 <div id="pay-card-name" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:2px"></div>
@@ -1264,7 +1264,7 @@
                 <input id="renew-new-end" type="date" style="width:100%;box-sizing:border-box">
               </div>
             </div>
-<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
+ <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
             <button class="btn-p" onclick="savePayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
           </div>
 
@@ -1983,7 +1983,22 @@
       try {
         const r = await fetch(`${FB_URL}?key=${FB_KEY}`);
         const data = await r.json();
-        students = (data.documents || []).map(fromFirestore);
+        const fresh = (data.documents || []).map(fromFirestore);
+        // Merge: keep local version if it's newer than what Firestore returned
+        if (students.length > 0) {
+          const localById = {};
+          students.forEach(s => { if (s._id) localById[s._id] = s; });
+          students = fresh.map(s => {
+            const local = s._id ? localById[s._id] : null;
+            if (!local) return s;
+            // If local has a more recent 'end' date (renewal in progress), keep local
+            const localEnd = local.end ? new Date(local.end).getTime() : 0;
+            const freshEnd = s.end ? new Date(s.end).getTime() : 0;
+            return localEnd > freshEnd ? local : s;
+          });
+        } else {
+          students = fresh;
+        }
         renderStudents();
       } catch (e) { console.error('fbLoad', e); renderStudents(); }
     }
@@ -2604,16 +2619,23 @@
       document.getElementById('pay-date').value = '';
       document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]').forEach(c => c.checked = false);
 
-      // Renew subscription for student 1 if checked (also synchronous update)
+      // Renew subscription for student 1 if checked
       if (doRenew && newEnd && paySelectedIdx !== null) {
-        const s = students[paySelectedIdx];
+        // Find student by _id for safety (index may shift after loadAllData)
+        const srcStudent = students[paySelectedIdx];
+        const sIdx = srcStudent ? students.findIndex(x => x._id === srcStudent._id || x === srcStudent) : -1;
+        const s = sIdx >= 0 ? students[sIdx] : null;
         if (s) {
           s.end = newEnd;
+          // Also clear isFrozen if it was frozen (renewal overrides freeze)
+          if (getStatus(newEnd, s.isFrozen, s.freezeEnd) !== 'frozen') {
+            // keep freeze if still valid, just update end
+          }
           save();
-          renderStudents();
+          renderStudents(); // immediate, before any await
           toast('تم تجديد اشتراك ' + s.name + ' حتى ' + fmtDate(newEnd) + ' ✓');
           // Firebase in background
-          if (window.firebaseReady) window.firebaseSave(s, s._id || paySelectedIdx);
+          if (window.firebaseReady) window.firebaseSave(s, s._id || sIdx);
         }
       }
 
