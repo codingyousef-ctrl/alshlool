@@ -2427,7 +2427,10 @@
         btn.classList.add('active');
         if (sub === 'trainers') {
           renderTrainerPayments();
-          loadAllData().then(() => renderTrainerPayments());
+          loadAllData().then(() => {
+            const el = document.getElementById('tpayments-list');
+            if (el) renderTrainerPayments();
+          });
         } else if (sub === 'students') {
           renderPayments();
           loadAllData().then(() => renderPayments());
@@ -2631,18 +2634,20 @@
         renderPayments();
         toast('تم تسجيل الدفعة ✓');
 
-        // Renew first student's subscription if checked
+        // Renew subscription for ALL selected students if checked
         if (doRenew && newEnd && paySelectedStudents.length > 0) {
-          const ps = paySelectedStudents[0];
-          const s = students[ps.idx];
-          if (s) {
-            s.end = newEnd;
-            if (s._id) pendingLocalEdits.set(s._id, Date.now());
-            save();
-            renderStudents();
-            toast('تم تجديد اشتراك ' + s.name + ' حتى ' + fmtDate(newEnd) + ' ✓');
-            if (window.firebaseReady) window.firebaseSave(s, s._id || ps.idx);
+          for (const ps of paySelectedStudents) {
+            const s = students[ps.idx];
+            if (s) {
+              s.end = newEnd;
+              if (s._id) pendingLocalEdits.set(s._id, Date.now());
+              if (window.firebaseReady) window.firebaseSave(s, s._id || ps.idx);
+            }
           }
+          save();
+          renderStudents();
+          const names = paySelectedStudents.map(ps => ps.name).join('، ');
+          toast('تم تجديد اشتراك ' + names + ' حتى ' + fmtDate(newEnd) + ' ✓');
         }
 
         // Reset form
@@ -2702,34 +2707,110 @@
 
       function printInvoice(i) {
         const p = payments[i];
-        const w = window.open('', '_blank', 'width=600,height=500');
+        // Convert amount to words (simple Arabic)
+        function amountWords(n) {
+          const ones = ['','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة','عشرة',
+            'أحد عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'];
+          const tens = ['','','عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'];
+          const num = parseFloat(n);
+          if (isNaN(num)) return n;
+          const d = Math.round(num);
+          const fils = Math.round((num - d) * 1000);
+          let words = '';
+          if (d >= 100) { words += ['','مئة','مئتان','ثلاثمئة','أربعمئة','خمسمئة','ستمئة','سبعمئة','ثمانمئة','تسعمئة'][Math.floor(d/100)]; }
+          const r = d % 100;
+          if (r > 0) { words += (words?' و':'') + (r < 20 ? ones[r] : ones[r%10] + (r%10?' و':'') + tens[Math.floor(r/10)]); }
+          words = (words || 'صفر') + ' دينار';
+          if (fils > 0) words += ' و' + fils + ' فلس';
+          return words;
+        }
+        const w = window.open('', '_blank', 'width=700,height=600');
         w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
-  <title>فاتورة</title>
+  <title>سند قبض</title>
   <style>
-    body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;padding:40px;color:#111;direction:rtl}
-    .logo{text-align:center;margin-bottom:20px}
-    .logo h2{font-size:22px;margin:0;color:#cc1a1a}
-    .logo p{color:#666;font-size:13px;margin:4px 0}
-    hr{border:none;border-top:2px solid #cc1a1a;margin:16px 0}
-    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:14px}
-    .label{color:#666}
-    .total{font-size:20px;font-weight:700;color:#cc1a1a;text-align:center;margin-top:20px}
-    .footer{text-align:center;color:#999;font-size:12px;margin-top:30px}
-    @media print{button{display:none}}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#fff;direction:rtl;padding:20px;color:#111}
+    .receipt{border:2.5px solid #1a1a6e;border-radius:4px;padding:0;max-width:650px;margin:0 auto;background:#fffde7}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;border-bottom:1.5px solid #1a1a6e}
+    .logo-circle{width:72px;height:72px;border:2px solid #1a1a6e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#1a1a6e;font-weight:700;text-align:center;padding:4px;flex-shrink:0}
+    .center-title{text-align:center;flex:1}
+    .center-title h1{font-size:22px;font-weight:900;color:#1a1a6e;letter-spacing:1px}
+    .center-title h2{font-size:14px;color:#1a1a6e;font-weight:600;margin-top:2px}
+    .branches{font-size:9.5px;color:#1a1a6e;text-align:center;margin-top:6px;line-height:1.6}
+    .phones{display:flex;justify-content:space-between;font-size:10.5px;color:#1a1a6e;font-weight:600;margin-top:4px}
+    .title-bar{background:#1a1a6e;color:#fff;text-align:center;font-size:18px;font-weight:700;padding:6px;letter-spacing:2px}
+    .number-date{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #1a1a6e}
+    .receipt-num{color:#cc1a1a;font-size:16px;font-weight:700;font-family:monospace}
+    .amount-box{border:1.5px solid #1a1a6e;display:inline-flex;text-align:center}
+    .amount-box .lbl{border-left:1px solid #1a1a6e;padding:4px 14px;font-size:12px;font-weight:600;color:#1a1a6e;background:#e8eaf6}
+    .amount-box .val{padding:4px 18px;font-size:15px;font-weight:700;color:#1a1a6e}
+    .date-label{font-size:12px;font-weight:600;color:#1a1a6e}
+    .body{padding:14px 18px}
+    .field-row{display:flex;align-items:baseline;gap:8px;margin-bottom:14px;border-bottom:1px dashed #888;padding-bottom:4px}
+    .field-lbl{font-size:12.5px;font-weight:700;color:#1a1a6e;white-space:nowrap}
+    .field-val{font-size:14px;font-weight:600;color:#111;flex:1;font-family:'Segoe UI',Tahoma,Arial}
+    .summary-table{border:1.5px solid #1a1a6e;border-collapse:collapse;width:100%;margin-top:14px}
+    .summary-table th,.summary-table td{border:1px solid #1a1a6e;padding:6px 12px;text-align:center;font-size:13px}
+    .summary-table th{background:#e8eaf6;font-weight:700;color:#1a1a6e}
+    .summary-table td{font-weight:600}
+    .footer-row{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 18px 10px}
+    .sig{border-top:1px solid #333;width:160px;text-align:center;padding-top:4px;font-size:12px;color:#444}
+    @media print{button{display:none!important}.receipt{border:2px solid #1a1a6e}}
   </style></head><body>
-  <div class="logo">
-    <h2>مركز الشلول للتايكوندو</h2>
-    <p>فاتورة دفع</p>
+  <div class="receipt">
+    <div class="header">
+      <div class="logo-circle">مركز<br>الشلول<br>للتايكوندو</div>
+      <div class="center-title">
+        <h1>مركـز الشلـول للتايكونـدو</h1>
+        <h2>Al-Shlool Tae Kwondo Center</h2>
+        <div class="branches">
+          الفرع الأول : طريق الحصن - بعد مستشفى الراهبات الوردية - اشارة مطاعم ابو رياض - مجمع زكريا الخصاونة - ط٣<br>
+          الفرع الثاني : طريق حكما - بعد مخابز السنبلة - مجمع البطين ٢
+        </div>
+        <div class="phones">
+          <span>+962 79 80 24 256</span>
+          <span>+962 79 5 28 28 93</span>
+        </div>
+      </div>
+    </div>
+    <div class="title-bar">سند قبض</div>
+    <div class="number-date">
+      <div class="receipt-num">No. ${String(Date.now()).slice(-6)}</div>
+      <div class="amount-box">
+        <div class="lbl">فلس</div>
+        <div class="val" style="border-left:1px solid #1a1a6e">—</div>
+        <div class="lbl" style="border-left:none">دينار</div>
+        <div class="val">${p.amount}</div>
+      </div>
+      <div class="date-label">التاريخ: <b>${fmtDate(p.date)}</b></div>
+    </div>
+    <div class="body">
+      <div class="field-row">
+        <span class="field-lbl">وصلني من السيد :</span>
+        <span class="field-val">${p.name}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-lbl">المبلغ أعلاه وقدره :</span>
+        <span class="field-val">${amountWords(p.amount)}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-lbl">وذلـك عـن :</span>
+        <span class="field-val">${p.reason}${p.notes ? ' — ' + p.notes : ''}</span>
+      </div>
+      <table class="summary-table">
+        <thead><tr><th>الرصيد</th><th>الدفعة</th><th>الباقي</th></tr></thead>
+        <tbody><tr>
+          <td>${p.amount}</td>
+          <td>${p.amount}</td>
+          <td>—</td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div class="footer-row">
+      <div class="sig">توقيع المستلم<br><br><br></div>
+      <button onclick="window.print()" style="padding:9px 28px;background:#1a1a6e;color:#fff;border:none;border-radius:7px;font-size:14px;cursor:pointer">🖨 طباعة</button>
+    </div>
   </div>
-  <hr>
-  <div class="row"><span class="label">اسم الطالب</span><span><b>${p.name}</b></span></div>
-  <div class="row"><span class="label">سبب الدفع</span><span>${p.reason}</span></div>
-  <div class="row"><span class="label">التاريخ</span><span>${fmtDate(p.date)}</span></div>
-  <div class="row"><span class="label">ملاحظات</span><span>${p.notes || '—'}</span></div>
-  <hr>
-  <div class="total">المبلغ: ${p.amount} دينار أردني</div>
-  <div class="footer">شكراً لكم — مركز الشلول للتايكوندو</div>
-  <br><button onclick="window.print()" style="padding:10px 30px;background:#cc1a1a;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;display:block;margin:0 auto">طباعة الفاتورة</button>
   </body></html>`);
         w.document.close();
       }
