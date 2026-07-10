@@ -1728,20 +1728,30 @@
             deductSuit(suitSize, name);
           }
         }
-        // eid could be a Firebase _id string or empty
+        // Update local array IMMEDIATELY before Firebase
         if (window.firebaseReady) {
-          window.firebaseSave(obj, isEdit ? eid : null).then(ok => {
-            if (ok) {
-              toast(isEdit ? 'تم تحديث بيانات الطالب بنجاح ✓' : 'تم تسجيل الطالب بنجاح ✓');
-              cancelEdit();
-              showTab('students');
-            } else {
-              toast('حدث خطأ، حاول مرة ثانية', true);
+          if (isEdit) {
+            const idx = students.findIndex(s => (s._id || '').toString() === eid || students.indexOf(s).toString() === eid);
+            if (idx >= 0) { obj._id = students[idx]._id; students[idx] = obj; }
+            else students.unshift(obj);
+          } else {
+            students.unshift(obj);
+          }
+          save();
+          cancelEdit();
+          showTab('students');
+          toast(isEdit ? 'تم تحديث بيانات الطالب بنجاح ✓' : 'تم تسجيل الطالب بنجاح ✓');
+          // Save to Firebase in background
+          window.firebaseSave(obj, isEdit ? eid : null).then(savedId => {
+            // If new student, update _id from Firebase response
+            if (!isEdit && savedId && typeof savedId === 'string') {
+              obj._id = savedId;
+              save();
             }
           });
         } else {
           const eidN = !isNaN(eid) && eid !== '' ? parseInt(eid) : -1;
-          if (eidN >= 0) { students[eidN] = obj; } else { students.push(obj); }
+          if (eidN >= 0) { students[eidN] = obj; } else { students.unshift(obj); }
           save();
           toast(isEdit ? 'تم تحديث بيانات الطالب بنجاح ✓' : 'تم تسجيل الطالب بنجاح ✓');
           cancelEdit();
@@ -2023,17 +2033,23 @@
             const fields = Object.keys(obj).filter(k => k !== '_id').map(k => `updateMask.fieldPaths=${k}`).join('&');
             const res = await fetch(`${FB_URL}/${editId}?${fields}&key=${FB_KEY}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
             if (!res.ok) { console.error('fbSave PATCH failed', res.status); }
-            // Don't reload all students — local array is already correct
+            return true;
           } else {
             const res = await fetch(`${FB_URL}?key=${FB_KEY}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
             if (res.ok) {
-              // New document: get its _id from response and update local object
               const data = await res.json();
-              if (data.name) obj._id = data.name.split('/').pop();
-              renderStudents();
+              const newId = data.name ? data.name.split('/').pop() : null;
+              if (newId) {
+                obj._id = newId;
+                // Update in students array and save
+                const idx = students.indexOf(obj);
+                if (idx >= 0) students[idx] = obj;
+                save();
+              }
+              return newId || true;
             }
+            return false;
           }
-          return true;
         } catch (e) { console.error('fbSave', e); return false; }
       };
 
@@ -2623,10 +2639,11 @@
         if (doRenew && !newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
         const notes = (doRenew && newEnd ? 'تجديد حتى ' + fmtDate(newEnd) + (document.getElementById('pay-notes').value.trim() ? ' | ' : '') : '') + document.getElementById('pay-notes').value.trim();
 
-        // Build payments for all selected students
-        const newPayments = paySelectedStudents.map(ps => ({
-          _id: 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-          id: Date.now(), name: ps.name, amount, date, reason, notes
+        // Build payments for all selected students — unique _id per payment
+        const ts = Date.now();
+        const newPayments = paySelectedStudents.map((ps, idx) => ({
+          _id: 'p_' + (ts + idx) + '_' + Math.random().toString(36).substr(2, 5),
+          id: ts + idx, name: ps.name, amount, date, reason, notes
         }));
 
         // Add to array and render IMMEDIATELY
@@ -2923,6 +2940,7 @@
 
       function renderTrainerPayments() {
         const el = document.getElementById('tpayments-list');
+        if (!el) return;
         if (!trainerPayments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
         let h = `<table class="st"><thead><tr>
     <th style="width:25%">المدرب</th><th style="width:18%">المبلغ</th><th style="width:18%">التاريخ</th><th style="width:25%">ملاحظات</th><th style="width:14%">حذف</th>
