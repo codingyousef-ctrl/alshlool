@@ -971,6 +971,7 @@
       <button class="nb" onclick="showTab('search')" id="nb-search"><i class="ti ti-search"></i> بحث</button>
       <button class="nb" onclick="showTab('payments')" id="nb-payments"><i class="ti ti-cash"></i> الدفعات</button>
       <button class="nb" onclick="showTab('suits')" id="nb-suits"><i class="ti ti-shirt"></i> البدلات</button>
+      <button class="nb" onclick="showTab('trainers')" id="nb-trainers"><i class="ti ti-medal"></i> المدربين</button>
     </div>
 
     <!-- Students Tab -->
@@ -1168,8 +1169,6 @@
         <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
           <button class="fb active" id="pay-sub-students" onclick="showPaySub('students',this)"><i
               class="ti ti-users"></i> دفعات الطلاب</button>
-          <button class="fb" id="pay-sub-trainers" onclick="showPaySub('trainers',this)"><i class="ti ti-medal"></i>
-            المدربين</button>
           <button class="fb" id="pay-sub-search" onclick="showPaySub('search',this)"><i
               class="ti ti-calendar-search"></i>
             بحث بالتاريخ</button>
@@ -1286,72 +1285,40 @@
             <div class="tbl-wrap" id="payments-list"></div>
           </div>
 
-          <div id="pay-trainers-section" style="display:none">
-
-            <!-- Pay a trainer -->
-            <div class="sec-title" style="font-size:13px"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة
-              لمدرب</div>
-            <div class="form-grid" style="margin-bottom:14px">
-              <div class="fg">
-                <label>اسم المدرب *</label>
-                <input id="tpay-name" type="text" placeholder="اسم المدرب">
-              </div>
-              <div class="fg">
-                <label>المبلغ المدفوع (دينار) *</label>
-                <input id="tpay-amount" type="number" placeholder="0.00" min="0" step="0.5">
-              </div>
-              <div class="fg">
-                <label>التاريخ *</label>
-                <input id="tpay-date" type="date">
-              </div>
-              <div class="fg full">
-                <label>السبب</label>
-                <input id="tpay-notes" type="text" placeholder="السبب...">
-              </div>
-            </div>
-            <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
-              <button class="btn-p" onclick="saveTrainerPayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
-            </div>
-            <hr class="divider">
-            <div class="sec-title" style="font-size:13px"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات
-              المدربين</div>
-            <div class="tbl-wrap" id="tpayments-list"></div>
-          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Trainers Tab -->
+    <!-- Trainers Tab -->
       <div class="content" id="tab-trainers">
         <div class="card" style="margin-bottom:14px">
-          <div class="sec-title"><i class="ti ti-medal" style="color:#cc1a1a"></i> إضافة مدرب</div>
+          <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة لمدرب</div>
           <div class="form-grid">
             <div class="fg">
               <label>اسم المدرب *</label>
-              <input id="tr-name" type="text" placeholder="اسم المدرب">
+              <input id="tpay-name" type="text" placeholder="اسم المدرب">
             </div>
             <div class="fg">
-              <label>رقم الهاتف</label>
-              <input id="tr-phone" type="tel" placeholder="07XXXXXXXX" dir="ltr">
+              <label>المبلغ المدفوع (دينار) *</label>
+              <input id="tpay-amount" type="number" placeholder="0.00" min="0" step="0.5">
             </div>
             <div class="fg">
-              <label>الراتب الشهري (دينار)</label>
-              <input id="tr-salary" type="number" placeholder="0.00" min="0" step="0.5">
+              <label>التاريخ *</label>
+              <input id="tpay-date" type="date">
             </div>
-            <div class="fg">
-              <label>تاريخ الانضمام</label>
-              <input id="tr-join" type="date">
+            <div class="fg full">
+              <label>السبب</label>
+              <input id="tpay-notes" type="text" placeholder="السبب...">
             </div>
           </div>
-          <input type="hidden" id="tr-edit-id" value="">
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
-            <button class="btn-s" onclick="cancelTrainer()">إلغاء</button>
-            <button class="btn-p" onclick="saveTrainer()"><i class="ti ti-check"></i> <span id="tr-save-lbl">حفظ
-                المدرب</span></button>
+            <button class="btn-p" onclick="saveTrainerPayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
           </div>
         </div>
+
         <div class="card">
-          <div class="sec-title"><i class="ti ti-users" style="color:#cc1a1a"></i> قائمة المدربين</div>
-          <div class="tbl-wrap" id="trainers-list"></div>
+          <div class="sec-title"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات المدربين</div>
+          <div class="tbl-wrap" id="tpayments-list"></div>
         </div>
       </div>
       <div class="toast-area">
@@ -1580,13 +1547,6 @@
         el.innerHTML = h;
       }
 
-      const STATUS_ORDER = { active: 0, soon: 1, expired: 2, frozen: 3, stopped: 4 };
-
-      function studentSortKey(s) {
-        if (isStudentStopped(s)) return 'stopped';
-        return getStatus(s.end, s.isFrozen, s.freezeEnd);
-      }
-
       function sortStudentsList(list) {
         // Default: last registered (created) first
         return list.slice().sort((a, b) => {
@@ -1620,7 +1580,7 @@
       }
 
       function showTab(t) {
-        ['students', 'add', 'search', 'payments', 'suits'].forEach(x => {
+        ['students', 'add', 'search', 'payments', 'suits', 'trainers'].forEach(x => {
           const tab = document.getElementById('tab-' + x);
           const nb = document.getElementById('nb-' + x);
           if (tab) tab.classList.toggle('show', x === t);
@@ -1628,9 +1588,9 @@
         });
         if (t === 'students') renderStudents();
         if (t === 'suits') renderSuitsTab();
+        if (t === 'trainers') renderTrainerPayments();
         if (t === 'payments') {
           document.getElementById('pay-students-section').style.display = 'block';
-          document.getElementById('pay-trainers-section').style.display = 'none';
           document.getElementById('pay-search-section').style.display = 'none';
           document.querySelectorAll('#tab-payments .fb').forEach((b, i) => { if (i === 0) b.classList.add('active'); else b.classList.remove('active'); });
           renderPayments();
@@ -1638,11 +1598,6 @@
         }
       }
 
-      function selectBelt(id, btn) {
-        document.querySelectorAll('.belt-opt').forEach(x => x.classList.remove('sel'));
-        btn.classList.add('sel');
-        document.getElementById('f-belt').value = id;
-      }
       function buildBeltGrid(selected) {
         const g = document.getElementById('belt-grid');
         if (!g) return;
@@ -1811,7 +1766,7 @@
         toast('تم الحذف');
         if (window.firebaseReady && deleted._id) {
           fetch(`${FB_URL}/${deleted._id}?key=${FB_KEY}`, { method: 'DELETE' })
-            .catch(e => console.error('fbDel', e));
+            .catch(() => {});
         }
       }
 
@@ -2022,7 +1977,7 @@
             return s; // Firestore has the confirmed version
           });
           renderStudents();
-        } catch (e) { console.error('fbLoad', e); renderStudents(); }
+        } catch (e) { renderStudents(); }
       }
 
       window.firebaseSave = async function (obj, editId) {
@@ -2032,7 +1987,7 @@
           if (editId) {
             const fields = Object.keys(obj).filter(k => k !== '_id').map(k => `updateMask.fieldPaths=${k}`).join('&');
             const res = await fetch(`${FB_URL}/${editId}?${fields}&key=${FB_KEY}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
-            if (!res.ok) { console.error('fbSave PATCH failed', res.status); }
+            if (!res.ok) { /* save failed */ }
             return true;
           } else {
             const res = await fetch(`${FB_URL}?key=${FB_KEY}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
@@ -2050,7 +2005,7 @@
             }
             return false;
           }
-        } catch (e) { console.error('fbSave', e); return false; }
+        } catch (e) { return false; }
       };
 
       window.firebaseDelete = async function (id) {
@@ -2058,11 +2013,20 @@
           await fetch(`${FB_URL}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
           await fbLoad();
           return true;
-        } catch (e) { console.error('fbDel', e); return false; }
+        } catch (e) { return false; }
       };
 
       window.firebaseReady = true;
-      fbLoad();
+      // Load students first, then all payment data
+      fbLoad().then(() => {
+        loadAllData().then(() => {
+          // Re-render payments if that tab is open
+          if (document.getElementById('pay-students-section') &&
+              document.getElementById('pay-students-section').style.display !== 'none') {
+            renderPayments();
+          }
+        });
+      });
 
 
 
@@ -2144,7 +2108,7 @@
             body: JSON.stringify({ fields: { qty: { integerValue: qty } } })
           });
           suitsInventory[String(size)] = qty;
-        } catch (e) { console.error('saveSuitQty', e); }
+        } catch (e) { }
       }
 
       async function addSuitLogEntry(studentName, size, action) {
@@ -2161,7 +2125,7 @@
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(entry)
           });
-        } catch (e) { console.error('addSuitLog', e); }
+        } catch (e) { }
       }
 
       async function deductSuit(size, studentName) {
@@ -2259,7 +2223,9 @@
       // ── Payments / Trainers Data ──────────────────────────────
       let payments = [];
       let trainerPayments = [];
-      let trainers = [];
+      // Load from localStorage on startup
+      try { payments = JSON.parse(localStorage.getItem('shalloul_payments') || '[]'); } catch(e) {}
+      try { trainerPayments = JSON.parse(localStorage.getItem('shalloul_tpayments') || '[]'); } catch(e) {}
       let paySearchActive = false;
 
       function isPaySearchTab() {
@@ -2363,56 +2329,28 @@
         else delTrainerPayment(idx);
       }
 
-      const FB_COL = {
-        payments: 'payments',
-        tpayments: 'trainerPayments',
-        trainers: 'trainers'
-      };
-
       async function fbSaveDoc(colName, id, obj) {
         try {
           await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`, {
             method: 'PATCH', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(toFirestore(obj))
           });
-        } catch (e) { console.error('fbSaveDoc', e); }
+        } catch (e) { }
       }
 
       async function fbDeleteDoc(colName, id) {
         try {
           await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
-        } catch (e) { console.error('fbDeleteDoc', e); }
+        } catch (e) { }
       }
 
       async function fbLoadCol(colName) {
         try {
-          const r = await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}?key=${FB_KEY}`);
+          const url = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}?key=${FB_KEY}`;
+          const r = await fetch(url);
           const data = await r.json();
           return (data.documents || []).map(fromFirestore);
         } catch (e) { return []; }
-      }
-
-      async function saveLocal() {
-        // save all three collections to Firebase
-        // payments
-        for (const p of payments) {
-          if (!p._id) p._id = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-          await fbSaveDoc('payments', p._id, p);
-        }
-        // trainerPayments
-        for (const p of trainerPayments) {
-          if (!p._id) p._id = 'tp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-          await fbSaveDoc('trainerPayments', p._id, p);
-        }
-        // trainers
-        for (const t of trainers) {
-          if (!t._id) t._id = 'tr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-          await fbSaveDoc('trainers', t._id, t);
-        }
-        // also keep local backup
-        try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
-        try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
-        try { localStorage.setItem('shalloul_trainers', JSON.stringify(trainers)); } catch (e) { }
       }
 
       function mergeFresh(localList, remoteList) {
@@ -2424,39 +2362,33 @@
       }
 
       async function loadAllData() {
-        const [p, tp, tr] = await Promise.all([
+        // Try multiple possible collection names (data may have been saved under different names historically)
+        const [p, tp1, tp2, tp3] = await Promise.all([
           fbLoadCol('payments'),
           fbLoadCol('trainerPayments'),
-          fbLoadCol('trainers')
+          fbLoadCol('tpayments'),
+          fbLoadCol('trainer_payments')
         ]);
+        // Merge all possible trainer payment collections
+        const allTp = [...tp1];
+        [...tp2, ...tp3].forEach(r => { if (!allTp.find(x => x._id === r._id)) allTp.push(r); });
         payments = mergeFresh(payments, p);
-        trainerPayments = mergeFresh(trainerPayments, tp);
-        trainers = mergeFresh(trainers, tr);
+        trainerPayments = mergeFresh(trainerPayments, allTp);
       }
 
       function showPaySub(sub, btn) {
         paySearchActive = false;
         document.getElementById('pay-students-section').style.display = sub === 'students' ? 'block' : 'none';
-        document.getElementById('pay-trainers-section').style.display = sub === 'trainers' ? 'block' : 'none';
         document.getElementById('pay-search-section').style.display = sub === 'search' ? 'block' : 'none';
         document.querySelectorAll('#tab-payments .fb').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        if (sub === 'trainers') {
-          renderTrainerPayments();
-          loadAllData().then(() => {
-            const el = document.getElementById('tpayments-list');
-            if (el) renderTrainerPayments();
-          });
-        } else if (sub === 'students') {
+        if (sub === 'students') {
           renderPayments();
           loadAllData().then(() => renderPayments());
         } else if (sub === 'search') {
           const from = document.getElementById('pay-search-from').value;
           const to = document.getElementById('pay-search-to').value;
           if (from || to) searchPaymentsByDate();
-          loadAllData().then(() => {
-            if (from || to) searchPaymentsByDate();
-          });
         }
       }
 
@@ -2682,12 +2614,6 @@
       }
 
 
-      async function saveNewPayment(p) {
-        if (!p._id) p._id = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-        await fbSaveDoc('payments', p._id, p);
-        try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
-      }
-
       function renderPayments() {
         const el = document.getElementById('payments-list');
         if (!payments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
@@ -2833,85 +2759,6 @@
       }
 
       // ── Trainers ──────────────────────────────────────────────
-      function saveTrainer() {
-        const name = document.getElementById('tr-name').value.trim();
-        const salary = document.getElementById('tr-salary').value.trim();
-        if (!name) { toast('يرجى إدخال اسم المدرب *', true); return; }
-        const obj = {
-          name,
-          phone: document.getElementById('tr-phone').value.trim(),
-          salary: salary || '0',
-          join: document.getElementById('tr-join').value,
-          paid: '0'
-        };
-        const eid = document.getElementById('tr-edit-id').value;
-        if (eid !== '') {
-          const idx = parseInt(eid);
-          obj.paid = trainers[idx].paid || '0';
-          trainers[idx] = obj;
-          toast('تم تحديث بيانات المدرب ✓');
-        } else {
-          trainers.push(obj);
-          toast('تم إضافة المدرب ✓');
-        }
-        saveLocal();
-        cancelTrainer();
-        renderTrainers();
-      }
-
-      function cancelTrainer() {
-        document.getElementById('tr-edit-id').value = '';
-        document.getElementById('tr-save-lbl').textContent = 'حفظ المدرب';
-        ['tr-name', 'tr-phone', 'tr-salary', 'tr-join'].forEach(id => document.getElementById(id).value = '');
-      }
-
-      function renderTrainers() {
-        const el = document.getElementById('trainers-list');
-        if (!trainers.length) { el.innerHTML = '<div class="empty">لا يوجد مدربين مسجلين</div>'; return; }
-        let h = `<table class="st"><thead><tr>
-    <th style="width:22%">الاسم</th><th style="width:16%">الهاتف</th><th style="width:16%">الراتب</th><th style="width:16%">المدفوع</th><th style="width:16%">المتبقي</th><th style="width:14%">إجراءات</th>
-  </tr></thead><tbody>`;
-        trainers.forEach((t, i) => {
-          const paid = parseFloat(t.paid || 0);
-          const salary = parseFloat(t.salary || 0);
-          const remaining = salary - paid;
-          const remColor = remaining <= 0 ? '#2a6b10' : '#a01414';
-          h += `<tr>
-      <td style="font-weight:600">${t.name}</td>
-      <td dir="ltr">${t.phone || '—'}</td>
-      <td>${salary} د.أ</td>
-      <td style="color:#2a6b10;font-weight:600">${paid} د.أ</td>
-      <td style="color:${remColor};font-weight:600">${remaining} د.أ</td>
-      <td><div class="act-btns">
-        <button class="ib" onclick="editTrainer(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
-        <button class="ib del" onclick="delTrainer(${i})" title="حذف"><i class="ti ti-trash"></i></button>
-      </div></td>
-    </tr>`;
-        });
-        h += '</tbody></table>';
-        el.innerHTML = h;
-      }
-
-      function editTrainer(i) {
-        const t = trainers[i];
-        document.getElementById('tr-edit-id').value = i;
-        document.getElementById('tr-name').value = t.name;
-        document.getElementById('tr-phone').value = t.phone || '';
-        document.getElementById('tr-salary').value = t.salary || '';
-        document.getElementById('tr-join').value = t.join || '';
-        document.getElementById('tr-save-lbl').textContent = 'حفظ التعديلات';
-      }
-
-      function delTrainer(i) {
-        if (!confirm(`حذف المدرب ${trainers[i].name}؟`)) return;
-        const t = trainers[i];
-        if (t._id) fbDeleteDoc('trainers', t._id);
-        trainers.splice(i, 1);
-        try { localStorage.setItem('shalloul_trainers', JSON.stringify(trainers)); } catch (e) { }
-        renderTrainers();
-        toast('تم الحذف');
-      }
-
       async function saveTrainerPayment() {
         const name = document.getElementById('tpay-name').value.trim();
         const amount = document.getElementById('tpay-amount').value.trim();
@@ -2932,15 +2779,9 @@
         try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
       }
 
-      async function saveNewTrainerPayment(p) {
-        if (!p._id) p._id = 'tp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-        await fbSaveDoc('trainerPayments', p._id, p);
-        try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
-      }
-
       function renderTrainerPayments() {
         const el = document.getElementById('tpayments-list');
-        if (!el) return;
+        if (!el) { return; }
         if (!trainerPayments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
         let h = `<table class="st"><thead><tr>
     <th style="width:25%">المدرب</th><th style="width:18%">المبلغ</th><th style="width:18%">التاريخ</th><th style="width:25%">ملاحظات</th><th style="width:14%">حذف</th>
@@ -2973,7 +2814,6 @@
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('pay-date').value = today;
       document.getElementById('tpay-date').value = today;
-      document.getElementById('tr-join').value = today;
 
     </script>
 </body>
