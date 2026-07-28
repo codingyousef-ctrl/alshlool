@@ -1215,7 +1215,8 @@
                 onkeydown="if(event.key==='Escape'){document.getElementById('pay-name-dropdown').style.display='none'}"
                 style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;box-sizing:border-box">
               <div id="pay-name-dropdown"
-                style="display:none;position:fixed;z-index:9999;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px #0003;min-width:260px"></div>
+                style="display:none;position:fixed;z-index:9999;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px #0003;min-width:260px">
+              </div>
             </div>
 
             <!-- Payment fields -->
@@ -1290,246 +1291,246 @@
     </div>
 
     <!-- Trainers Tab -->
-      <div class="content" id="tab-trainers">
-        <div class="card" style="margin-bottom:14px">
-          <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة لمدرب</div>
-          <div class="form-grid">
-            <div class="fg">
-              <label>اسم المدرب *</label>
-              <input id="tpay-name" type="text" placeholder="اسم المدرب">
-            </div>
-            <div class="fg">
-              <label>المبلغ المدفوع (دينار) *</label>
-              <input id="tpay-amount" type="number" placeholder="0.00" min="0" step="0.5">
-            </div>
-            <div class="fg">
-              <label>التاريخ *</label>
-              <input id="tpay-date" type="date">
-            </div>
-            <div class="fg full">
-              <label>السبب</label>
-              <input id="tpay-notes" type="text" placeholder="السبب...">
-            </div>
+    <div class="content" id="tab-trainers">
+      <div class="card" style="margin-bottom:14px">
+        <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة لمدرب</div>
+        <div class="form-grid">
+          <div class="fg">
+            <label>اسم المدرب *</label>
+            <input id="tpay-name" type="text" placeholder="اسم المدرب">
           </div>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
-            <button class="btn-p" onclick="saveTrainerPayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
+          <div class="fg">
+            <label>المبلغ المدفوع (دينار) *</label>
+            <input id="tpay-amount" type="number" placeholder="0.00" min="0" step="0.5">
+          </div>
+          <div class="fg">
+            <label>التاريخ *</label>
+            <input id="tpay-date" type="date">
+          </div>
+          <div class="fg full">
+            <label>السبب</label>
+            <input id="tpay-notes" type="text" placeholder="السبب...">
           </div>
         </div>
-
-        <div class="card">
-          <div class="sec-title"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات المدربين</div>
-          <div class="tbl-wrap" id="tpayments-list"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+          <button class="btn-p" onclick="saveTrainerPayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
         </div>
       </div>
-      <div class="toast-area">
-        <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
+
+      <div class="card">
+        <div class="sec-title"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات المدربين</div>
+        <div class="tbl-wrap" id="tpayments-list"></div>
       </div>
     </div>
-
-    <!-- Modal -->
-    <div class="modal-bg" id="modal-bg" onclick="closeModal()">
-      <div class="modal" onclick="event.stopPropagation()">
-        <div class="modal-hdr">
-          <span style="font-weight:700;font-size:15px;color:var(--text)" id="modal-title">تفاصيل الطالب</span>
-          <button class="close-btn" onclick="closeModal()"><i class="ti ti-x"></i></button>
-        </div>
-        <div id="modal-body"></div>
-      </div>
+    <div class="toast-area">
+      <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
     </div>
+  </div>
 
-    <script>
-      const PASSWORD = '1122';
+  <!-- Modal -->
+  <div class="modal-bg" id="modal-bg" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-hdr">
+        <span style="font-weight:700;font-size:15px;color:var(--text)" id="modal-title">تفاصيل الطالب</span>
+        <button class="close-btn" onclick="closeModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
 
-      // ── Lock / Unlock ──────────────────────────────────────────
-      const lockScreen = document.getElementById('lock-screen');
-      const mainApp = document.getElementById('main-app');
+  <script>
+    const PASSWORD = '1122';
 
-      function tryUnlock() {
-        const val = document.getElementById('lock-inp').value;
-        const err = document.getElementById('lock-err');
-        if (val === PASSWORD) {
-          lockScreen.classList.add('hide');
-          mainApp.style.display = 'block';
-          err.classList.add('hide');
-          try { sessionStorage.setItem('shalloul_unlocked', '1'); } catch (e) { }
-        } else {
-          err.classList.remove('hide');
-          document.getElementById('lock-inp').value = '';
-          document.getElementById('lock-inp').classList.add('shake');
-          setTimeout(() => document.getElementById('lock-inp').classList.remove('shake'), 500);
-        }
-      }
+    // ── Lock / Unlock ──────────────────────────────────────────
+    const lockScreen = document.getElementById('lock-screen');
+    const mainApp = document.getElementById('main-app');
 
-      function lockApp() {
-        try { sessionStorage.removeItem('shalloul_unlocked'); } catch (e) { }
-        mainApp.style.display = 'none';
-        lockScreen.classList.remove('hide');
+    function tryUnlock() {
+      const val = document.getElementById('lock-inp').value;
+      const err = document.getElementById('lock-err');
+      if (val === PASSWORD) {
+        lockScreen.classList.add('hide');
+        mainApp.style.display = 'block';
+        err.classList.add('hide');
+        try { sessionStorage.setItem('shalloul_unlocked', '1'); } catch (e) { }
+      } else {
+        err.classList.remove('hide');
         document.getElementById('lock-inp').value = '';
-        document.getElementById('lock-err').classList.add('hide');
+        document.getElementById('lock-inp').classList.add('shake');
+        setTimeout(() => document.getElementById('lock-inp').classList.remove('shake'), 500);
+      }
+    }
+
+    function lockApp() {
+      try { sessionStorage.removeItem('shalloul_unlocked'); } catch (e) { }
+      mainApp.style.display = 'none';
+      lockScreen.classList.remove('hide');
+      document.getElementById('lock-inp').value = '';
+      document.getElementById('lock-err').classList.add('hide');
+    }
+
+    document.getElementById('lock-inp').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+    // Auto-unlock if session active
+    try {
+      if (sessionStorage.getItem('shalloul_unlocked') === '1') {
+        lockScreen.classList.add('hide');
+        mainApp.style.display = 'block';
+      }
+    } catch (e) { }
+
+    function toggleEye() {
+      const inp = document.getElementById('lock-inp');
+      const icon = document.getElementById('eye-icon');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.className = 'ti ti-eye-off';
+      } else {
+        inp.type = 'password';
+        icon.className = 'ti ti-eye';
+      }
+    }
+
+    // Shake animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}.shake{animation:shake .4s ease}';
+    document.head.appendChild(style);
+
+    // ── Dark Mode ──────────────────────────────────────────────
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    let isDark = false;
+    try { isDark = localStorage.getItem('shalloul_theme') === 'dark'; } catch (e) { }
+    function applyTheme(dark) {
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+      themeIcon.className = dark ? 'ti ti-sun' : 'ti ti-moon';
+      try { localStorage.setItem('shalloul_theme', dark ? 'dark' : 'light'); } catch (e) { }
+    }
+    applyTheme(isDark);
+    themeBtn.onclick = () => { isDark = !isDark; applyTheme(isDark); };
+
+    // ── PWA ──────────────────────────────────────────────────
+    let deferredPrompt = null;
+    const pwaBanner = document.getElementById('pwa-banner');
+    const manifestData = {
+      name: "مركز الشلول للتايكوندو", short_name: "الشلول",
+      start_url: ".", display: "standalone",
+      background_color: "#0d0d0d", theme_color: "#cc1a1a",
+      dir: "rtl", lang: "ar",
+      icons: [{ src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230d0d0d'/><circle cx='50' cy='50' r='45' fill='%23cc1a1a' opacity='.2'/></svg>", sizes: "512x512", type: "image/svg+xml" }]
+    };
+    const mBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+    const ml = document.getElementById('manifest-link'); if (ml) ml.href = URL.createObjectURL(mBlob);
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e; pwaBanner.classList.add('show');
+    });
+    document.getElementById('pwa-install-btn').onclick = async () => {
+      if (!deferredPrompt) { alert('افتح قائمة المتصفح واختر "إضافة إلى الشاشة الرئيسية"'); return; }
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null; pwaBanner.classList.remove('show');
+    };
+    window.addEventListener('appinstalled', () => pwaBanner.classList.remove('show'));
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isSA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isIOS && !isSA) {
+      pwaBanner.classList.add('show');
+      document.getElementById('pwa-install-btn').textContent = 'كيف أثبّته؟';
+      document.getElementById('pwa-install-btn').onclick = () => alert('على iOS: اضغط أيقونة المشاركة ← "إضافة إلى الشاشة الرئيسية"');
+    }
+
+    // ── App Data ──────────────────────────────────────────────
+    const BELTS = [
+      { id: 'white', label: 'أبيض', color: '#f0f0f0', border: '#ccc' },
+      { id: 'yellow', label: 'أصفر', color: '#f5c518', border: '#c9a000' },
+      { id: 'y-g', label: 'أصفر وأخضر', color: '#a8c84a', border: '#7a9e1a' },
+      { id: 'green', label: 'أخضر', color: '#3a9e3a', border: '#2a7a2a' },
+      { id: 'g-b', label: 'أخضر وأزرق', color: '#3a7abf', border: '#1a5a9e' },
+      { id: 'blue', label: 'أزرق', color: '#1a5bbf', border: '#0e3d8a' },
+      { id: 'b-br', label: 'أزرق وبني', color: '#8b5a2b', border: '#6a3e1a' },
+      { id: 'brown', label: 'بني', color: '#7b3f1a', border: '#5a2c0e' },
+      { id: 'br-r', label: 'بني وأحمر', color: '#c0392b', border: '#96240f' },
+      { id: 'red', label: 'أحمر', color: '#e03020', border: '#b02010' },
+      { id: 'black', label: 'أسود', color: '#1a1a1a', border: '#000' },
+    ];
+
+    let students = [];
+    try { students = JSON.parse(localStorage.getItem('shalloul_v2') || '[]'); } catch (e) { }
+    let filter = 'all';
+
+    function save() { try { localStorage.setItem('shalloul_v2', JSON.stringify(students)); } catch (e) { } }
+
+    function isStudentStopped(student) {
+      return student && (student.isStopped === true || student.isStopped === 'true');
+    }
+
+    function getStatus(end, isFrozen, freezeEnd) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const frozen = isFrozen === true || isFrozen === 'true';
+      if (frozen && freezeEnd) {
+        const freezeEndDateObj = new Date(freezeEnd);
+        freezeEndDateObj.setHours(0, 0, 0, 0);
+        if (freezeEndDateObj >= today) return 'frozen';
       }
 
-      document.getElementById('lock-inp').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+      if (!end) return 'active';
+      const subEndDateObj = new Date(end);
+      subEndDateObj.setHours(0, 0, 0, 0);
+      const diffDays = Math.ceil((subEndDateObj - today) / 86400000);
+      if (diffDays < 0) return 'expired';
+      if (diffDays <= 3) return 'soon';
+      return 'active';
+    }
 
-      // Auto-unlock if session active
-      try {
-        if (sessionStorage.getItem('shalloul_unlocked') === '1') {
-          lockScreen.classList.add('hide');
-          mainApp.style.display = 'block';
-        }
-      } catch (e) { }
-
-      function toggleEye() {
-        const inp = document.getElementById('lock-inp');
-        const icon = document.getElementById('eye-icon');
-        if (inp.type === 'password') {
-          inp.type = 'text';
-          icon.className = 'ti ti-eye-off';
-        } else {
-          inp.type = 'password';
-          icon.className = 'ti ti-eye';
-        }
+    function sBadge(student) {
+      if (isStudentStopped(student)) {
+        return `<span class="badge b-stopped">متوقف</span>`;
       }
-
-      // Shake animation
-      const style = document.createElement('style');
-      style.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}.shake{animation:shake .4s ease}';
-      document.head.appendChild(style);
-
-      // ── Dark Mode ──────────────────────────────────────────────
-      const root = document.documentElement;
-      const themeBtn = document.getElementById('theme-toggle');
-      const themeIcon = document.getElementById('theme-icon');
-      let isDark = false;
-      try { isDark = localStorage.getItem('shalloul_theme') === 'dark'; } catch (e) { }
-      function applyTheme(dark) {
-        root.setAttribute('data-theme', dark ? 'dark' : 'light');
-        themeIcon.className = dark ? 'ti ti-sun' : 'ti ti-moon';
-        try { localStorage.setItem('shalloul_theme', dark ? 'dark' : 'light'); } catch (e) { }
-      }
-      applyTheme(isDark);
-      themeBtn.onclick = () => { isDark = !isDark; applyTheme(isDark); };
-
-      // ── PWA ──────────────────────────────────────────────────
-      let deferredPrompt = null;
-      const pwaBanner = document.getElementById('pwa-banner');
-      const manifestData = {
-        name: "مركز الشلول للتايكوندو", short_name: "الشلول",
-        start_url: ".", display: "standalone",
-        background_color: "#0d0d0d", theme_color: "#cc1a1a",
-        dir: "rtl", lang: "ar",
-        icons: [{ src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230d0d0d'/><circle cx='50' cy='50' r='45' fill='%23cc1a1a' opacity='.2'/></svg>", sizes: "512x512", type: "image/svg+xml" }]
+      const s = getStatus(student.end, student.isFrozen, student.freezeEnd);
+      const m = {
+        active: ['b-act', 'فعال'],
+        soon: ['b-soon', 'ينتهي قريباً'],
+        expired: ['b-exp', 'منتهي'],
+        frozen: ['b-frozen', 'مجمد']
       };
-      const mBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-      const ml = document.getElementById('manifest-link'); if (ml) ml.href = URL.createObjectURL(mBlob);
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault(); deferredPrompt = e; pwaBanner.classList.add('show');
-      });
-      document.getElementById('pwa-install-btn').onclick = async () => {
-        if (!deferredPrompt) { alert('افتح قائمة المتصفح واختر "إضافة إلى الشاشة الرئيسية"'); return; }
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null; pwaBanner.classList.remove('show');
-      };
-      window.addEventListener('appinstalled', () => pwaBanner.classList.remove('show'));
-      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-      const isSA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      if (isIOS && !isSA) {
-        pwaBanner.classList.add('show');
-        document.getElementById('pwa-install-btn').textContent = 'كيف أثبّته؟';
-        document.getElementById('pwa-install-btn').onclick = () => alert('على iOS: اضغط أيقونة المشاركة ← "إضافة إلى الشاشة الرئيسية"');
-      }
+      return `<span class="badge ${m[s][0]}">${m[s][1]}</span>`;
+    }
 
-      // ── App Data ──────────────────────────────────────────────
-      const BELTS = [
-        { id: 'white', label: 'أبيض', color: '#f0f0f0', border: '#ccc' },
-        { id: 'yellow', label: 'أصفر', color: '#f5c518', border: '#c9a000' },
-        { id: 'y-g', label: 'أصفر وأخضر', color: '#a8c84a', border: '#7a9e1a' },
-        { id: 'green', label: 'أخضر', color: '#3a9e3a', border: '#2a7a2a' },
-        { id: 'g-b', label: 'أخضر وأزرق', color: '#3a7abf', border: '#1a5a9e' },
-        { id: 'blue', label: 'أزرق', color: '#1a5bbf', border: '#0e3d8a' },
-        { id: 'b-br', label: 'أزرق وبني', color: '#8b5a2b', border: '#6a3e1a' },
-        { id: 'brown', label: 'بني', color: '#7b3f1a', border: '#5a2c0e' },
-        { id: 'br-r', label: 'بني وأحمر', color: '#c0392b', border: '#96240f' },
-        { id: 'red', label: 'أحمر', color: '#e03020', border: '#b02010' },
-        { id: 'black', label: 'أسود', color: '#1a1a1a', border: '#000' },
-      ];
+    function gBadge(g) { return g === 'm' ? `<span class="badge b-m">ذكر</span>` : `<span class="badge b-f">أنثى</span>`; }
 
-      let students = [];
-      try { students = JSON.parse(localStorage.getItem('shalloul_v2') || '[]'); } catch (e) { }
-      let filter = 'all';
+    function beltBadge(id) {
+      if (!id) return '<span style="color:var(--text2);font-size:12px">—</span>';
+      const b = BELTS.find(x => x.id === id);
+      if (!b) return '';
+      const tc = (id === 'white' || id === 'yellow' || id === 'y-g') ? '#333' : '#fff';
+      return `<span style="display:inline-flex;align-items:center;gap:5px;background:${b.color};color:${tc};padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid ${b.border}">${b.label}</span>`;
+    }
 
-      function save() { try { localStorage.setItem('shalloul_v2', JSON.stringify(students)); } catch (e) { } }
+    function fmtDate(d) { if (!d) return '—'; const p = d.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
 
-      function isStudentStopped(student) {
-        return student && (student.isStopped === true || student.isStopped === 'true');
-      }
+    function updateStats() {
+      const activeStudents = students.filter(s => !isStudentStopped(s));
+      document.getElementById('st-total').textContent = students.length;
+      document.getElementById('st-act').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active').length;
+      document.getElementById('st-soon').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon').length;
+      document.getElementById('st-exp').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired').length;
+      document.getElementById('st-frozen').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen').length;
+      const stStopped = document.getElementById('stat-stopped');
+      if (stStopped) stStopped.textContent = students.filter(s => isStudentStopped(s)).length;
+    }
 
-      function getStatus(end, isFrozen, freezeEnd) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const frozen = isFrozen === true || isFrozen === 'true';
-        if (frozen && freezeEnd) {
-          const freezeEndDateObj = new Date(freezeEnd);
-          freezeEndDateObj.setHours(0, 0, 0, 0);
-          if (freezeEndDateObj >= today) return 'frozen';
-        }
-
-        if (!end) return 'active';
-        const subEndDateObj = new Date(end);
-        subEndDateObj.setHours(0, 0, 0, 0);
-        const diffDays = Math.ceil((subEndDateObj - today) / 86400000);
-        if (diffDays < 0) return 'expired';
-        if (diffDays <= 3) return 'soon';
-        return 'active';
-      }
-
-      function sBadge(student) {
-        if (isStudentStopped(student)) {
-          return `<span class="badge b-stopped">متوقف</span>`;
-        }
-        const s = getStatus(student.end, student.isFrozen, student.freezeEnd);
-        const m = {
-          active: ['b-act', 'فعال'],
-          soon: ['b-soon', 'ينتهي قريباً'],
-          expired: ['b-exp', 'منتهي'],
-          frozen: ['b-frozen', 'مجمد']
-        };
-        return `<span class="badge ${m[s][0]}">${m[s][1]}</span>`;
-      }
-
-      function gBadge(g) { return g === 'm' ? `<span class="badge b-m">ذكر</span>` : `<span class="badge b-f">أنثى</span>`; }
-
-      function beltBadge(id) {
-        if (!id) return '<span style="color:var(--text2);font-size:12px">—</span>';
-        const b = BELTS.find(x => x.id === id);
-        if (!b) return '';
-        const tc = (id === 'white' || id === 'yellow' || id === 'y-g') ? '#333' : '#fff';
-        return `<span style="display:inline-flex;align-items:center;gap:5px;background:${b.color};color:${tc};padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid ${b.border}">${b.label}</span>`;
-      }
-
-      function fmtDate(d) { if (!d) return '—'; const p = d.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
-
-      function updateStats() {
-        const activeStudents = students.filter(s => !isStudentStopped(s));
-        document.getElementById('st-total').textContent = students.length;
-        document.getElementById('st-act').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active').length;
-        document.getElementById('st-soon').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon').length;
-        document.getElementById('st-exp').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired').length;
-        document.getElementById('st-frozen').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen').length;
-        const stStopped = document.getElementById('stat-stopped');
-        if (stStopped) stStopped.textContent = students.filter(s => isStudentStopped(s)).length;
-      }
-
-      function renderTable(list, cid) {
-        const el = document.getElementById(cid);
-        if (!list.length) { el.innerHTML = `<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
-        let h = `<table class="st"><thead><tr>
+    function renderTable(list, cid) {
+      const el = document.getElementById(cid);
+      if (!list.length) { el.innerHTML = `<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
+      let h = `<table class="st"><thead><tr>
     <th style="width:22%">الاسم</th><th style="width:11%">الجنس</th><th style="width:14%">الحزام</th><th style="width:18%">رقم الهاتف</th><th style="width:15%">ينتهي</th><th style="width:10%">الحالة</th><th style="width:10%">إجراءات</th>
   </tr></thead><tbody>`;
-        list.forEach(s => {
-          const i = students.indexOf(s);
-          h += `<tr>
+      list.forEach(s => {
+        const i = students.indexOf(s);
+        h += `<tr>
       <td style="font-weight:600">${s.name}</td>
       <td>${gBadge(s.gender)}</td>
       <td>${beltBadge(s.belt)}</td>
@@ -1542,357 +1543,357 @@
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
       </div></td>
     </tr>`;
-        });
-        h += '</tbody></table>';
-        el.innerHTML = h;
-      }
+      });
+      h += '</tbody></table>';
+      el.innerHTML = h;
+    }
 
-      function sortStudentsList(list) {
-        // Default: last registered (created) first
-        return list.slice().sort((a, b) => {
-          const da = a.created ? new Date(a.created).getTime() : 0;
-          const db = b.created ? new Date(b.created).getTime() : 0;
-          return db - da;
-        });
-      }
+    function sortStudentsList(list) {
+      // Default: last registered (created) first
+      return list.slice().sort((a, b) => {
+        const da = a.created ? new Date(a.created).getTime() : 0;
+        const db = b.created ? new Date(b.created).getTime() : 0;
+        return db - da;
+      });
+    }
 
-      function renderStudents() {
-        let list = [...students];
-        if (filter === 'active') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active');
-        else if (filter === 'soon') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon');
-        else if (filter === 'expired') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired');
-        else if (filter === 'frozen') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen');
-        else if (filter === 'stopped') list = list.filter(s => isStudentStopped(s));
-        else if (filter === 'm') list = list.filter(s => s.gender === 'm');
-        else if (filter === 'f') list = list.filter(s => s.gender === 'f');
-        list = currentSort ? applySort(list) : sortStudentsList(list);
-        const countEl = document.getElementById('students-count');
-        if (countEl) countEl.textContent = list.length + ' طالب';
-        renderTable(list, 'students-list');
-        updateStats();
-      }
+    function renderStudents() {
+      let list = [...students];
+      if (filter === 'active') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active');
+      else if (filter === 'soon') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon');
+      else if (filter === 'expired') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired');
+      else if (filter === 'frozen') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen');
+      else if (filter === 'stopped') list = list.filter(s => isStudentStopped(s));
+      else if (filter === 'm') list = list.filter(s => s.gender === 'm');
+      else if (filter === 'f') list = list.filter(s => s.gender === 'f');
+      list = currentSort ? applySort(list) : sortStudentsList(list);
+      const countEl = document.getElementById('students-count');
+      if (countEl) countEl.textContent = list.length + ' طالب';
+      renderTable(list, 'students-list');
+      updateStats();
+    }
 
-      function setFilter(f, btn) {
-        filter = f;
-        document.querySelectorAll('.filter-row:first-child .fb').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderStudents();
-      }
+    function setFilter(f, btn) {
+      filter = f;
+      document.querySelectorAll('.filter-row:first-child .fb').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderStudents();
+    }
 
-      function showTab(t) {
-        ['students', 'add', 'search', 'payments', 'suits', 'trainers'].forEach(x => {
-          const tab = document.getElementById('tab-' + x);
-          const nb = document.getElementById('nb-' + x);
-          if (tab) tab.classList.toggle('show', x === t);
-          if (nb) nb.classList.toggle('active', x === t);
-        });
-        if (t === 'students') renderStudents();
-        if (t === 'suits') renderSuitsTab();
-        if (t === 'trainers') renderTrainerPayments();
-        if (t === 'payments') {
-          document.getElementById('pay-students-section').style.display = 'block';
-          document.getElementById('pay-search-section').style.display = 'none';
-          document.querySelectorAll('#tab-payments .fb').forEach((b, i) => { if (i === 0) b.classList.add('active'); else b.classList.remove('active'); });
-          renderPayments();
-          loadAllData().then(() => renderPayments());
-        }
+    function showTab(t) {
+      ['students', 'add', 'search', 'payments', 'suits', 'trainers'].forEach(x => {
+        const tab = document.getElementById('tab-' + x);
+        const nb = document.getElementById('nb-' + x);
+        if (tab) tab.classList.toggle('show', x === t);
+        if (nb) nb.classList.toggle('active', x === t);
+      });
+      if (t === 'students') renderStudents();
+      if (t === 'suits') renderSuitsTab();
+      if (t === 'trainers') renderTrainerPayments();
+      if (t === 'payments') {
+        document.getElementById('pay-students-section').style.display = 'block';
+        document.getElementById('pay-search-section').style.display = 'none';
+        document.querySelectorAll('#tab-payments .fb').forEach((b, i) => { if (i === 0) b.classList.add('active'); else b.classList.remove('active'); });
+        renderPayments();
+        loadAllData().then(() => renderPayments());
       }
+    }
 
-      function buildBeltGrid(selected) {
-        const g = document.getElementById('belt-grid');
-        if (!g) return;
-        g.innerHTML = '';
-        BELTS.forEach(b => {
-          const d = document.createElement('button');
-          d.type = 'button';
-          d.className = 'belt-opt' + (selected === b.id ? ' sel' : '');
-          d.innerHTML = `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${b.color};border:1px solid ${b.border};flex-shrink:0"></span>${b.label}`;
-          d.onclick = () => {
-            document.querySelectorAll('.belt-opt').forEach(x => x.classList.remove('sel'));
-            d.classList.add('sel');
-            document.getElementById('f-belt').value = b.id;
-          };
-          g.appendChild(d);
-        });
-      }
-
-      function saveStudent() {
-        const name = document.getElementById('f-name').value.trim();
-        const gender = document.getElementById('f-gender').value;
-        const start = document.getElementById('f-start').value;
-        const end = document.getElementById('f-end').value;
-        if (!name || !gender || !start || !end) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
-        const suitReceived = document.getElementById('f-suit-received').checked;
-        const suitSize = suitReceived ? document.getElementById('f-suit-size').value : '';
-        if (suitReceived && !suitSize) { toast('يرجى اختيار مقاس البدلة', true); return; }
-        if (suitReceived && suitSize) {
-          const eidCheck = document.getElementById('f-edit-id').value;
-          let prevSizeCheck = '';
-          if (eidCheck !== '') {
-            const idxCheck = students.findIndex(s => (s._id || students.indexOf(s)).toString() === eidCheck);
-            if (idxCheck >= 0) prevSizeCheck = students[idxCheck].suitSize || '';
-          }
-          const stockQty = suitsInventory[String(suitSize)] || 0;
-          if (stockQty <= 0 && prevSizeCheck !== suitSize) {
-            toast(`مقاس ${suitSize} غير متوفر في المخزون`, true);
-            return;
-          }
-        }
-        const obj = {
-          name, gender,
-          dob: document.getElementById('f-dob').value,
-          dad: document.getElementById('f-dad').value.trim(),
-          location: document.getElementById('f-location').value.trim(),
-          start, end,
-          notes: document.getElementById('f-notes').value.trim(),
-          belt: document.getElementById('f-belt').value,
-          suitReceived: suitReceived ? 'true' : 'false',
-          suitSize: suitSize,
-          created: new Date().toISOString()
+    function buildBeltGrid(selected) {
+      const g = document.getElementById('belt-grid');
+      if (!g) return;
+      g.innerHTML = '';
+      BELTS.forEach(b => {
+        const d = document.createElement('button');
+        d.type = 'button';
+        d.className = 'belt-opt' + (selected === b.id ? ' sel' : '');
+        d.innerHTML = `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${b.color};border:1px solid ${b.border};flex-shrink:0"></span>${b.label}`;
+        d.onclick = () => {
+          document.querySelectorAll('.belt-opt').forEach(x => x.classList.remove('sel'));
+          d.classList.add('sel');
+          document.getElementById('f-belt').value = b.id;
         };
-        const eid = document.getElementById('f-edit-id').value;
-        const isEdit = eid !== '';
-        let prevSuitReceived = false;
-        let prevSuitSize = '';
-        if (isEdit) {
-          const idx = students.findIndex(s => (s._id || students.indexOf(s)).toString() === eid);
-          if (idx >= 0) {
-            const prev = students[idx];
-            if (prev.isFrozen) obj.isFrozen = prev.isFrozen;
-            if (prev.freezeEnd) obj.freezeEnd = prev.freezeEnd;
-            if (prev.actualEndDateBeforeFreeze) obj.actualEndDateBeforeFreeze = prev.actualEndDateBeforeFreeze;
-            if (prev.isStopped) obj.isStopped = prev.isStopped;
-            // Preserve original created timestamp on edit — only new registrations get a new timestamp
-            if (prev.created) obj.created = prev.created;
-            prevSuitReceived = prev.suitReceived === 'true' || prev.suitReceived === true;
-            prevSuitSize = prev.suitSize || '';
-          }
+        g.appendChild(d);
+      });
+    }
+
+    function saveStudent() {
+      const name = document.getElementById('f-name').value.trim();
+      const gender = document.getElementById('f-gender').value;
+      const start = document.getElementById('f-start').value;
+      const end = document.getElementById('f-end').value;
+      if (!name || !gender || !start || !end) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
+      const suitReceived = document.getElementById('f-suit-received').checked;
+      const suitSize = suitReceived ? document.getElementById('f-suit-size').value : '';
+      if (suitReceived && !suitSize) { toast('يرجى اختيار مقاس البدلة', true); return; }
+      if (suitReceived && suitSize) {
+        const eidCheck = document.getElementById('f-edit-id').value;
+        let prevSizeCheck = '';
+        if (eidCheck !== '') {
+          const idxCheck = students.findIndex(s => (s._id || students.indexOf(s)).toString() === eidCheck);
+          if (idxCheck >= 0) prevSizeCheck = students[idxCheck].suitSize || '';
         }
-        // Handle suit inventory deduction/revert
-        const newSuitReceived = obj.suitReceived === 'true';
-        if (!isEdit && newSuitReceived && suitSize) {
-          // New student receiving a suit: deduct 1
-          deductSuit(suitSize, name);
-        } else if (isEdit) {
-          if (prevSuitReceived && prevSuitSize && (!newSuitReceived || prevSuitSize !== suitSize)) {
-            // Suit returned or size changed: return old size
-            addSuitBack(prevSuitSize);
-          }
-          if (newSuitReceived && suitSize && (!prevSuitReceived || prevSuitSize !== suitSize)) {
-            // New suit given or size changed: deduct new size
-            deductSuit(suitSize, name);
-          }
-        }
-        // Update local array IMMEDIATELY before Firebase
-        if (window.firebaseReady) {
-          if (isEdit) {
-            const idx = students.findIndex(s => (s._id || '').toString() === eid || students.indexOf(s).toString() === eid);
-            if (idx >= 0) { obj._id = students[idx]._id; students[idx] = obj; }
-            else students.unshift(obj);
-          } else {
-            students.unshift(obj);
-          }
-          save();
-          cancelEdit();
-          showTab('students');
-          toast(isEdit ? 'تم تحديث بيانات الطالب بنجاح ✓' : 'تم تسجيل الطالب بنجاح ✓');
-          // Save to Firebase in background
-          window.firebaseSave(obj, isEdit ? eid : null).then(savedId => {
-            // If new student, update _id from Firebase response
-            if (!isEdit && savedId && typeof savedId === 'string') {
-              obj._id = savedId;
-              save();
-            }
-          });
-        } else {
-          const eidN = !isNaN(eid) && eid !== '' ? parseInt(eid) : -1;
-          if (eidN >= 0) { students[eidN] = obj; } else { students.unshift(obj); }
-          save();
-          toast(isEdit ? 'تم تحديث بيانات الطالب بنجاح ✓' : 'تم تسجيل الطالب بنجاح ✓');
-          cancelEdit();
-          showTab('students');
-        }
-      }
-
-      function cancelEdit() {
-        document.getElementById('f-edit-id').value = '';
-        document.getElementById('form-title').textContent = 'تسجيل طالب جديد';
-        document.getElementById('save-btn-lbl').textContent = 'حفظ التسجيل';
-        ['f-name', 'f-gender', 'f-dob', 'f-dad', 'f-location', 'f-start', 'f-end', 'f-notes', 'f-belt'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('f-suit-received').checked = false;
-        document.getElementById('f-suit-size').value = '';
-        document.getElementById('suit-size-wrap').style.display = 'none';
-        buildBeltGrid('');
-        const stopBtns = document.getElementById('stop-reactivate-btns');
-        if (stopBtns) stopBtns.style.display = 'none';
-      }
-
-      function editStudent(i) {
-        const s = students[i];
-        document.getElementById('f-edit-id').value = s._id || i;
-        document.getElementById('f-name').value = s.name;
-        document.getElementById('f-gender').value = s.gender;
-        document.getElementById('f-dob').value = s.dob || '';
-        document.getElementById('f-dad').value = s.dad || '';
-        document.getElementById('f-location').value = s.location || '';
-        document.getElementById('f-start').value = s.start || '';
-        document.getElementById('f-end').value = s.end || '';
-        document.getElementById('f-notes').value = s.notes || '';
-        document.getElementById('f-belt').value = s.belt || '';
-        buildBeltGrid(s.belt || '');
-        document.getElementById('form-title').textContent = 'تعديل: ' + s.name;
-        document.getElementById('save-btn-lbl').textContent = 'حفظ التعديلات';
-        // Populate suit fields
-        const suitRec = s.suitReceived === 'true' || s.suitReceived === true;
-        document.getElementById('f-suit-received').checked = suitRec;
-        populateSuitSizeOptions(s.suitSize || '');
-        document.getElementById('f-suit-size').value = s.suitSize || '';
-        document.getElementById('suit-size-wrap').style.display = suitRec ? 'flex' : 'none';
-        // Show stop/reactivate buttons
-        const stopBtns = document.getElementById('stop-reactivate-btns');
-        stopBtns.style.display = 'flex';
-        const stopped = isStudentStopped(s);
-        document.getElementById('btn-stop-student').style.display = stopped ? 'none' : 'inline-flex';
-        document.getElementById('btn-reactivate-student').style.display = stopped ? 'inline-flex' : 'none';
-        showTab('add');
-      }
-
-      function delStudent(i) {
-        if (!confirm(`هل تريد حذف ${students[i].name}؟`)) return;
-        const deleted = students[i];
-        students.splice(i, 1);
-        save();
-        renderStudents();
-        toast('تم الحذف');
-        if (window.firebaseReady && deleted._id) {
-          fetch(`${FB_URL}/${deleted._id}?key=${FB_KEY}`, { method: 'DELETE' })
-            .catch(() => {});
-        }
-      }
-
-      function freezeSubscription() {
-        const studentId = document.getElementById('f-edit-id').value;
-        if (!studentId) { toast('يرجى اختيار طالب لتجميد اشتراكه', true); return; }
-        const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
-        if (studentIndex === -1) return;
-
-        const student = students[studentIndex];
-        const freezeDurationDays = parseInt(document.getElementById('freeze-duration').value, 10);
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const isCurrentlyFrozen = (student.isFrozen === true || student.isFrozen === 'true') &&
-          student.freezeEnd && new Date(student.freezeEnd).setHours(0, 0, 0, 0) >= today.getTime();
-
-        if (isCurrentlyFrozen) {
-          const currentFreezeEnd = new Date(student.freezeEnd);
-          const currentSubEnd = new Date(student.end);
-          currentFreezeEnd.setHours(0, 0, 0, 0);
-          currentSubEnd.setHours(0, 0, 0, 0);
-
-          const newFreezeEnd = new Date(currentFreezeEnd);
-          newFreezeEnd.setDate(newFreezeEnd.getDate() + freezeDurationDays);
-          student.freezeEnd = newFreezeEnd.toISOString().split('T')[0];
-
-          const newSubEnd = new Date(currentSubEnd);
-          newSubEnd.setDate(newSubEnd.getDate() + freezeDurationDays);
-          student.end = newSubEnd.toISOString().split('T')[0];
-
-          toast(`تم تمديد تجميد اشتراك ${student.name} لمدة ${freezeDurationDays} يوم. ينتهي التجميد في: ${fmtDate(student.freezeEnd)}`);
-        } else {
-          student.isFrozen = true;
-          student.actualEndDateBeforeFreeze = student.end;
-
-          const freezeEndDate = new Date(today);
-          freezeEndDate.setDate(today.getDate() + freezeDurationDays);
-          student.freezeEnd = freezeEndDate.toISOString().split('T')[0];
-
-          const subscriptionEndDate = new Date(student.end);
-          subscriptionEndDate.setDate(subscriptionEndDate.getDate() + freezeDurationDays);
-          student.end = subscriptionEndDate.toISOString().split('T')[0];
-
-          toast(`تم تجميد اشتراك ${student.name} لمدة ${freezeDurationDays} يوم. ينتهي التجميد في: ${fmtDate(student.freezeEnd)}`);
-        }
-
-        save();
-        if (window.firebaseReady) {
-          window.firebaseSave(student, student._id || studentIndex);
-        } else {
-          renderStudents();
-        }
-      }
-
-      function unfreezeSubscription() {
-        const studentId = document.getElementById('f-edit-id').value;
-        if (!studentId) { toast('يرجى اختيار طالب لفك تجميد اشتراكه', true); return; }
-        const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
-        if (studentIndex === -1) return;
-
-        const student = students[studentIndex];
-        if (!student.isFrozen && student.isFrozen !== 'true') {
-          toast('هذا الطالب ليس لديه اشتراك مجمد', true);
+        const stockQty = suitsInventory[String(suitSize)] || 0;
+        if (stockQty <= 0 && prevSizeCheck !== suitSize) {
+          toast(`مقاس ${suitSize} غير متوفر في المخزون`, true);
           return;
         }
-
-        if (confirm(`هل أنت متأكد من فك تجميد اشتراك ${student.name}؟`)) {
-          if (student.actualEndDateBeforeFreeze) student.end = student.actualEndDateBeforeFreeze;
-          student.isFrozen = false;
-          delete student.freezeEnd;
-          delete student.actualEndDateBeforeFreeze;
-
-          save();
-          if (window.firebaseReady) {
-            window.firebaseSave(student, student._id || studentIndex);
-          } else {
-            renderStudents();
+      }
+      const obj = {
+        name, gender,
+        dob: document.getElementById('f-dob').value,
+        dad: document.getElementById('f-dad').value.trim(),
+        location: document.getElementById('f-location').value.trim(),
+        start, end,
+        notes: document.getElementById('f-notes').value.trim(),
+        belt: document.getElementById('f-belt').value,
+        suitReceived: suitReceived ? 'true' : 'false',
+        suitSize: suitSize,
+        created: new Date().toISOString()
+      };
+      const eid = document.getElementById('f-edit-id').value;
+      const isEdit = eid !== '';
+      let prevSuitReceived = false;
+      let prevSuitSize = '';
+      if (isEdit) {
+        const idx = students.findIndex(s => (s._id || students.indexOf(s)).toString() === eid);
+        if (idx >= 0) {
+          const prev = students[idx];
+          if (prev.isFrozen) obj.isFrozen = prev.isFrozen;
+          if (prev.freezeEnd) obj.freezeEnd = prev.freezeEnd;
+          if (prev.actualEndDateBeforeFreeze) obj.actualEndDateBeforeFreeze = prev.actualEndDateBeforeFreeze;
+          if (prev.isStopped) obj.isStopped = prev.isStopped;
+          // Preserve original created timestamp on edit — only new registrations get a new timestamp
+          if (prev.created) obj.created = prev.created;
+          prevSuitReceived = prev.suitReceived === 'true' || prev.suitReceived === true;
+          prevSuitSize = prev.suitSize || '';
+        }
+      }
+      // Handle suit inventory deduction/revert
+      const newSuitReceived = obj.suitReceived === 'true';
+      if (!isEdit && newSuitReceived && suitSize) {
+        // New student receiving a suit: deduct 1
+        deductSuit(suitSize, name);
+      } else if (isEdit) {
+        if (prevSuitReceived && prevSuitSize && (!newSuitReceived || prevSuitSize !== suitSize)) {
+          // Suit returned or size changed: return old size
+          addSuitBack(prevSuitSize);
+        }
+        if (newSuitReceived && suitSize && (!prevSuitReceived || prevSuitSize !== suitSize)) {
+          // New suit given or size changed: deduct new size
+          deductSuit(suitSize, name);
+        }
+      }
+      // Update local array IMMEDIATELY before Firebase
+      if (window.firebaseReady) {
+        if (isEdit) {
+          const idx = students.findIndex(s => (s._id || '').toString() === eid || students.indexOf(s).toString() === eid);
+          if (idx >= 0) { obj._id = students[idx]._id; students[idx] = obj; }
+          else students.unshift(obj);
+        } else {
+          students.unshift(obj);
+        }
+        save();
+        cancelEdit();
+        showTab('students');
+        toast(isEdit ? 'تم تحديث بيانات الطالب بنجاح ✓' : 'تم تسجيل الطالب بنجاح ✓');
+        // Save to Firebase in background
+        window.firebaseSave(obj, isEdit ? eid : null).then(savedId => {
+          // If new student, update _id from Firebase response
+          if (!isEdit && savedId && typeof savedId === 'string') {
+            obj._id = savedId;
+            save();
           }
-          toast('تم فك التجميد بنجاح.');
-        }
+        });
+      } else {
+        const eidN = !isNaN(eid) && eid !== '' ? parseInt(eid) : -1;
+        if (eidN >= 0) { students[eidN] = obj; } else { students.unshift(obj); }
+        save();
+        toast(isEdit ? 'تم تحديث بيانات الطالب بنجاح ✓' : 'تم تسجيل الطالب بنجاح ✓');
+        cancelEdit();
+        showTab('students');
+      }
+    }
+
+    function cancelEdit() {
+      document.getElementById('f-edit-id').value = '';
+      document.getElementById('form-title').textContent = 'تسجيل طالب جديد';
+      document.getElementById('save-btn-lbl').textContent = 'حفظ التسجيل';
+      ['f-name', 'f-gender', 'f-dob', 'f-dad', 'f-location', 'f-start', 'f-end', 'f-notes', 'f-belt'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-suit-received').checked = false;
+      document.getElementById('f-suit-size').value = '';
+      document.getElementById('suit-size-wrap').style.display = 'none';
+      buildBeltGrid('');
+      const stopBtns = document.getElementById('stop-reactivate-btns');
+      if (stopBtns) stopBtns.style.display = 'none';
+    }
+
+    function editStudent(i) {
+      const s = students[i];
+      document.getElementById('f-edit-id').value = s._id || i;
+      document.getElementById('f-name').value = s.name;
+      document.getElementById('f-gender').value = s.gender;
+      document.getElementById('f-dob').value = s.dob || '';
+      document.getElementById('f-dad').value = s.dad || '';
+      document.getElementById('f-location').value = s.location || '';
+      document.getElementById('f-start').value = s.start || '';
+      document.getElementById('f-end').value = s.end || '';
+      document.getElementById('f-notes').value = s.notes || '';
+      document.getElementById('f-belt').value = s.belt || '';
+      buildBeltGrid(s.belt || '');
+      document.getElementById('form-title').textContent = 'تعديل: ' + s.name;
+      document.getElementById('save-btn-lbl').textContent = 'حفظ التعديلات';
+      // Populate suit fields
+      const suitRec = s.suitReceived === 'true' || s.suitReceived === true;
+      document.getElementById('f-suit-received').checked = suitRec;
+      populateSuitSizeOptions(s.suitSize || '');
+      document.getElementById('f-suit-size').value = s.suitSize || '';
+      document.getElementById('suit-size-wrap').style.display = suitRec ? 'flex' : 'none';
+      // Show stop/reactivate buttons
+      const stopBtns = document.getElementById('stop-reactivate-btns');
+      stopBtns.style.display = 'flex';
+      const stopped = isStudentStopped(s);
+      document.getElementById('btn-stop-student').style.display = stopped ? 'none' : 'inline-flex';
+      document.getElementById('btn-reactivate-student').style.display = stopped ? 'inline-flex' : 'none';
+      showTab('add');
+    }
+
+    function delStudent(i) {
+      if (!confirm(`هل تريد حذف ${students[i].name}؟`)) return;
+      const deleted = students[i];
+      students.splice(i, 1);
+      save();
+      renderStudents();
+      toast('تم الحذف');
+      if (window.firebaseReady && deleted._id) {
+        fetch(`${FB_URL}/${deleted._id}?key=${FB_KEY}`, { method: 'DELETE' })
+          .catch(() => { });
+      }
+    }
+
+    function freezeSubscription() {
+      const studentId = document.getElementById('f-edit-id').value;
+      if (!studentId) { toast('يرجى اختيار طالب لتجميد اشتراكه', true); return; }
+      const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+      if (studentIndex === -1) return;
+
+      const student = students[studentIndex];
+      const freezeDurationDays = parseInt(document.getElementById('freeze-duration').value, 10);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const isCurrentlyFrozen = (student.isFrozen === true || student.isFrozen === 'true') &&
+        student.freezeEnd && new Date(student.freezeEnd).setHours(0, 0, 0, 0) >= today.getTime();
+
+      if (isCurrentlyFrozen) {
+        const currentFreezeEnd = new Date(student.freezeEnd);
+        const currentSubEnd = new Date(student.end);
+        currentFreezeEnd.setHours(0, 0, 0, 0);
+        currentSubEnd.setHours(0, 0, 0, 0);
+
+        const newFreezeEnd = new Date(currentFreezeEnd);
+        newFreezeEnd.setDate(newFreezeEnd.getDate() + freezeDurationDays);
+        student.freezeEnd = newFreezeEnd.toISOString().split('T')[0];
+
+        const newSubEnd = new Date(currentSubEnd);
+        newSubEnd.setDate(newSubEnd.getDate() + freezeDurationDays);
+        student.end = newSubEnd.toISOString().split('T')[0];
+
+        toast(`تم تمديد تجميد اشتراك ${student.name} لمدة ${freezeDurationDays} يوم. ينتهي التجميد في: ${fmtDate(student.freezeEnd)}`);
+      } else {
+        student.isFrozen = true;
+        student.actualEndDateBeforeFreeze = student.end;
+
+        const freezeEndDate = new Date(today);
+        freezeEndDate.setDate(today.getDate() + freezeDurationDays);
+        student.freezeEnd = freezeEndDate.toISOString().split('T')[0];
+
+        const subscriptionEndDate = new Date(student.end);
+        subscriptionEndDate.setDate(subscriptionEndDate.getDate() + freezeDurationDays);
+        student.end = subscriptionEndDate.toISOString().split('T')[0];
+
+        toast(`تم تجميد اشتراك ${student.name} لمدة ${freezeDurationDays} يوم. ينتهي التجميد في: ${fmtDate(student.freezeEnd)}`);
       }
 
-      function stopStudent() {
-        const studentId = document.getElementById('f-edit-id').value;
-        if (!studentId) { toast('يرجى اختيار طالب أولاً', true); return; }
-        const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
-        if (studentIndex === -1) return;
-        const student = students[studentIndex];
-        if (!confirm(`هل تريد إيقاف ${student.name} عن النادي؟`)) return;
-        student.isStopped = true;
+      save();
+      if (window.firebaseReady) {
+        window.firebaseSave(student, student._id || studentIndex);
+      } else {
+        renderStudents();
+      }
+    }
+
+    function unfreezeSubscription() {
+      const studentId = document.getElementById('f-edit-id').value;
+      if (!studentId) { toast('يرجى اختيار طالب لفك تجميد اشتراكه', true); return; }
+      const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+      if (studentIndex === -1) return;
+
+      const student = students[studentIndex];
+      if (!student.isFrozen && student.isFrozen !== 'true') {
+        toast('هذا الطالب ليس لديه اشتراك مجمد', true);
+        return;
+      }
+
+      if (confirm(`هل أنت متأكد من فك تجميد اشتراك ${student.name}؟`)) {
+        if (student.actualEndDateBeforeFreeze) student.end = student.actualEndDateBeforeFreeze;
+        student.isFrozen = false;
+        delete student.freezeEnd;
+        delete student.actualEndDateBeforeFreeze;
+
         save();
         if (window.firebaseReady) {
           window.firebaseSave(student, student._id || studentIndex);
         } else {
           renderStudents();
         }
-        toast(`تم إيقاف ${student.name} عن النادي`);
-        document.getElementById('btn-stop-student').style.display = 'none';
-        document.getElementById('btn-reactivate-student').style.display = 'inline-flex';
+        toast('تم فك التجميد بنجاح.');
       }
+    }
 
-      function reactivateStudent() {
-        const studentId = document.getElementById('f-edit-id').value;
-        if (!studentId) { toast('يرجى اختيار طالب أولاً', true); return; }
-        const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
-        if (studentIndex === -1) return;
-        const student = students[studentIndex];
-        if (!confirm(`هل تريد إعادة تفعيل ${student.name}؟`)) return;
-        student.isStopped = false;
-        save();
-        if (window.firebaseReady) {
-          window.firebaseSave(student, student._id || studentIndex);
-        } else {
-          renderStudents();
-        }
-        toast(`تم إعادة تفعيل ${student.name}`);
-        document.getElementById('btn-stop-student').style.display = 'inline-flex';
-        document.getElementById('btn-reactivate-student').style.display = 'none';
+    function stopStudent() {
+      const studentId = document.getElementById('f-edit-id').value;
+      if (!studentId) { toast('يرجى اختيار طالب أولاً', true); return; }
+      const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+      if (studentIndex === -1) return;
+      const student = students[studentIndex];
+      if (!confirm(`هل تريد إيقاف ${student.name} عن النادي؟`)) return;
+      student.isStopped = true;
+      save();
+      if (window.firebaseReady) {
+        window.firebaseSave(student, student._id || studentIndex);
+      } else {
+        renderStudents();
       }
+      toast(`تم إيقاف ${student.name} عن النادي`);
+      document.getElementById('btn-stop-student').style.display = 'none';
+      document.getElementById('btn-reactivate-student').style.display = 'inline-flex';
+    }
 
-      function viewStudent(i) {
-        const s = students[i];
-        document.getElementById('modal-title').textContent = s.name;
-        document.getElementById('modal-body').innerHTML = `
+    function reactivateStudent() {
+      const studentId = document.getElementById('f-edit-id').value;
+      if (!studentId) { toast('يرجى اختيار طالب أولاً', true); return; }
+      const studentIndex = students.findIndex(s => (s._id || students.indexOf(s)).toString() === studentId);
+      if (studentIndex === -1) return;
+      const student = students[studentIndex];
+      if (!confirm(`هل تريد إعادة تفعيل ${student.name}؟`)) return;
+      student.isStopped = false;
+      save();
+      if (window.firebaseReady) {
+        window.firebaseSave(student, student._id || studentIndex);
+      } else {
+        renderStudents();
+      }
+      toast(`تم إعادة تفعيل ${student.name}`);
+      document.getElementById('btn-stop-student').style.display = 'inline-flex';
+      document.getElementById('btn-reactivate-student').style.display = 'none';
+    }
+
+    function viewStudent(i) {
+      const s = students[i];
+      document.getElementById('modal-title').textContent = s.name;
+      document.getElementById('modal-body').innerHTML = `
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">${gBadge(s.gender)} ${sBadge(s)} ${beltBadge(s.belt)}</div>
     <div class="detail-row"><span class="dk">الاسم</span><span style="font-weight:600">${s.name}</span></div>
     <div class="detail-row"><span class="dk">تاريخ الميلاد</span><span>${fmtDate(s.dob)}</span></div>
@@ -1908,255 +1909,267 @@
       <button class="btn-s" onclick="closeModal()">إغلاق</button>
       <button class="btn-p" onclick="closeModal();editStudent(${i})"><i class="ti ti-edit"></i> تعديل</button>
     </div>`;
-        document.getElementById('modal-bg').classList.add('show');
-      }
+      document.getElementById('modal-bg').classList.add('show');
+    }
 
-      function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
+    function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
 
-      function doSearch() {
-        const q = document.getElementById('search-inp').value.trim().toLowerCase();
-        if (!q) { document.getElementById('search-results').innerHTML = ''; return; }
-        const res = students.filter(s => s.name.toLowerCase().includes(q) || (s.dad && s.dad.includes(q)) || (s.mom && s.mom.includes(q)));
-        renderTable(res, 'search-results');
-      }
+    function doSearch() {
+      const q = document.getElementById('search-inp').value.trim().toLowerCase();
+      if (!q) { document.getElementById('search-results').innerHTML = ''; return; }
+      const res = students.filter(s => s.name.toLowerCase().includes(q) || (s.dad && s.dad.includes(q)) || (s.mom && s.mom.includes(q)));
+      renderTable(res, 'search-results');
+    }
 
-      function toast(msg, err) {
-        const t = document.getElementById('toast');
-        document.getElementById('toast-msg').textContent = msg;
-        t.className = 'toast show' + (err ? ' err' : '');
-        setTimeout(() => t.className = 'toast', 2800);
-      }
+    function toast(msg, err) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      t.className = 'toast show' + (err ? ' err' : '');
+      setTimeout(() => t.className = 'toast', 2800);
+    }
 
-      // Init
-      document.getElementById('f-start').value = new Date().toISOString().split('T')[0];
+    // Init
+    document.getElementById('f-start').value = new Date().toISOString().split('T')[0];
 
-      // Firebase via REST API
-      const FB_PROJECT = 'alshlool-44292';
-      const FB_URL = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/students`;
-      const FB_KEY = 'AIzaSyD4RF2k0qNQns-HdHlEje4ib--itJ7M19g';
+    // Firebase via REST API
+    const FB_PROJECT = 'alshlool-44292';
+    const FB_URL = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/students`;
+    const FB_KEY = 'AIzaSyD4RF2k0qNQns-HdHlEje4ib--itJ7M19g';
 
-      function toFirestore(obj) {
-        const fields = {};
-        Object.keys(obj).forEach(k => {
-          if (obj[k] === null || obj[k] === undefined) fields[k] = { nullValue: null };
-          else if (typeof obj[k] === 'boolean') fields[k] = { booleanValue: obj[k] };
-          else fields[k] = { stringValue: String(obj[k]) };
-        });
-        return { fields };
-      }
-
-      function fromFirestore(doc) {
-        const obj = { _id: doc.name.split('/').pop() };
-        Object.keys(doc.fields || {}).forEach(k => {
-          const f = doc.fields[k];
-          obj[k] = f.stringValue !== undefined ? f.stringValue :
-            f.integerValue !== undefined ? f.integerValue :
-              f.booleanValue !== undefined ? f.booleanValue : '';
-        });
-        return obj;
-      }
-
-      // Tracks local edits that haven't been confirmed by Firestore yet
-      const pendingLocalEdits = new Map();
-
-      async function fbLoad() {
-        try {
-          const r = await fetch(`${FB_URL}?key=${FB_KEY}`);
-          const data = await r.json();
-          const fresh = (data.documents || []).map(fromFirestore);
-          // Merge: protect any record edited locally in the last 10 seconds
-          const localById = {};
-          students.forEach(s => { if (s._id) localById[s._id] = s; });
-          students = fresh.map(s => {
-            if (!s._id) return s;
-            const local = localById[s._id];
-            if (!local) return s;
-            if (pendingLocalEdits.has(s._id) && Date.now() - pendingLocalEdits.get(s._id) < 10000) {
-              return local; // keep our local version while write is in-flight
-            }
-            return s; // Firestore has the confirmed version
-          });
-          renderStudents();
-        } catch (e) { renderStudents(); }
-      }
-
-      window.firebaseSave = async function (obj, editId) {
-        try {
-          if (obj._id) pendingLocalEdits.set(obj._id, Date.now());
-          const body = JSON.stringify(toFirestore(obj));
-          if (editId) {
-            const fields = Object.keys(obj).filter(k => k !== '_id').map(k => `updateMask.fieldPaths=${k}`).join('&');
-            const res = await fetch(`${FB_URL}/${editId}?${fields}&key=${FB_KEY}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
-            if (!res.ok) { /* save failed */ }
-            return true;
-          } else {
-            const res = await fetch(`${FB_URL}?key=${FB_KEY}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-            if (res.ok) {
-              const data = await res.json();
-              const newId = data.name ? data.name.split('/').pop() : null;
-              if (newId) {
-                obj._id = newId;
-                // Update in students array and save
-                const idx = students.indexOf(obj);
-                if (idx >= 0) students[idx] = obj;
-                save();
-              }
-              return newId || true;
-            }
-            return false;
-          }
-        } catch (e) { return false; }
-      };
-
-      window.firebaseDelete = async function (id) {
-        try {
-          await fetch(`${FB_URL}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
-          await fbLoad();
-          return true;
-        } catch (e) { return false; }
-      };
-
-      window.firebaseReady = true;
-      // Load students first, then all payment data
-      fbLoad().then(() => {
-        loadAllData().then(() => {
-          // Re-render payments if that tab is open
-          if (document.getElementById('pay-students-section') &&
-              document.getElementById('pay-students-section').style.display !== 'none') {
-            renderPayments();
-          }
-        });
+    function toFirestore(obj) {
+      const fields = {};
+      Object.keys(obj).forEach(k => {
+        if (obj[k] === null || obj[k] === undefined) fields[k] = { nullValue: null };
+        else if (typeof obj[k] === 'boolean') fields[k] = { booleanValue: obj[k] };
+        else fields[k] = { stringValue: String(obj[k]) };
       });
+      return { fields };
+    }
 
+    function fromFirestore(doc) {
+      const obj = { _id: doc.name.split('/').pop() };
+      Object.keys(doc.fields || {}).forEach(k => {
+        const f = doc.fields[k];
+        obj[k] = f.stringValue !== undefined ? f.stringValue :
+          f.integerValue !== undefined ? f.integerValue :
+            f.booleanValue !== undefined ? f.booleanValue : '';
+      });
+      return obj;
+    }
 
+    // Tracks local edits that haven't been confirmed by Firestore yet
+    const pendingLocalEdits = new Map();
 
-      // ── Suits Inventory ──────────────────────────────────────
-      const SUIT_SIZES = [90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190];
-      const FB_SUITS_COL = 'suitsInventory';
-      const FB_SUITS_LOG = 'suitsLog';
-
-      let suitsInventory = {}; // { '90': 5, '100': 3, ... }
-      let suitsLog = []; // [{ studentName, size, action, date }]
-
-      function toggleSuitSize() {
-        const checked = document.getElementById('f-suit-received').checked;
-        document.getElementById('suit-size-wrap').style.display = checked ? 'flex' : 'none';
-        if (checked) populateSuitSizeOptions();
-        else document.getElementById('f-suit-size').value = '';
-      }
-
-      function populateSuitSizeOptions(keepSize) {
-        const sel = document.getElementById('f-suit-size');
-        if (!sel) return;
-        const currentVal = keepSize !== undefined ? keepSize : sel.value;
-        sel.innerHTML = '<option value="">اختر المقاس</option>';
-        SUIT_SIZES.forEach(size => {
-          const qty = suitsInventory[String(size)] || 0;
-          const outOfStock = qty <= 0;
-          const opt = document.createElement('option');
-          opt.value = String(size);
-          opt.textContent = outOfStock ? `${size} — انتهى` : `${size} (${qty})`;
-          // Allow keeping a previously-saved size selected even if it's now out of stock (editing existing record),
-          // but otherwise disable out-of-stock sizes from being selected.
-          if (outOfStock && String(size) !== String(currentVal)) {
-            opt.disabled = true;
-            opt.style.textDecoration = 'line-through';
+    async function fbLoad() {
+      try {
+        // Fetch ALL documents by paging through Firestore's list endpoint.
+        // (Firestore's default page size is limited, so without this loop
+        // only the first page — around ~100 students — would come back,
+        // making it look like older students got wiped whenever a new
+        // student was added and the list re-synced.)
+        let allDocs = [];
+        let pageToken = '';
+        do {
+          const pageUrl = `${FB_URL}?key=${FB_KEY}&pageSize=300${pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : ''}`;
+          const r = await fetch(pageUrl);
+          const data = await r.json();
+          allDocs = allDocs.concat(data.documents || []);
+          pageToken = data.nextPageToken || '';
+        } while (pageToken);
+        const fresh = allDocs.map(fromFirestore);
+        // Merge: protect any record edited locally in the last 10 seconds
+        const localById = {};
+        students.forEach(s => { if (s._id) localById[s._id] = s; });
+        students = fresh.map(s => {
+          if (!s._id) return s;
+          const local = localById[s._id];
+          if (!local) return s;
+          if (pendingLocalEdits.has(s._id) && Date.now() - pendingLocalEdits.get(s._id) < 10000) {
+            return local; // keep our local version while write is in-flight
           }
-          sel.appendChild(opt);
+          return s; // Firestore has the confirmed version
         });
-        sel.value = currentVal || '';
-      }
+        renderStudents();
+      } catch (e) { renderStudents(); }
+    }
 
-      async function loadSuitsInventory() {
-        try {
-          const r = await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_COL}?key=${FB_KEY}`);
-          const data = await r.json();
-          suitsInventory = {};
-          (data.documents || []).forEach(doc => {
-            const size = doc.name.split('/').pop();
-            const qty = doc.fields && doc.fields.qty ? (doc.fields.qty.integerValue || doc.fields.qty.stringValue || 0) : 0;
-            suitsInventory[size] = parseInt(qty);
-          });
-          // Initialize missing sizes
-          SUIT_SIZES.forEach(s => { if (suitsInventory[String(s)] === undefined) suitsInventory[String(s)] = 0; });
-        } catch (e) {
-          SUIT_SIZES.forEach(s => { if (suitsInventory[String(s)] === undefined) suitsInventory[String(s)] = 0; });
-        }
-      }
-
-      async function loadSuitsLog() {
-        try {
-          const r = await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_LOG}?key=${FB_KEY}`);
-          const data = await r.json();
-          suitsLog = (data.documents || []).map(doc => {
-            const f = doc.fields || {};
-            return {
-              _id: doc.name.split('/').pop(),
-              studentName: f.studentName ? f.studentName.stringValue : '',
-              size: f.size ? f.size.stringValue : '',
-              action: f.action ? f.action.stringValue : '',
-              date: f.date ? f.date.stringValue : ''
-            };
-          }).sort((a, b) => b.date.localeCompare(a.date));
-        } catch (e) { suitsLog = []; }
-      }
-
-      async function saveSuitQty(size, qty) {
-        try {
-          await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_COL}/${size}?key=${FB_KEY}`, {
-            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fields: { qty: { integerValue: qty } } })
-          });
-          suitsInventory[String(size)] = qty;
-        } catch (e) { }
-      }
-
-      async function addSuitLogEntry(studentName, size, action) {
-        const entry = {
-          fields: {
-            studentName: { stringValue: studentName },
-            size: { stringValue: String(size) },
-            action: { stringValue: action },
-            date: { stringValue: new Date().toISOString().split('T')[0] }
+    window.firebaseSave = async function (obj, editId) {
+      try {
+        if (obj._id) pendingLocalEdits.set(obj._id, Date.now());
+        const body = JSON.stringify(toFirestore(obj));
+        if (editId) {
+          const fields = Object.keys(obj).filter(k => k !== '_id').map(k => `updateMask.fieldPaths=${k}`).join('&');
+          const res = await fetch(`${FB_URL}/${editId}?${fields}&key=${FB_KEY}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
+          if (!res.ok) { /* save failed */ }
+          return true;
+        } else {
+          const res = await fetch(`${FB_URL}?key=${FB_KEY}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+          if (res.ok) {
+            const data = await res.json();
+            const newId = data.name ? data.name.split('/').pop() : null;
+            if (newId) {
+              obj._id = newId;
+              // Update in students array and save
+              const idx = students.indexOf(obj);
+              if (idx >= 0) students[idx] = obj;
+              save();
+            }
+            return newId || true;
           }
-        };
-        try {
-          await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_LOG}?key=${FB_KEY}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(entry)
-          });
-        } catch (e) { }
-      }
+          return false;
+        }
+      } catch (e) { return false; }
+    };
 
-      async function deductSuit(size, studentName) {
-        const current = suitsInventory[String(size)] || 0;
-        const newQty = Math.max(0, current - 1);
-        await saveSuitQty(size, newQty);
-        await addSuitLogEntry(studentName, size, 'صرف');
-      }
+    window.firebaseDelete = async function (id) {
+      try {
+        await fetch(`${FB_URL}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
+        await fbLoad();
+        return true;
+      } catch (e) { return false; }
+    };
 
-      async function addSuitBack(size) {
-        const current = suitsInventory[String(size)] || 0;
-        await saveSuitQty(size, current + 1);
-      }
+    window.firebaseReady = true;
+    // Load students first, then all payment data
+    fbLoad().then(() => {
+      loadAllData().then(() => {
+        // Re-render payments if that tab is open
+        if (document.getElementById('pay-students-section') &&
+          document.getElementById('pay-students-section').style.display !== 'none') {
+          renderPayments();
+        }
+      });
+    });
 
-      async function renderSuitsTab() {
-        await loadSuitsInventory();
-        await loadSuitsLog();
-        renderSuitsGrid();
-        renderSuitsLog();
-      }
 
-      function renderSuitsGrid() {
-        const el = document.getElementById('suits-grid');
-        if (!el) return;
-        el.innerHTML = '';
-        SUIT_SIZES.forEach(size => {
-          const qty = suitsInventory[String(size)] || 0;
-          const color = qty === 0 ? '#a01414' : qty <= 2 ? '#7a4a08' : '#2a6b10';
-          const div = document.createElement('div');
-          div.style.cssText = 'background:var(--surface2);border:0.5px solid var(--border2);border-radius:12px;padding:14px;text-align:center';
-          div.innerHTML = `
+
+    // ── Suits Inventory ──────────────────────────────────────
+    const SUIT_SIZES = [90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190];
+    const FB_SUITS_COL = 'suitsInventory';
+    const FB_SUITS_LOG = 'suitsLog';
+
+    let suitsInventory = {}; // { '90': 5, '100': 3, ... }
+    let suitsLog = []; // [{ studentName, size, action, date }]
+
+    function toggleSuitSize() {
+      const checked = document.getElementById('f-suit-received').checked;
+      document.getElementById('suit-size-wrap').style.display = checked ? 'flex' : 'none';
+      if (checked) populateSuitSizeOptions();
+      else document.getElementById('f-suit-size').value = '';
+    }
+
+    function populateSuitSizeOptions(keepSize) {
+      const sel = document.getElementById('f-suit-size');
+      if (!sel) return;
+      const currentVal = keepSize !== undefined ? keepSize : sel.value;
+      sel.innerHTML = '<option value="">اختر المقاس</option>';
+      SUIT_SIZES.forEach(size => {
+        const qty = suitsInventory[String(size)] || 0;
+        const outOfStock = qty <= 0;
+        const opt = document.createElement('option');
+        opt.value = String(size);
+        opt.textContent = outOfStock ? `${size} — انتهى` : `${size} (${qty})`;
+        // Allow keeping a previously-saved size selected even if it's now out of stock (editing existing record),
+        // but otherwise disable out-of-stock sizes from being selected.
+        if (outOfStock && String(size) !== String(currentVal)) {
+          opt.disabled = true;
+          opt.style.textDecoration = 'line-through';
+        }
+        sel.appendChild(opt);
+      });
+      sel.value = currentVal || '';
+    }
+
+    async function loadSuitsInventory() {
+      try {
+        const r = await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_COL}?key=${FB_KEY}`);
+        const data = await r.json();
+        suitsInventory = {};
+        (data.documents || []).forEach(doc => {
+          const size = doc.name.split('/').pop();
+          const qty = doc.fields && doc.fields.qty ? (doc.fields.qty.integerValue || doc.fields.qty.stringValue || 0) : 0;
+          suitsInventory[size] = parseInt(qty);
+        });
+        // Initialize missing sizes
+        SUIT_SIZES.forEach(s => { if (suitsInventory[String(s)] === undefined) suitsInventory[String(s)] = 0; });
+      } catch (e) {
+        SUIT_SIZES.forEach(s => { if (suitsInventory[String(s)] === undefined) suitsInventory[String(s)] = 0; });
+      }
+    }
+
+    async function loadSuitsLog() {
+      try {
+        const r = await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_LOG}?key=${FB_KEY}`);
+        const data = await r.json();
+        suitsLog = (data.documents || []).map(doc => {
+          const f = doc.fields || {};
+          return {
+            _id: doc.name.split('/').pop(),
+            studentName: f.studentName ? f.studentName.stringValue : '',
+            size: f.size ? f.size.stringValue : '',
+            action: f.action ? f.action.stringValue : '',
+            date: f.date ? f.date.stringValue : ''
+          };
+        }).sort((a, b) => b.date.localeCompare(a.date));
+      } catch (e) { suitsLog = []; }
+    }
+
+    async function saveSuitQty(size, qty) {
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_COL}/${size}?key=${FB_KEY}`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fields: { qty: { integerValue: qty } } })
+        });
+        suitsInventory[String(size)] = qty;
+      } catch (e) { }
+    }
+
+    async function addSuitLogEntry(studentName, size, action) {
+      const entry = {
+        fields: {
+          studentName: { stringValue: studentName },
+          size: { stringValue: String(size) },
+          action: { stringValue: action },
+          date: { stringValue: new Date().toISOString().split('T')[0] }
+        }
+      };
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_LOG}?key=${FB_KEY}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        });
+      } catch (e) { }
+    }
+
+    async function deductSuit(size, studentName) {
+      const current = suitsInventory[String(size)] || 0;
+      const newQty = Math.max(0, current - 1);
+      await saveSuitQty(size, newQty);
+      await addSuitLogEntry(studentName, size, 'صرف');
+    }
+
+    async function addSuitBack(size) {
+      const current = suitsInventory[String(size)] || 0;
+      await saveSuitQty(size, current + 1);
+    }
+
+    async function renderSuitsTab() {
+      await loadSuitsInventory();
+      await loadSuitsLog();
+      renderSuitsGrid();
+      renderSuitsLog();
+    }
+
+    function renderSuitsGrid() {
+      const el = document.getElementById('suits-grid');
+      if (!el) return;
+      el.innerHTML = '';
+      SUIT_SIZES.forEach(size => {
+        const qty = suitsInventory[String(size)] || 0;
+        const color = qty === 0 ? '#a01414' : qty <= 2 ? '#7a4a08' : '#2a6b10';
+        const div = document.createElement('div');
+        div.style.cssText = 'background:var(--surface2);border:0.5px solid var(--border2);border-radius:12px;padding:14px;text-align:center';
+        div.innerHTML = `
           <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">${size}</div>
           <div style="font-size:24px;font-weight:700;color:${color};margin-bottom:10px">${qty}</div>
           <div style="display:flex;gap:6px;justify-content:center">
@@ -2164,91 +2177,91 @@
             <button onclick="editSuitQty(${size}, ${qty})" style="background:var(--surface);border:0.5px solid var(--border2);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:12px;color:var(--text2);display:flex;align-items:center;justify-content:center" title="تعديل"><i class="ti ti-edit"></i></button>
             <button onclick="changeSuitQty(${size}, 1)" style="background:var(--surface);border:0.5px solid var(--border2);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:16px;color:#1a7a1a;display:flex;align-items:center;justify-content:center" title="أضف">+</button>
           </div>`;
-          el.appendChild(div);
-        });
-      }
+        el.appendChild(div);
+      });
+    }
 
-      async function changeSuitQty(size, delta) {
-        const current = suitsInventory[String(size)] || 0;
-        const newQty = Math.max(0, current + delta);
-        await saveSuitQty(size, newQty);
-        renderSuitsGrid();
-        toast(`مقاس ${size}: ${newQty} قطعة`);
-      }
+    async function changeSuitQty(size, delta) {
+      const current = suitsInventory[String(size)] || 0;
+      const newQty = Math.max(0, current + delta);
+      await saveSuitQty(size, newQty);
+      renderSuitsGrid();
+      toast(`مقاس ${size}: ${newQty} قطعة`);
+    }
 
-      function editSuitQty(size, current) {
-        const val = prompt(`أدخل الكمية الجديدة للمقاس ${size}:`, current);
-        if (val === null) return;
-        const n = parseInt(val);
-        if (isNaN(n) || n < 0) { toast('كمية غير صالحة', true); return; }
-        saveSuitQty(size, n).then(() => { renderSuitsGrid(); toast(`تم تحديث مقاس ${size}: ${n} قطعة`); });
-      }
+    function editSuitQty(size, current) {
+      const val = prompt(`أدخل الكمية الجديدة للمقاس ${size}:`, current);
+      if (val === null) return;
+      const n = parseInt(val);
+      if (isNaN(n) || n < 0) { toast('كمية غير صالحة', true); return; }
+      saveSuitQty(size, n).then(() => { renderSuitsGrid(); toast(`تم تحديث مقاس ${size}: ${n} قطعة`); });
+    }
 
-      async function deleteSuitLogEntry(id) {
-        if (!confirm('هل تريد حذف هذا السجل؟')) return;
-        try {
-          await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_LOG}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
-          suitsLog = suitsLog.filter(l => l._id !== id);
-          renderSuitsLog();
-          toast('تم حذف السجل');
-        } catch (e) { toast('حدث خطأ أثناء الحذف', true); }
-      }
+    async function deleteSuitLogEntry(id) {
+      if (!confirm('هل تريد حذف هذا السجل؟')) return;
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${FB_SUITS_LOG}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
+        suitsLog = suitsLog.filter(l => l._id !== id);
+        renderSuitsLog();
+        toast('تم حذف السجل');
+      } catch (e) { toast('حدث خطأ أثناء الحذف', true); }
+    }
 
-      function renderSuitsLog() {
-        const el = document.getElementById('suits-log');
-        if (!el) return;
-        if (!suitsLog.length) { el.innerHTML = '<div class="empty">لا يوجد سجل بدلات</div>'; return; }
-        let h = `<table class="st"><thead><tr>
+    function renderSuitsLog() {
+      const el = document.getElementById('suits-log');
+      if (!el) return;
+      if (!suitsLog.length) { el.innerHTML = '<div class="empty">لا يوجد سجل بدلات</div>'; return; }
+      let h = `<table class="st"><thead><tr>
         <th style="width:26%">الطالب</th><th style="width:14%">المقاس</th><th style="width:18%">العملية</th><th style="width:22%">التاريخ</th><th style="width:10%"></th>
       </tr></thead><tbody>`;
-        suitsLog.forEach(log => {
-          const color = log.action === 'صرف' ? '#a01414' : '#2a6b10';
-          h += `<tr>
+      suitsLog.forEach(log => {
+        const color = log.action === 'صرف' ? '#a01414' : '#2a6b10';
+        h += `<tr>
           <td style="font-weight:600">${log.studentName}</td>
           <td><span style="background:#e8f5e0;color:#2a6b10;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${log.size}</span></td>
           <td><span style="color:${color};font-weight:600">${log.action}</span></td>
           <td>${fmtDate(log.date)}</td>
           <td><button onclick="deleteSuitLogEntry('${log._id}')" style="background:none;border:none;cursor:pointer;color:#a01414;font-size:16px" title="حذف"><i class="ti ti-trash"></i></button></td>
         </tr>`;
-        });
-        h += '</tbody></table>';
-        el.innerHTML = h;
+      });
+      h += '</tbody></table>';
+      el.innerHTML = h;
+    }
+
+    // Init suits on page load
+    loadSuitsInventory();
+    // Init belt grid (empty/new student state)
+    buildBeltGrid('');
+
+    // ── Payments / Trainers Data ──────────────────────────────
+    let payments = [];
+    let trainerPayments = [];
+    // Load from localStorage on startup
+    try { payments = JSON.parse(localStorage.getItem('shalloul_payments') || '[]'); } catch (e) { }
+    try { trainerPayments = JSON.parse(localStorage.getItem('shalloul_tpayments') || '[]'); } catch (e) { }
+    let paySearchActive = false;
+
+    function isPaySearchTab() {
+      const btn = document.getElementById('pay-sub-search');
+      return btn && btn.classList.contains('active');
+    }
+
+    function renderSearchPaymentTable(list, type) {
+      if (!list.length) {
+        return `<div class="empty" style="padding:20px 0"><i class="ti ti-receipt-off" style="font-size:28px;display:block;margin-bottom:6px"></i>لا توجد دفعات</div>`;
       }
-
-      // Init suits on page load
-      loadSuitsInventory();
-      // Init belt grid (empty/new student state)
-      buildBeltGrid('');
-
-      // ── Payments / Trainers Data ──────────────────────────────
-      let payments = [];
-      let trainerPayments = [];
-      // Load from localStorage on startup
-      try { payments = JSON.parse(localStorage.getItem('shalloul_payments') || '[]'); } catch(e) {}
-      try { trainerPayments = JSON.parse(localStorage.getItem('shalloul_tpayments') || '[]'); } catch(e) {}
-      let paySearchActive = false;
-
-      function isPaySearchTab() {
-        const btn = document.getElementById('pay-sub-search');
-        return btn && btn.classList.contains('active');
-      }
-
-      function renderSearchPaymentTable(list, type) {
-        if (!list.length) {
-          return `<div class="empty" style="padding:20px 0"><i class="ti ti-receipt-off" style="font-size:28px;display:block;margin-bottom:6px"></i>لا توجد دفعات</div>`;
-        }
-        const isStudent = type === 'student';
-        let h = `<table class="st"><thead><tr>
+      const isStudent = type === 'student';
+      let h = `<table class="st"><thead><tr>
     <th style="width:${isStudent ? '22%' : '25%'}">الاسم</th><th style="width:14%">المبلغ</th><th style="width:${isStudent ? '24%' : '20%'}">التفاصيل</th><th style="width:14%">التاريخ</th><th style="width:14%">ملاحظات</th><th style="width:12%">إجراءات</th>
   </tr></thead><tbody>`;
-        list.forEach(p => {
-          const details = isStudent ? (p.reason || '—') : 'راتب مدرب';
-          const amountColor = isStudent ? '#2a6b10' : '#a01414';
-          const actions = isStudent
-            ? `<button class="ib" onclick="printInvoice(${p._idx})" title="طباعة"><i class="ti ti-printer"></i></button>
+      list.forEach(p => {
+        const details = isStudent ? (p.reason || '—') : 'راتب مدرب';
+        const amountColor = isStudent ? '#2a6b10' : '#a01414';
+        const actions = isStudent
+          ? `<button class="ib" onclick="printInvoice(${p._idx})" title="طباعة"><i class="ti ti-printer"></i></button>
          <button class="ib del" onclick="delPaymentFromSearch('student',${p._idx})" title="حذف"><i class="ti ti-trash"></i></button>`
-            : `<button class="ib del" onclick="delPaymentFromSearch('trainer',${p._idx})" title="حذف"><i class="ti ti-trash"></i></button>`;
-          h += `<tr>
+          : `<button class="ib del" onclick="delPaymentFromSearch('trainer',${p._idx})" title="حذف"><i class="ti ti-trash"></i></button>`;
+        h += `<tr>
       <td style="font-weight:600">${p.name || p.trainer}</td>
       <td><span style="color:${amountColor};font-weight:700">${p.amount} د.أ</span></td>
       <td>${details}</td>
@@ -2256,230 +2269,238 @@
       <td>${p.notes || '—'}</td>
       <td><div class="act-btns">${actions}</div></td>
     </tr>`;
-        });
-        h += '</tbody></table>';
-        return h;
+      });
+      h += '</tbody></table>';
+      return h;
+    }
+
+    function inDateRange(dateStr, from, to) {
+      if (!dateStr) return false;
+      const d = dateStr.split('T')[0];
+      if (from && d < from) return false;
+      if (to && d > to) return false;
+      return true;
+    }
+
+    function searchPaymentsByDate() {
+      const from = document.getElementById('pay-search-from').value;
+      const to = document.getElementById('pay-search-to').value;
+      if (!from && !to) { toast('يرجى اختيار تاريخ البداية أو النهاية', true); return; }
+      if (from && to && from > to) { toast('تاريخ البداية يجب أن يكون قبل تاريخ النهاية', true); return; }
+
+      paySearchActive = true;
+
+      const studentResults = payments.map((p, i) => ({ ...p, _type: 'student', _idx: i }))
+        .filter(p => inDateRange(p.date, from, to))
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      const trainerResults = trainerPayments.map((p, i) => ({ ...p, _type: 'trainer', _idx: i, name: p.trainer }))
+        .filter(p => inDateRange(p.date, from, to))
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+      renderPaymentSearchResults(studentResults, trainerResults, from, to);
+    }
+
+    function renderPaymentSearchResults(studentList, trainerList, from, to) {
+      const el = document.getElementById('pay-search-results');
+
+      const rangeLabel = `${from ? fmtDate(from) : '—'} → ${to ? fmtDate(to) : '—'}`;
+      const income = studentList.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+      const expenses = trainerList.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+      const net = income - expenses;
+      const netColor = net >= 0 ? '#2a6b10' : '#a01414';
+
+      if (!studentList.length && !trainerList.length) {
+        el.innerHTML = `<div class="empty"><i class="ti ti-search-off" style="font-size:32px;display:block;margin-bottom:8px"></i>لا توجد دفعات في الفترة ${rangeLabel}</div>`;
+        return;
       }
 
-      function inDateRange(dateStr, from, to) {
-        if (!dateStr) return false;
-        const d = dateStr.split('T')[0];
-        if (from && d < from) return false;
-        if (to && d > to) return false;
-        return true;
-      }
-
-      function searchPaymentsByDate() {
-        const from = document.getElementById('pay-search-from').value;
-        const to = document.getElementById('pay-search-to').value;
-        if (!from && !to) { toast('يرجى اختيار تاريخ البداية أو النهاية', true); return; }
-        if (from && to && from > to) { toast('تاريخ البداية يجب أن يكون قبل تاريخ النهاية', true); return; }
-
-        paySearchActive = true;
-
-        const studentResults = payments.map((p, i) => ({ ...p, _type: 'student', _idx: i }))
-          .filter(p => inDateRange(p.date, from, to))
-          .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-        const trainerResults = trainerPayments.map((p, i) => ({ ...p, _type: 'trainer', _idx: i, name: p.trainer }))
-          .filter(p => inDateRange(p.date, from, to))
-          .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-        renderPaymentSearchResults(studentResults, trainerResults, from, to);
-      }
-
-      function renderPaymentSearchResults(studentList, trainerList, from, to) {
-        const el = document.getElementById('pay-search-results');
-
-        const rangeLabel = `${from ? fmtDate(from) : '—'} → ${to ? fmtDate(to) : '—'}`;
-        const income = studentList.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
-        const expenses = trainerList.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
-        const net = income - expenses;
-        const netColor = net >= 0 ? '#2a6b10' : '#a01414';
-
-        if (!studentList.length && !trainerList.length) {
-          el.innerHTML = `<div class="empty"><i class="ti ti-search-off" style="font-size:32px;display:block;margin-bottom:8px"></i>لا توجد دفعات في الفترة ${rangeLabel}</div>`;
-          return;
-        }
-
-        let h = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:var(--surface2);border-radius:10px;border:0.5px solid var(--border2)">
+      let h = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:var(--surface2);border-radius:10px;border:0.5px solid var(--border2)">
     <span class="badge b-act">إيرادات: ${income.toFixed(2)} د.أ</span>
     <span class="badge b-exp">مصروفات: ${expenses.toFixed(2)} د.أ</span>
     <span class="badge" style="background:${net >= 0 ? '#e8f5e0' : '#fce8e8'};color:${netColor}">الصافي: ${net.toFixed(2)} د.أ</span>
     <span style="font-size:12px;color:var(--text2);align-self:center">${rangeLabel}</span>
   </div>`;
 
-        h += `<div class="sec-title" style="font-size:13px;margin-top:4px"><i class="ti ti-arrow-down-left" style="color:#2a6b10"></i> إيرادات الطلاب (${studentList.length})</div>`;
-        h += `<div class="tbl-wrap" style="margin-bottom:16px">${renderSearchPaymentTable(studentList, 'student')}</div>`;
+      h += `<div class="sec-title" style="font-size:13px;margin-top:4px"><i class="ti ti-arrow-down-left" style="color:#2a6b10"></i> إيرادات الطلاب (${studentList.length})</div>`;
+      h += `<div class="tbl-wrap" style="margin-bottom:16px">${renderSearchPaymentTable(studentList, 'student')}</div>`;
 
-        h += `<div class="sec-title" style="font-size:13px"><i class="ti ti-arrow-up-right" style="color:#a01414"></i> مصروفات المدربين (${trainerList.length})</div>`;
-        h += `<div class="tbl-wrap">${renderSearchPaymentTable(trainerList, 'trainer')}</div>`;
+      h += `<div class="sec-title" style="font-size:13px"><i class="ti ti-arrow-up-right" style="color:#a01414"></i> مصروفات المدربين (${trainerList.length})</div>`;
+      h += `<div class="tbl-wrap">${renderSearchPaymentTable(trainerList, 'trainer')}</div>`;
 
-        el.innerHTML = h;
-      }
+      el.innerHTML = h;
+    }
 
-      function clearPaymentSearch() {
-        paySearchActive = false;
-        document.getElementById('pay-search-from').value = '';
-        document.getElementById('pay-search-to').value = '';
-        document.getElementById('pay-search-results').innerHTML = '';
-      }
+    function clearPaymentSearch() {
+      paySearchActive = false;
+      document.getElementById('pay-search-from').value = '';
+      document.getElementById('pay-search-to').value = '';
+      document.getElementById('pay-search-results').innerHTML = '';
+    }
 
-      function delPaymentFromSearch(type, idx) {
-        if (type === 'student') delPayment(idx);
-        else delTrainerPayment(idx);
-      }
+    function delPaymentFromSearch(type, idx) {
+      if (type === 'student') delPayment(idx);
+      else delTrainerPayment(idx);
+    }
 
-      async function fbSaveDoc(colName, id, obj) {
-        try {
-          await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`, {
-            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(toFirestore(obj))
-          });
-        } catch (e) { }
-      }
+    async function fbSaveDoc(colName, id, obj) {
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(toFirestore(obj))
+        });
+      } catch (e) { }
+    }
 
-      async function fbDeleteDoc(colName, id) {
-        try {
-          await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
-        } catch (e) { }
-      }
+    async function fbDeleteDoc(colName, id) {
+      try {
+        await fetch(`https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}/${id}?key=${FB_KEY}`, { method: 'DELETE' });
+      } catch (e) { }
+    }
 
-      async function fbLoadCol(colName) {
-        try {
-          const url = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}?key=${FB_KEY}`;
+    async function fbLoadCol(colName) {
+      try {
+        // Page through all documents (see note in fbLoad above) so large
+        // collections (payments, suits log, etc.) don't get truncated.
+        let allDocs = [];
+        let pageToken = '';
+        do {
+          const url = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/${colName}?key=${FB_KEY}&pageSize=300${pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : ''}`;
           const r = await fetch(url);
           const data = await r.json();
-          return (data.documents || []).map(fromFirestore);
-        } catch (e) { return []; }
+          allDocs = allDocs.concat(data.documents || []);
+          pageToken = data.nextPageToken || '';
+        } while (pageToken);
+        return allDocs.map(fromFirestore);
+      } catch (e) { return []; }
+    }
+
+    function mergeFresh(localList, remoteList) {
+      if (!remoteList.length) return localList;
+      const remoteIds = new Set(remoteList.map(r => r._id));
+      // Keep any local-only records not yet reflected in Firestore (e.g. write still in-flight)
+      const localOnly = localList.filter(l => l._id && !remoteIds.has(l._id));
+      return [...remoteList, ...localOnly];
+    }
+
+    async function loadAllData() {
+      // Try multiple possible collection names (data may have been saved under different names historically)
+      const [p, tp1, tp2, tp3] = await Promise.all([
+        fbLoadCol('payments'),
+        fbLoadCol('trainerPayments'),
+        fbLoadCol('tpayments'),
+        fbLoadCol('trainer_payments')
+      ]);
+      // Merge all possible trainer payment collections
+      const allTp = [...tp1];
+      [...tp2, ...tp3].forEach(r => { if (!allTp.find(x => x._id === r._id)) allTp.push(r); });
+      payments = mergeFresh(payments, p);
+      trainerPayments = mergeFresh(trainerPayments, allTp);
+    }
+
+    function showPaySub(sub, btn) {
+      paySearchActive = false;
+      document.getElementById('pay-students-section').style.display = sub === 'students' ? 'block' : 'none';
+      document.getElementById('pay-search-section').style.display = sub === 'search' ? 'block' : 'none';
+      document.querySelectorAll('#tab-payments .fb').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (sub === 'students') {
+        renderPayments();
+        loadAllData().then(() => renderPayments());
+      } else if (sub === 'search') {
+        const from = document.getElementById('pay-search-from').value;
+        const to = document.getElementById('pay-search-to').value;
+        if (from || to) searchPaymentsByDate();
       }
+    }
 
-      function mergeFresh(localList, remoteList) {
-        if (!remoteList.length) return localList;
-        const remoteIds = new Set(remoteList.map(r => r._id));
-        // Keep any local-only records not yet reflected in Firestore (e.g. write still in-flight)
-        const localOnly = localList.filter(l => l._id && !remoteIds.has(l._id));
-        return [...remoteList, ...localOnly];
-      }
+    // ── Sort ──────────────────────────────────────────────────
+    let currentSort = null;
 
-      async function loadAllData() {
-        // Try multiple possible collection names (data may have been saved under different names historically)
-        const [p, tp1, tp2, tp3] = await Promise.all([
-          fbLoadCol('payments'),
-          fbLoadCol('trainerPayments'),
-          fbLoadCol('tpayments'),
-          fbLoadCol('trainer_payments')
-        ]);
-        // Merge all possible trainer payment collections
-        const allTp = [...tp1];
-        [...tp2, ...tp3].forEach(r => { if (!allTp.find(x => x._id === r._id)) allTp.push(r); });
-        payments = mergeFresh(payments, p);
-        trainerPayments = mergeFresh(trainerPayments, allTp);
-      }
+    const SORT_LABELS = {
+      'newest-reg': '🆕 الأجدد بالتسجيل',
+      'oldest-reg': '🕰 الأقدم بالتسجيل',
+      'newest-sub': '📅 الأجدد بالاشتراك',
+      'oldest-sub': '📅 الأقدم بالاشتراك',
+      'belt-asc': '🥋 الحزام ↑',
+      'belt-desc': '🥋 الحزام ↓',
+    };
 
-      function showPaySub(sub, btn) {
-        paySearchActive = false;
-        document.getElementById('pay-students-section').style.display = sub === 'students' ? 'block' : 'none';
-        document.getElementById('pay-search-section').style.display = sub === 'search' ? 'block' : 'none';
-        document.querySelectorAll('#tab-payments .fb').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        if (sub === 'students') {
-          renderPayments();
-          loadAllData().then(() => renderPayments());
-        } else if (sub === 'search') {
-          const from = document.getElementById('pay-search-from').value;
-          const to = document.getElementById('pay-search-to').value;
-          if (from || to) searchPaymentsByDate();
-        }
-      }
+    function toggleSortMenu(e) {
+      const m = document.getElementById('sort-menu');
+      if (m.style.display !== 'none') { m.style.display = 'none'; return; }
+      const btn = document.getElementById('sort-toggle-btn');
+      const r = btn.getBoundingClientRect();
+      m.style.top = (r.bottom + 6) + 'px';
+      // Keep within right edge of viewport
+      const menuW = 200;
+      const left = Math.min(r.left, window.innerWidth - menuW - 8);
+      m.style.left = Math.max(8, left) + 'px';
+      m.style.display = 'block';
+    }
 
-      // ── Sort ──────────────────────────────────────────────────
-      let currentSort = null;
-
-      const SORT_LABELS = {
-        'newest-reg': '🆕 الأجدد بالتسجيل',
-        'oldest-reg': '🕰 الأقدم بالتسجيل',
-        'newest-sub': '📅 الأجدد بالاشتراك',
-        'oldest-sub': '📅 الأقدم بالاشتراك',
-        'belt-asc': '🥋 الحزام ↑',
-        'belt-desc': '🥋 الحزام ↓',
-      };
-
-      function toggleSortMenu(e) {
-        const m = document.getElementById('sort-menu');
-        if (m.style.display !== 'none') { m.style.display = 'none'; return; }
-        const btn = document.getElementById('sort-toggle-btn');
-        const r = btn.getBoundingClientRect();
-        m.style.top = (r.bottom + 6) + 'px';
-        // Keep within right edge of viewport
-        const menuW = 200;
-        const left = Math.min(r.left, window.innerWidth - menuW - 8);
-        m.style.left = Math.max(8, left) + 'px';
-        m.style.display = 'block';
-      }
-
-      function setSort(mode) {
-        document.getElementById('sort-menu').style.display = 'none';
-        currentSort = mode;
-        document.querySelectorAll('.sort-opt').forEach(el => {
-          el.classList.toggle('active', el.dataset.key === mode);
-        });
-        const lbl = document.getElementById('sort-label');
-        lbl.textContent = mode && SORT_LABELS[mode] ? SORT_LABELS[mode] : 'ترتيب';
-        const btn = document.getElementById('sort-toggle-btn');
-        btn.style.borderColor = mode ? '#cc1a1a' : '';
-        btn.style.color = mode ? '#cc1a1a' : '';
-        renderStudents();
-      }
-
-      document.addEventListener('click', e => {
-        if (!e.target.closest('#sort-toggle-btn') && !e.target.closest('#sort-menu')) {
-          const m = document.getElementById('sort-menu');
-          if (m) m.style.display = 'none';
-        }
-        if (!e.target.closest('#pay-name') && !e.target.closest('#pay-name-dropdown')) {
-          const dd = document.getElementById('pay-name-dropdown');
-          if (dd) dd.style.display = 'none';
-        }
+    function setSort(mode) {
+      document.getElementById('sort-menu').style.display = 'none';
+      currentSort = mode;
+      document.querySelectorAll('.sort-opt').forEach(el => {
+        el.classList.toggle('active', el.dataset.key === mode);
       });
-      function applySort(list) {
-        if (!currentSort) return list;
-        const BELT_IDX = { white: 0, yellow: 1, 'y-g': 2, green: 3, 'g-b': 4, blue: 5, 'b-br': 6, brown: 7, 'br-r': 8, red: 9, black: 10 };
-        const cl = list.slice();
-        if (currentSort === 'newest-reg') {
-          cl.sort((a, b) => (b.created ? new Date(b.created).getTime() : 0) - (a.created ? new Date(a.created).getTime() : 0));
-        } else if (currentSort === 'oldest-reg') {
-          cl.sort((a, b) => (a.created ? new Date(a.created).getTime() : Infinity) - (b.created ? new Date(b.created).getTime() : Infinity));
-        } else if (currentSort === 'newest-sub') {
-          cl.sort((a, b) => (b.end ? new Date(b.end).getTime() : 0) - (a.end ? new Date(a.end).getTime() : 0));
-        } else if (currentSort === 'oldest-sub') {
-          cl.sort((a, b) => (a.end ? new Date(a.end).getTime() : Infinity) - (b.end ? new Date(b.end).getTime() : Infinity));
-        } else if (currentSort === 'belt-asc') {
-          cl.sort((a, b) => (BELT_IDX[a.belt] ?? 99) - (BELT_IDX[b.belt] ?? 99));
-        } else if (currentSort === 'belt-desc') {
-          cl.sort((a, b) => (BELT_IDX[b.belt] ?? -1) - (BELT_IDX[a.belt] ?? -1));
-        }
-        return cl;
+      const lbl = document.getElementById('sort-label');
+      lbl.textContent = mode && SORT_LABELS[mode] ? SORT_LABELS[mode] : 'ترتيب';
+      const btn = document.getElementById('sort-toggle-btn');
+      btn.style.borderColor = mode ? '#cc1a1a' : '';
+      btn.style.color = mode ? '#cc1a1a' : '';
+      renderStudents();
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#sort-toggle-btn') && !e.target.closest('#sort-menu')) {
+        const m = document.getElementById('sort-menu');
+        if (m) m.style.display = 'none';
       }
-
-      // ── Subscription Renewal ──────────────────────────────────
-      // ── Unified payment name search + renewal ────────────────
-      // ── Dual student payment search ──────────────────────────
-      // ── Tags-based student payment search ──────────────────
-      let paySelectedStudents = []; // [{idx, name, end, belt}]
-
-      function payNameSearch() {
-        const q = document.getElementById('pay-name').value.trim().toLowerCase();
+      if (!e.target.closest('#pay-name') && !e.target.closest('#pay-name-dropdown')) {
         const dd = document.getElementById('pay-name-dropdown');
-        const inp = document.getElementById('pay-name');
-        if (!q) { dd.style.display = 'none'; return; }
-        const alreadySelected = new Set(paySelectedStudents.map(s => s.idx));
-        const matches = students.map((s,i)=>({s,i}))
-          .filter(({s,i}) => s.name.toLowerCase().includes(q) && !alreadySelected.has(i))
-          .slice(0, 8);
-        if (!matches.length) {
-          dd.innerHTML = '<div style="padding:12px 14px;color:var(--text2);font-size:13px">لا توجد نتائج</div>';
-        } else {
-          dd.innerHTML = matches.map(({s,i}) => `
+        if (dd) dd.style.display = 'none';
+      }
+    });
+    function applySort(list) {
+      if (!currentSort) return list;
+      const BELT_IDX = { white: 0, yellow: 1, 'y-g': 2, green: 3, 'g-b': 4, blue: 5, 'b-br': 6, brown: 7, 'br-r': 8, red: 9, black: 10 };
+      const cl = list.slice();
+      if (currentSort === 'newest-reg') {
+        cl.sort((a, b) => (b.created ? new Date(b.created).getTime() : 0) - (a.created ? new Date(a.created).getTime() : 0));
+      } else if (currentSort === 'oldest-reg') {
+        cl.sort((a, b) => (a.created ? new Date(a.created).getTime() : Infinity) - (b.created ? new Date(b.created).getTime() : Infinity));
+      } else if (currentSort === 'newest-sub') {
+        cl.sort((a, b) => (b.end ? new Date(b.end).getTime() : 0) - (a.end ? new Date(a.end).getTime() : 0));
+      } else if (currentSort === 'oldest-sub') {
+        cl.sort((a, b) => (a.end ? new Date(a.end).getTime() : Infinity) - (b.end ? new Date(b.end).getTime() : Infinity));
+      } else if (currentSort === 'belt-asc') {
+        cl.sort((a, b) => (BELT_IDX[a.belt] ?? 99) - (BELT_IDX[b.belt] ?? 99));
+      } else if (currentSort === 'belt-desc') {
+        cl.sort((a, b) => (BELT_IDX[b.belt] ?? -1) - (BELT_IDX[a.belt] ?? -1));
+      }
+      return cl;
+    }
+
+    // ── Subscription Renewal ──────────────────────────────────
+    // ── Unified payment name search + renewal ────────────────
+    // ── Dual student payment search ──────────────────────────
+    // ── Tags-based student payment search ──────────────────
+    let paySelectedStudents = []; // [{idx, name, end, belt}]
+
+    function payNameSearch() {
+      const q = document.getElementById('pay-name').value.trim().toLowerCase();
+      const dd = document.getElementById('pay-name-dropdown');
+      const inp = document.getElementById('pay-name');
+      if (!q) { dd.style.display = 'none'; return; }
+      const alreadySelected = new Set(paySelectedStudents.map(s => s.idx));
+      const matches = students.map((s, i) => ({ s, i }))
+        .filter(({ s, i }) => s.name.toLowerCase().includes(q) && !alreadySelected.has(i))
+        .slice(0, 8);
+      if (!matches.length) {
+        dd.innerHTML = '<div style="padding:12px 14px;color:var(--text2);font-size:13px">لا توجد نتائج</div>';
+      } else {
+        dd.innerHTML = matches.map(({ s, i }) => `
             <div onclick="selectPayStudent(${i})"
               style="padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--border2);display:flex;align-items:center;gap:10px;background:var(--surface)"
               onmouseover="this.style.background='var(--surface2)'"
@@ -2488,140 +2509,140 @@
               ${s.belt ? beltBadge(s.belt) : ''}
               <span style="font-size:11px;color:var(--text2);white-space:nowrap">${fmtDate(s.end)}</span>
             </div>`).join('');
-        }
-        const r = inp.getBoundingClientRect();
-        dd.style.top = (r.bottom + 4) + 'px';
-        dd.style.left = r.left + 'px';
-        dd.style.width = r.width + 'px';
-        dd.style.maxWidth = (window.innerWidth - r.left - 8) + 'px';
-        dd.style.display = 'block';
       }
+      const r = inp.getBoundingClientRect();
+      dd.style.top = (r.bottom + 4) + 'px';
+      dd.style.left = r.left + 'px';
+      dd.style.width = r.width + 'px';
+      dd.style.maxWidth = (window.innerWidth - r.left - 8) + 'px';
+      dd.style.display = 'block';
+    }
 
-      function selectPayStudent(i) {
-        const s = students[i];
-        document.getElementById('pay-name').value = '';
-        document.getElementById('pay-name-dropdown').style.display = 'none';
-        paySelectedStudents.push({ idx: i, name: s.name, end: s.end, belt: s.belt });
-        renderPayTags();
-        // Update renewal with first student's end date
-        if (paySelectedStudents.length === 1) {
-          document.getElementById('pay-renew-current').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
-          if (document.getElementById('pay-renew-toggle').checked) {
-            const base = s.end ? new Date(s.end) : new Date();
-            base.setMonth(base.getMonth() + 1);
-            document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
-          }
+    function selectPayStudent(i) {
+      const s = students[i];
+      document.getElementById('pay-name').value = '';
+      document.getElementById('pay-name-dropdown').style.display = 'none';
+      paySelectedStudents.push({ idx: i, name: s.name, end: s.end, belt: s.belt });
+      renderPayTags();
+      // Update renewal with first student's end date
+      if (paySelectedStudents.length === 1) {
+        document.getElementById('pay-renew-current').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
+        if (document.getElementById('pay-renew-toggle').checked) {
+          const base = s.end ? new Date(s.end) : new Date();
+          base.setMonth(base.getMonth() + 1);
+          document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
         }
       }
+    }
 
-      function renderPayTags() {
-        const wrap = document.getElementById('pay-tags-wrap');
-        if (!wrap) return;
-        wrap.innerHTML = paySelectedStudents.map((s, i) => `
+    function renderPayTags() {
+      const wrap = document.getElementById('pay-tags-wrap');
+      if (!wrap) return;
+      wrap.innerHTML = paySelectedStudents.map((s, i) => `
           <div style="display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:4px 10px 4px 6px">
             ${s.belt ? beltBadge(s.belt) : ''}
             <span style="font-size:13px;font-weight:600;color:var(--text)">${s.name}</span>
             ${s.end ? '<span style="font-size:11px;color:var(--text2)">' + fmtDate(s.end) + '</span>' : ''}
             <button onclick="removePayTag(${i})" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:16px;line-height:1;padding:0 0 0 4px;margin:0">×</button>
           </div>`).join('');
-      }
+    }
 
-      function removePayTag(i) {
-        paySelectedStudents.splice(i, 1);
-        renderPayTags();
-        if (paySelectedStudents.length === 0) {
-          document.getElementById('pay-renew-toggle').checked = false;
-          document.getElementById('pay-renew-fields').style.display = 'none';
-        }
-      }
-
-      function clearPaySelected() {
-        paySelectedStudents = [];
-        document.getElementById('pay-name').value = '';
-        document.getElementById('pay-name-dropdown').style.display = 'none';
+    function removePayTag(i) {
+      paySelectedStudents.splice(i, 1);
+      renderPayTags();
+      if (paySelectedStudents.length === 0) {
         document.getElementById('pay-renew-toggle').checked = false;
         document.getElementById('pay-renew-fields').style.display = 'none';
-        document.getElementById('renew-new-end').value = '';
-        renderPayTags();
       }
+    }
 
-      function toggleRenewFields() {
-        const checked = document.getElementById('pay-renew-toggle').checked;
-        document.getElementById('pay-renew-fields').style.display = checked ? 'block' : 'none';
-        if (checked && paySelectedStudents.length > 0) {
-          const s = students[paySelectedStudents[0].idx];
+    function clearPaySelected() {
+      paySelectedStudents = [];
+      document.getElementById('pay-name').value = '';
+      document.getElementById('pay-name-dropdown').style.display = 'none';
+      document.getElementById('pay-renew-toggle').checked = false;
+      document.getElementById('pay-renew-fields').style.display = 'none';
+      document.getElementById('renew-new-end').value = '';
+      renderPayTags();
+    }
+
+    function toggleRenewFields() {
+      const checked = document.getElementById('pay-renew-toggle').checked;
+      document.getElementById('pay-renew-fields').style.display = checked ? 'block' : 'none';
+      if (checked && paySelectedStudents.length > 0) {
+        const s = students[paySelectedStudents[0].idx];
+        if (s) {
+          document.getElementById('pay-renew-current').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
+          const base = s.end ? new Date(s.end) : new Date();
+          base.setMonth(base.getMonth() + 1);
+          document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
+        }
+      }
+    }
+
+    async function savePayment() {
+      if (!paySelectedStudents.length) { toast('يرجى اختيار طالب واحد على الأقل', true); return; }
+      const amount = document.getElementById('pay-amount').value.trim();
+      const date = document.getElementById('pay-date').value;
+      const checked = [...document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]:checked')].map(c => c.value);
+      const reason = checked.join(' + ');
+      if (!amount || !date || !reason) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
+      const doRenew = document.getElementById('pay-renew-toggle').checked;
+      const newEnd = doRenew ? document.getElementById('renew-new-end').value : null;
+      if (doRenew && !newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
+      const notes = (doRenew && newEnd ? 'تجديد حتى ' + fmtDate(newEnd) + (document.getElementById('pay-notes').value.trim() ? ' | ' : '') : '') + document.getElementById('pay-notes').value.trim();
+
+      // Build payments for all selected students — unique _id per payment
+      const ts = Date.now();
+      const newPayments = paySelectedStudents.map((ps, idx) => ({
+        _id: 'p_' + (ts + idx) + '_' + Math.random().toString(36).substr(2, 5),
+        id: ts + idx, name: ps.name, amount, date, reason, notes
+      }));
+
+      // Add to array and render IMMEDIATELY
+      newPayments.forEach(p => payments.unshift(p));
+      renderPayments();
+      toast('تم تسجيل الدفعة ✓');
+
+      // Renew subscription for ALL selected students if checked
+      if (doRenew && newEnd && paySelectedStudents.length > 0) {
+        for (const ps of paySelectedStudents) {
+          const s = students[ps.idx];
           if (s) {
-            document.getElementById('pay-renew-current').textContent = s.end ? fmtDate(s.end) : 'غير محدد';
-            const base = s.end ? new Date(s.end) : new Date();
-            base.setMonth(base.getMonth() + 1);
-            document.getElementById('renew-new-end').value = base.toISOString().split('T')[0];
+            s.end = newEnd;
+            if (s._id) pendingLocalEdits.set(s._id, Date.now());
+            if (window.firebaseReady) window.firebaseSave(s, s._id || ps.idx);
           }
         }
+        save();
+        renderStudents();
+        const names = paySelectedStudents.map(ps => ps.name).join('، ');
+        toast('تم تجديد اشتراك ' + names + ' حتى ' + fmtDate(newEnd) + ' ✓');
       }
 
-      async function savePayment() {
-        if (!paySelectedStudents.length) { toast('يرجى اختيار طالب واحد على الأقل', true); return; }
-        const amount = document.getElementById('pay-amount').value.trim();
-        const date = document.getElementById('pay-date').value;
-        const checked = [...document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]:checked')].map(c => c.value);
-        const reason = checked.join(' + ');
-        if (!amount || !date || !reason) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
-        const doRenew = document.getElementById('pay-renew-toggle').checked;
-        const newEnd = doRenew ? document.getElementById('renew-new-end').value : null;
-        if (doRenew && !newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
-        const notes = (doRenew && newEnd ? 'تجديد حتى ' + fmtDate(newEnd) + (document.getElementById('pay-notes').value.trim() ? ' | ' : '') : '') + document.getElementById('pay-notes').value.trim();
+      // Reset form
+      clearPaySelected();
+      document.getElementById('pay-amount').value = '';
+      document.getElementById('pay-notes').value = '';
+      document.getElementById('pay-date').value = '';
+      document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]').forEach(c => c.checked = false);
 
-        // Build payments for all selected students — unique _id per payment
-        const ts = Date.now();
-        const newPayments = paySelectedStudents.map((ps, idx) => ({
-          _id: 'p_' + (ts + idx) + '_' + Math.random().toString(36).substr(2, 5),
-          id: ts + idx, name: ps.name, amount, date, reason, notes
-        }));
-
-        // Add to array and render IMMEDIATELY
-        newPayments.forEach(p => payments.unshift(p));
-        renderPayments();
-        toast('تم تسجيل الدفعة ✓');
-
-        // Renew subscription for ALL selected students if checked
-        if (doRenew && newEnd && paySelectedStudents.length > 0) {
-          for (const ps of paySelectedStudents) {
-            const s = students[ps.idx];
-            if (s) {
-              s.end = newEnd;
-              if (s._id) pendingLocalEdits.set(s._id, Date.now());
-              if (window.firebaseReady) window.firebaseSave(s, s._id || ps.idx);
-            }
-          }
-          save();
-          renderStudents();
-          const names = paySelectedStudents.map(ps => ps.name).join('، ');
-          toast('تم تجديد اشتراك ' + names + ' حتى ' + fmtDate(newEnd) + ' ✓');
-        }
-
-        // Reset form
-        clearPaySelected();
-        document.getElementById('pay-amount').value = '';
-        document.getElementById('pay-notes').value = '';
-        document.getElementById('pay-date').value = '';
-        document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]').forEach(c => c.checked = false);
-
-        // Save to Firebase in background
-        for (const p of newPayments) {
-          await fbSaveDoc('payments', p._id, p);
-        }
-        try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch(e) {}
+      // Save to Firebase in background
+      for (const p of newPayments) {
+        await fbSaveDoc('payments', p._id, p);
       }
+      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
+    }
 
 
-      function renderPayments() {
-        const el = document.getElementById('payments-list');
-        if (!payments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
-        let h = `<table class="st"><thead><tr>
+    function renderPayments() {
+      const el = document.getElementById('payments-list');
+      if (!payments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
+      let h = `<table class="st"><thead><tr>
     <th style="width:22%">الاسم</th><th style="width:15%">المبلغ</th><th style="width:20%">السبب</th><th style="width:15%">التاريخ</th><th style="width:18%">ملاحظات</th><th style="width:10%">إجراءات</th>
   </tr></thead><tbody>`;
-        payments.forEach((p, i) => {
-          h += `<tr>
+      payments.forEach((p, i) => {
+        h += `<tr>
       <td style="font-weight:600">${p.name}</td>
       <td><span style="color:#2a6b10;font-weight:700">${p.amount} د.أ</span></td>
       <td>${p.reason}</td>
@@ -2632,43 +2653,43 @@
         <button class="ib del" onclick="delPayment(${i})" title="حذف"><i class="ti ti-trash"></i></button>
       </div></td>
     </tr>`;
-        });
-        h += '</tbody></table>';
-        el.innerHTML = h;
-      }
+      });
+      h += '</tbody></table>';
+      el.innerHTML = h;
+    }
 
-      function delPayment(i) {
-        if (!confirm('حذف هذه الدفعة؟')) return;
-        const p = payments[i];
-        if (p._id) fbDeleteDoc('payments', p._id);
-        payments.splice(i, 1);
-        try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
-        if (isPaySearchTab() || paySearchActive) searchPaymentsByDate();
-        else renderPayments();
-        toast('تم الحذف');
-      }
+    function delPayment(i) {
+      if (!confirm('حذف هذه الدفعة؟')) return;
+      const p = payments[i];
+      if (p._id) fbDeleteDoc('payments', p._id);
+      payments.splice(i, 1);
+      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
+      if (isPaySearchTab() || paySearchActive) searchPaymentsByDate();
+      else renderPayments();
+      toast('تم الحذف');
+    }
 
-      function printInvoice(i) {
-        const p = payments[i];
-        // Convert amount to words (simple Arabic)
-        function amountWords(n) {
-          const ones = ['','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة','عشرة',
-            'أحد عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'];
-          const tens = ['','','عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'];
-          const num = parseFloat(n);
-          if (isNaN(num)) return n;
-          const d = Math.round(num);
-          const fils = Math.round((num - d) * 1000);
-          let words = '';
-          if (d >= 100) { words += ['','مئة','مئتان','ثلاثمئة','أربعمئة','خمسمئة','ستمئة','سبعمئة','ثمانمئة','تسعمئة'][Math.floor(d/100)]; }
-          const r = d % 100;
-          if (r > 0) { words += (words?' و':'') + (r < 20 ? ones[r] : ones[r%10] + (r%10?' و':'') + tens[Math.floor(r/10)]); }
-          words = (words || 'صفر') + ' دينار';
-          if (fils > 0) words += ' و' + fils + ' فلس';
-          return words;
-        }
-        const w = window.open('', '_blank', 'width=700,height=600');
-        w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
+    function printInvoice(i) {
+      const p = payments[i];
+      // Convert amount to words (simple Arabic)
+      function amountWords(n) {
+        const ones = ['', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة', 'عشرة',
+          'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
+        const tens = ['', '', 'عشرون', 'ثلاثون', 'أربعون', 'خمسون', 'ستون', 'سبعون', 'ثمانون', 'تسعون'];
+        const num = parseFloat(n);
+        if (isNaN(num)) return n;
+        const d = Math.round(num);
+        const fils = Math.round((num - d) * 1000);
+        let words = '';
+        if (d >= 100) { words += ['', 'مئة', 'مئتان', 'ثلاثمئة', 'أربعمئة', 'خمسمئة', 'ستمئة', 'سبعمئة', 'ثمانمئة', 'تسعمئة'][Math.floor(d / 100)]; }
+        const r = d % 100;
+        if (r > 0) { words += (words ? ' و' : '') + (r < 20 ? ones[r] : ones[r % 10] + (r % 10 ? ' و' : '') + tens[Math.floor(r / 10)]); }
+        words = (words || 'صفر') + ' دينار';
+        if (fils > 0) words += ' و' + fils + ' فلس';
+        return words;
+      }
+      const w = window.open('', '_blank', 'width=700,height=600');
+      w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
   <title>سند قبض</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -2755,67 +2776,67 @@
     </div>
   </div>
   </body></html>`);
-        w.document.close();
-      }
+      w.document.close();
+    }
 
-      // ── Trainers ──────────────────────────────────────────────
-      async function saveTrainerPayment() {
-        const name = document.getElementById('tpay-name').value.trim();
-        const amount = document.getElementById('tpay-amount').value.trim();
-        const date = document.getElementById('tpay-date').value;
-        if (!name || !amount || !date) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
-        const newPayment = {
-          _id: 'tp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-          id: Date.now(), trainer: name, amount, date,
-          notes: document.getElementById('tpay-notes').value.trim()
-        };
-        // Add to array and render IMMEDIATELY
-        trainerPayments.unshift(newPayment);
-        ['tpay-name', 'tpay-amount', 'tpay-notes'].forEach(id => document.getElementById(id).value = '');
-        renderTrainerPayments();
-        toast('تم تسجيل الدفعة ✓');
-        // Save to Firebase in background
-        await fbSaveDoc('trainerPayments', newPayment._id, newPayment);
-        try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
-      }
+    // ── Trainers ──────────────────────────────────────────────
+    async function saveTrainerPayment() {
+      const name = document.getElementById('tpay-name').value.trim();
+      const amount = document.getElementById('tpay-amount').value.trim();
+      const date = document.getElementById('tpay-date').value;
+      if (!name || !amount || !date) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
+      const newPayment = {
+        _id: 'tp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        id: Date.now(), trainer: name, amount, date,
+        notes: document.getElementById('tpay-notes').value.trim()
+      };
+      // Add to array and render IMMEDIATELY
+      trainerPayments.unshift(newPayment);
+      ['tpay-name', 'tpay-amount', 'tpay-notes'].forEach(id => document.getElementById(id).value = '');
+      renderTrainerPayments();
+      toast('تم تسجيل الدفعة ✓');
+      // Save to Firebase in background
+      await fbSaveDoc('trainerPayments', newPayment._id, newPayment);
+      try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
+    }
 
-      function renderTrainerPayments() {
-        const el = document.getElementById('tpayments-list');
-        if (!el) { return; }
-        if (!trainerPayments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
-        let h = `<table class="st"><thead><tr>
+    function renderTrainerPayments() {
+      const el = document.getElementById('tpayments-list');
+      if (!el) { return; }
+      if (!trainerPayments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
+      let h = `<table class="st"><thead><tr>
     <th style="width:25%">المدرب</th><th style="width:18%">المبلغ</th><th style="width:18%">التاريخ</th><th style="width:25%">ملاحظات</th><th style="width:14%">حذف</th>
   </tr></thead><tbody>`;
-        trainerPayments.forEach((p, i) => {
-          h += `<tr>
+      trainerPayments.forEach((p, i) => {
+        h += `<tr>
       <td style="font-weight:600">${p.trainer}</td>
       <td style="color:#2a6b10;font-weight:700">${p.amount} د.أ</td>
       <td>${fmtDate(p.date)}</td>
       <td>${p.notes || '—'}</td>
       <td><button class="ib del" onclick="delTrainerPayment(${i})"><i class="ti ti-trash"></i></button></td>
     </tr>`;
-        });
-        h += '</tbody></table>';
-        el.innerHTML = h;
-      }
+      });
+      h += '</tbody></table>';
+      el.innerHTML = h;
+    }
 
-      function delTrainerPayment(i) {
-        if (!confirm('حذف هذه الدفعة؟')) return;
-        const p = trainerPayments[i];
-        if (p._id) fbDeleteDoc('trainerPayments', p._id);
-        trainerPayments.splice(i, 1);
-        try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
-        if (isPaySearchTab() || paySearchActive) searchPaymentsByDate();
-        else renderTrainerPayments();
-        toast('تم الحذف');
-      }
+    function delTrainerPayment(i) {
+      if (!confirm('حذف هذه الدفعة؟')) return;
+      const p = trainerPayments[i];
+      if (p._id) fbDeleteDoc('trainerPayments', p._id);
+      trainerPayments.splice(i, 1);
+      try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
+      if (isPaySearchTab() || paySearchActive) searchPaymentsByDate();
+      else renderTrainerPayments();
+      toast('تم الحذف');
+    }
 
-      // Init payments date
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('pay-date').value = today;
-      document.getElementById('tpay-date').value = today;
+    // Init payments date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('pay-date').value = today;
+    document.getElementById('tpay-date').value = today;
 
-    </script>
+  </script>
 </body>
 
 </html>
