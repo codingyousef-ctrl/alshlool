@@ -1230,6 +1230,10 @@
                 <label>التاريخ *</label>
                 <input id="pay-date" type="date">
               </div>
+              <div class="fg">
+                <label>الباقي (دينار)</label>
+                <input id="pay-remaining" type="number" placeholder="0.00" min="0" step="0.5">
+              </div>
               <div class="fg full">
                 <label>سبب الدفع * (يمكن اختيار أكثر من سبب)</label>
                 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="pay-reasons-wrap">
@@ -1283,6 +1287,13 @@
             </div>
 
             <hr class="divider">
+            <div class="sec-title" style="margin-bottom:8px"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل الدفعات</div>
+            <div style="position:relative;margin-bottom:10px">
+              <input id="pay-history-search" type="text" placeholder="🔍 ابحث باسم الطالب لعرض كل دفعاته..." autocomplete="off"
+                oninput="renderPayments()"
+                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;box-sizing:border-box">
+            </div>
+            <div id="pay-history-summary"></div>
             <div class="tbl-wrap" id="payments-list"></div>
           </div>
 
@@ -1501,6 +1512,16 @@
 
     function gBadge(g) { return g === 'm' ? `<span class="badge b-m">ذكر</span>` : `<span class="badge b-f">أنثى</span>`; }
 
+    function getStudentRemaining(name) {
+      if (!name) return 0;
+      const matches = payments.filter(p => p.name === name);
+      if (!matches.length) return 0;
+      matches.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      const latest = matches[0];
+      const r = latest.remaining ? parseFloat(latest.remaining) : 0;
+      return (r > 0) ? r : 0;
+    }
+
     function beltBadge(id) {
       if (!id) return '<span style="color:var(--text2);font-size:12px">—</span>';
       const b = BELTS.find(x => x.id === id);
@@ -1526,20 +1547,23 @@
       const el = document.getElementById(cid);
       if (!list.length) { el.innerHTML = `<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
       let h = `<table class="st"><thead><tr>
-    <th style="width:22%">الاسم</th><th style="width:11%">الجنس</th><th style="width:14%">الحزام</th><th style="width:18%">رقم الهاتف</th><th style="width:15%">ينتهي</th><th style="width:10%">الحالة</th><th style="width:10%">إجراءات</th>
+    <th style="width:18%">الاسم</th><th style="width:8%">الجنس</th><th style="width:12%">الحزام</th><th style="width:14%">رقم الهاتف</th><th style="width:12%">ينتهي</th><th style="width:12%">الحالة</th><th style="width:10%">الباقي</th><th style="width:14%">إجراءات</th>
   </tr></thead><tbody>`;
       list.forEach(s => {
         const i = students.indexOf(s);
+        const remaining = getStudentRemaining(s.name);
         h += `<tr>
       <td style="font-weight:600">${s.name}</td>
       <td>${gBadge(s.gender)}</td>
       <td>${beltBadge(s.belt)}</td>
       <td dir="ltr">${s.dad || '—'}</td>
       <td>${(isStudentStopped(s) || getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen') ? '—' : fmtDate(s.end)}</td>
-      <td>${sBadge(s)}</td>
+      <td style="white-space:normal;line-height:1.6">${sBadge(s)}</td>
+      <td>${remaining > 0 ? `<span class="badge" style="background:#fce8e8;color:#a01414;display:inline-block">${remaining} د.أ</span>` : '<span style="color:var(--text2);font-size:12px">—</span>'}</td>
       <td><div class="act-btns">
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
+        ${remaining > 0 ? `<button class="ib" style="color:#1a7a1a" onclick="settleRemaining(${i})" title="تسديد الباقي"><i class="ti ti-cash"></i></button>` : ''}
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
       </div></td>
     </tr>`;
@@ -1914,6 +1938,66 @@
 
     function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
 
+    function settleRemaining(i) {
+      const s = students[i];
+      const remaining = getStudentRemaining(s.name);
+      if (remaining <= 0) { toast('لا يوجد باقي على هذا الطالب', true); return; }
+      document.getElementById('modal-title').textContent = 'تسديد الباقي - ' + s.name;
+      document.getElementById('modal-body').innerHTML = `
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px">
+      الباقي الحالي: <b style="color:#cc1a1a">${remaining} د.أ</b>
+    </div>
+    <div class="form-grid" style="margin-bottom:6px">
+      <div class="fg full">
+        <label>المبلغ المدفوع الآن (دينار) *</label>
+        <input id="settle-amount" type="number" min="0" max="${remaining}" step="0.5" value="${remaining}">
+      </div>
+      <div class="fg full">
+        <label>التاريخ *</label>
+        <input id="settle-date" type="date" value="${new Date().toISOString().split('T')[0]}">
+      </div>
+      <div class="fg full">
+        <label>ملاحظات</label>
+        <input id="settle-notes" type="text" placeholder="ملاحظات إضافية...">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn-s" style="flex:1" onclick="document.getElementById('settle-amount').value='${remaining}'">دفع الكل (${remaining} د.أ)</button>
+      <button class="btn-s" style="flex:1" onclick="document.getElementById('settle-amount').focus()">دفع جزء منه</button>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-s" onclick="closeModal()">إلغاء</button>
+      <button class="btn-p" onclick="confirmSettleRemaining(${i}, ${remaining})"><i class="ti ti-check"></i> تأكيد الدفع</button>
+    </div>`;
+      document.getElementById('modal-bg').classList.add('show');
+    }
+
+    async function confirmSettleRemaining(i, oldRemaining) {
+      const s = students[i];
+      const amountInput = document.getElementById('settle-amount').value.trim();
+      const date = document.getElementById('settle-date').value;
+      const notes = document.getElementById('settle-notes').value.trim();
+      const amount = parseFloat(amountInput);
+      if (!amountInput || isNaN(amount) || amount <= 0) { toast('يرجى إدخال مبلغ صحيح', true); return; }
+      if (!date) { toast('يرجى تحديد التاريخ', true); return; }
+      if (amount > oldRemaining) { toast('المبلغ أكبر من الباقي', true); return; }
+      const newRemaining = Math.max(0, +(oldRemaining - amount).toFixed(2));
+      const ts = Date.now();
+      const p = {
+        _id: 'p_' + ts + '_' + Math.random().toString(36).substr(2, 5),
+        id: ts, name: s.name, amount: amountInput, date,
+        remaining: newRemaining > 0 ? newRemaining : '',
+        reason: 'تسديد الباقي', notes
+      };
+      payments.unshift(p);
+      renderPayments();
+      renderStudents();
+      closeModal();
+      toast(newRemaining > 0 ? 'تم تسجيل دفعة جزئية، الباقي ' + newRemaining + ' د.أ ✓' : 'تم تسديد كامل الباقي ✓');
+      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
+      await fbSaveDoc('payments', p._id, p);
+    }
+
     function doSearch() {
       const q = document.getElementById('search-inp').value.trim().toLowerCase();
       if (!q) { document.getElementById('search-results').innerHTML = ''; return; }
@@ -2252,7 +2336,7 @@
       }
       const isStudent = type === 'student';
       let h = `<table class="st"><thead><tr>
-    <th style="width:${isStudent ? '22%' : '25%'}">الاسم</th><th style="width:14%">المبلغ</th><th style="width:${isStudent ? '24%' : '20%'}">التفاصيل</th><th style="width:14%">التاريخ</th><th style="width:14%">ملاحظات</th><th style="width:12%">إجراءات</th>
+    <th style="width:${isStudent ? '18%' : '25%'}">الاسم</th><th style="width:12%">المبلغ</th>${isStudent ? '<th style="width:10%">الباقي</th>' : ''}<th style="width:${isStudent ? '22%' : '20%'}">التفاصيل</th><th style="width:13%">التاريخ</th><th style="width:13%">ملاحظات</th><th style="width:12%">إجراءات</th>
   </tr></thead><tbody>`;
       list.forEach(p => {
         const details = isStudent ? (p.reason || '—') : 'راتب مدرب';
@@ -2264,6 +2348,7 @@
         h += `<tr>
       <td style="font-weight:600">${p.name || p.trainer}</td>
       <td><span style="color:${amountColor};font-weight:700">${p.amount} د.أ</span></td>
+      ${isStudent ? `<td>${p.remaining && parseFloat(p.remaining) > 0 ? '<span style="color:#cc1a1a;font-weight:700">' + p.remaining + ' د.أ</span>' : '—'}</td>` : ''}
       <td>${details}</td>
       <td>${fmtDate(p.date)}</td>
       <td>${p.notes || '—'}</td>
@@ -2584,6 +2669,7 @@
       if (!paySelectedStudents.length) { toast('يرجى اختيار طالب واحد على الأقل', true); return; }
       const amount = document.getElementById('pay-amount').value.trim();
       const date = document.getElementById('pay-date').value;
+      const remaining = document.getElementById('pay-remaining').value.trim();
       const checked = [...document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]:checked')].map(c => c.value);
       const reason = checked.join(' + ');
       if (!amount || !date || !reason) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
@@ -2596,12 +2682,13 @@
       const ts = Date.now();
       const newPayments = paySelectedStudents.map((ps, idx) => ({
         _id: 'p_' + (ts + idx) + '_' + Math.random().toString(36).substr(2, 5),
-        id: ts + idx, name: ps.name, amount, date, reason, notes
+        id: ts + idx, name: ps.name, amount, date, remaining, reason, notes
       }));
 
       // Add to array and render IMMEDIATELY
       newPayments.forEach(p => payments.unshift(p));
       renderPayments();
+      renderStudents();
       toast('تم تسجيل الدفعة ✓');
 
       // Renew subscription for ALL selected students if checked
@@ -2623,6 +2710,7 @@
       // Reset form
       clearPaySelected();
       document.getElementById('pay-amount').value = '';
+      document.getElementById('pay-remaining').value = '';
       document.getElementById('pay-notes').value = '';
       document.getElementById('pay-date').value = '';
       document.querySelectorAll('#pay-reasons-wrap input[type=checkbox]').forEach(c => c.checked = false);
@@ -2637,14 +2725,35 @@
 
     function renderPayments() {
       const el = document.getElementById('payments-list');
-      if (!payments.length) { el.innerHTML = '<div class="empty">لا توجد دفعات مسجلة</div>'; return; }
+      const summaryEl = document.getElementById('pay-history-summary');
+      const searchInput = document.getElementById('pay-history-search');
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const list = q ? payments.filter(p => p.name && p.name.toLowerCase().includes(q)) : payments;
+
+      if (summaryEl) {
+        if (q && list.length) {
+          const totalPaid = list.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+          const totalRemaining = list.reduce((sum, p) => sum + (parseFloat(p.remaining) || 0), 0);
+          summaryEl.innerHTML = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+            <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">عدد الدفعات: <b>${list.length}</b></div>
+            <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">إجمالي المدفوع: <b style="color:#2a6b10">${totalPaid.toFixed(2)} د.أ</b></div>
+            ${totalRemaining > 0 ? `<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">إجمالي الباقي: <b style="color:#cc1a1a">${totalRemaining.toFixed(2)} د.أ</b></div>` : ''}
+          </div>`;
+        } else {
+          summaryEl.innerHTML = '';
+        }
+      }
+
+      if (!list.length) { el.innerHTML = `<div class="empty">${q ? 'لا توجد دفعات لهذا الطالب' : 'لا توجد دفعات مسجلة'}</div>`; return; }
       let h = `<table class="st"><thead><tr>
-    <th style="width:22%">الاسم</th><th style="width:15%">المبلغ</th><th style="width:20%">السبب</th><th style="width:15%">التاريخ</th><th style="width:18%">ملاحظات</th><th style="width:10%">إجراءات</th>
+    <th style="width:20%">الاسم</th><th style="width:13%">المبلغ</th><th style="width:12%">الباقي</th><th style="width:18%">السبب</th><th style="width:13%">التاريخ</th><th style="width:14%">ملاحظات</th><th style="width:10%">إجراءات</th>
   </tr></thead><tbody>`;
-      payments.forEach((p, i) => {
+      list.forEach((p) => {
+        const i = payments.indexOf(p);
         h += `<tr>
       <td style="font-weight:600">${p.name}</td>
       <td><span style="color:#2a6b10;font-weight:700">${p.amount} د.أ</span></td>
+      <td>${p.remaining && parseFloat(p.remaining) > 0 ? '<span style="color:#cc1a1a;font-weight:700">' + p.remaining + ' د.أ</span>' : '—'}</td>
       <td>${p.reason}</td>
       <td>${fmtDate(p.date)}</td>
       <td>${p.notes || '—'}</td>
@@ -2666,6 +2775,7 @@
       try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
       if (isPaySearchTab() || paySearchActive) searchPaymentsByDate();
       else renderPayments();
+      renderStudents();
       toast('تم الحذف');
     }
 
@@ -2766,7 +2876,7 @@
         <tbody><tr>
           <td>${p.amount}</td>
           <td>${p.amount}</td>
-          <td>—</td>
+          <td>${p.remaining && parseFloat(p.remaining) > 0 ? p.remaining : '—'}</td>
         </tr></tbody>
       </table>
     </div>
