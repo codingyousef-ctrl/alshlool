@@ -16,75 +16,93 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
   <style>
     :root {
-      --bg: #f2f2f7;
+      --bg: #f6f3ec;
       --surface: #ffffff;
-      --surface2: #f7f7f9;
-      --border: #e0e0ea;
-      --border2: #ebebf2;
-      --text: #0d0d0d;
-      --text2: #6b6b80;
-      --red: #cc1a1a;
-      --red-dark: #a01212;
-      --green: #1a7a1a;
-      --header: #0d0d0d;
-      --nav: #111111;
-      --jordan-red: #cc1a1a;
-      --jordan-green: #1a6b1a;
-      --jordan-black: #0d0d0d;
+      --surface2: #f1ebdf;
+      --border: #e6ddc9;
+      --border2: #ede6d6;
+      --text: #1c1712;
+      --text2: #8a8072;
+      --red: #c41e1e;
+      --red-dark: #8c1414;
+      --red-light: #fbe9e7;
+      --green: #1d7a4c;
+      --green-light: #e6f4ea;
+      --gold: #a9741f;
+      --gold-light: #faf0da;
+      --blue: #22588f;
+      --blue-light: #e9f1fb;
+      --pink: #a13d6d;
+      --pink-light: #fbe9f1;
+      --purple: #6a3f96;
+      --purple-light: #f1eaf8;
+      --header: #16130e;
+      --nav: #0f0d0a;
+      --jordan-red: #c41e1e;
+      --jordan-green: #1d6b3f;
+      --jordan-black: #16130e;
       --font: 'Cairo', sans-serif;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 1px 2px rgba(28, 23, 18, .05), 0 1px 1px rgba(28, 23, 18, .04);
+      --shadow-md: 0 8px 24px rgba(28, 23, 18, .08);
+      --shadow-lg: 0 20px 48px rgba(28, 23, 18, .18);
     }
 
     [data-theme="dark"] {
-      --bg: #111118;
-      --surface: #1c1c26;
-      --surface2: #16161e;
-      --border: #2a2a3a;
-      --border2: #222230;
-      --text: #e8e8f0;
-      --text2: #8888a0;
-      --header: #080810;
-      --nav: #060610;
+      --bg: #141210;
+      --surface: #1f1c17;
+      --surface2: #191510;
+      --border: #322a1f;
+      --border2: #2a231a;
+      --text: #f3ede0;
+      --text2: #a89b85;
+      --header: #0b0a07;
+      --nav: #0b0a07;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, .35);
+      --shadow-lg: 0 20px 48px rgba(0, 0, 0, .5);
     }
 
     [data-theme="dark"] .b-act {
-      background: #0f2a08;
-      color: #5ec43e
+      background: #123320;
+      color: #5ec98e
     }
 
     [data-theme="dark"] .b-exp {
-      background: #2a0a0a;
-      color: #f07070
+      background: #391414;
+      color: #f2857c
     }
 
     [data-theme="dark"] .b-soon {
-      background: #2a1a04;
-      color: #e8a030
+      background: #362508;
+      color: #e8b854
     }
 
     [data-theme="dark"] .b-m {
-      background: #081830;
-      color: #5090e8
+      background: #10263e;
+      color: #6fa8e0
     }
 
     [data-theme="dark"] .b-f {
-      background: #280a18;
-      color: #e870a8
+      background: #391a2a;
+      color: #ea8fbb
     }
 
     [data-theme="dark"] .b-frozen {
-      background: #082a30;
-      color: #5090e8
+      background: #0f2c3a;
+      color: #66b3d6
     }
 
     [data-theme="dark"] .b-stopped {
-      background: #1a0828;
-      color: #b870e8
+      background: #281638;
+      color: #bd8ee8
     }
 
     [data-theme="dark"] .belt-opt.sel {
-      background: #1a0808;
-      color: #cc1a1a;
-      border-color: #cc1a1a
+      background: #2b1210;
+      color: #ea6a5f;
+      border-color: var(--red)
     }
 
     [data-theme="dark"] input,
@@ -105,7 +123,13 @@
       direction: rtl;
       background: var(--bg);
       min-height: 100vh;
-      transition: background .3s, color .3s
+      transition: background .3s, color .3s;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--red);
+      outline-offset: 2px;
     }
 
     /* ── Lock Screen ── */
@@ -113,7 +137,10 @@
       position: fixed;
       inset: 0;
       z-index: 999;
-      background: linear-gradient(160deg, #0d0d0d 0%, #1a0505 50%, #050d0d 100%);
+      background:
+        radial-gradient(circle at 15% 8%, rgba(196, 30, 30, .18), transparent 45%),
+        radial-gradient(circle at 85% 92%, rgba(169, 116, 31, .14), transparent 50%),
+        linear-gradient(160deg, #14110d 0%, #1c1310 45%, #0d0c0a 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -127,9 +154,11 @@
     }
 
     .lock-logo {
-      width: 160px;
-      height: 160px;
-      margin-bottom: 24px;
+      width: 148px;
+      height: 148px;
+      margin-bottom: 22px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 20px 50px rgba(0, 0, 0, .5);
       animation: logoIn .8s cubic-bezier(.34, 1.56, .64, 1) both;
     }
 
@@ -147,17 +176,18 @@
 
     .lock-title {
       color: white;
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 700;
       text-align: center;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
+      letter-spacing: .2px;
       animation: fadeUp .6s .2s both;
     }
 
     .lock-sub {
-      color: rgba(255, 255, 255, .5);
-      font-size: 13px;
-      margin-bottom: 32px;
+      color: rgba(255, 255, 255, .48);
+      font-size: 12.5px;
+      margin-bottom: 30px;
       animation: fadeUp .6s .3s both
     }
 
@@ -174,34 +204,35 @@
     }
 
     .lock-box {
-      background: rgba(255, 255, 255, .05);
+      background: rgba(255, 255, 255, .045);
       border: 1px solid rgba(255, 255, 255, .1);
-      border-radius: 16px;
-      padding: 24px 22px;
+      border-radius: 20px;
+      padding: 26px 22px;
       width: 100%;
       max-width: 340px;
       animation: fadeUp .6s .4s both;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-lg);
     }
 
     .lock-label {
-      color: rgba(255, 255, 255, .7);
+      color: rgba(255, 255, 255, .65);
       font-size: 12px;
-      margin-bottom: 7px;
+      margin-bottom: 8px;
       display: block
     }
 
     .lock-input-wrap {
       position: relative;
-      margin-bottom: 16px
+      margin-bottom: 18px
     }
 
     .lock-inp {
       width: 100%;
-      padding: 11px 14px 11px 40px;
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .15);
-      border-radius: 10px;
+      padding: 12px 14px 12px 40px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 12px;
       color: white;
       font-family: var(--font);
       font-size: 14px;
@@ -213,8 +244,8 @@
 
     .lock-inp:focus {
       outline: none;
-      border-color: #cc1a1a;
-      background: rgba(204, 26, 26, .1)
+      border-color: var(--red);
+      background: rgba(196, 30, 30, .12)
     }
 
     .lock-inp::placeholder {
@@ -237,22 +268,26 @@
 
     .lock-btn {
       width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #cc1a1a, #8b0000);
+      padding: 13px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-family: var(--font);
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
       transition: transform .15s, box-shadow .15s;
-      box-shadow: 0 4px 20px rgba(204, 26, 26, .4);
+      box-shadow: 0 8px 24px rgba(196, 30, 30, .38);
     }
 
     .lock-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(204, 26, 26, .5)
+      box-shadow: 0 10px 28px rgba(196, 30, 30, .48)
     }
 
     .lock-btn:active {
@@ -260,10 +295,10 @@
     }
 
     .lock-err {
-      color: #f07070;
+      color: #f2857c;
       font-size: 12px;
       text-align: center;
-      margin-top: 10px;
+      margin-top: 11px;
       min-height: 18px;
       transition: opacity .2s;
     }
@@ -275,14 +310,14 @@
     /* ── PWA Banner ── */
     #pwa-banner {
       display: none;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a2e);
+      background: linear-gradient(135deg, #16130e, #221a12);
       color: white;
       padding: 10px 16px;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
       font-size: 13px;
-      border-bottom: 1px solid rgba(204, 26, 26, .3);
+      border-bottom: 1px solid rgba(196, 30, 30, .35);
     }
 
     #pwa-banner.show {
@@ -290,12 +325,13 @@
     }
 
     .pwa-btn {
-      background: #cc1a1a;
+      background: var(--red);
       color: white;
       border: none;
       padding: 6px 14px;
       border-radius: 20px;
       font-family: var(--font);
+      font-weight: 600;
       font-size: 12px;
       cursor: pointer
     }
@@ -315,49 +351,66 @@
     }
 
     .header {
+      position: relative;
       background: var(--header);
       color: white;
-      padding: 10px 16px;
+      padding: 12px 16px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
-      border-bottom: 2px solid #cc1a1a;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red-dark), var(--red) 35%, var(--gold) 60%, var(--red) 85%, var(--red-dark));
+      opacity: .95;
     }
 
     .logo-wrap {
       flex-shrink: 0;
-      width: 46px;
-      height: 46px
+      width: 42px;
+      height: 42px
     }
 
     .logo-wrap svg {
-      width: 46px;
-      height: 46px
+      width: 42px;
+      height: 42px
     }
 
-    /* Real logo SVG embedded */
     .logo-img {
-      width: 46px;
-      height: 46px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      object-fit: cover
+      object-fit: cover;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, .12);
     }
 
     .header-info {
-      flex: 1
+      flex: 1;
+      min-width: 0;
     }
 
     .header h1 {
       font-size: 15px;
       font-weight: 700;
       color: white;
-      letter-spacing: .3px
+      letter-spacing: .2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .header p {
-      font-size: 11px;
-      color: rgba(255, 255, 255, .5);
-      margin-top: 1px
+      font-size: 10.5px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, .45);
+      margin-top: 2px;
+      letter-spacing: .3px;
     }
 
     .header-btns {
@@ -367,8 +420,8 @@
     }
 
     .icon-btn {
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .1);
       color: white;
       width: 34px;
       height: 34px;
@@ -377,45 +430,57 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
-      transition: background .2s, transform .2s;
+      font-size: 15px;
+      transition: background .2s, transform .2s, border-color .2s;
     }
 
     .icon-btn:hover {
-      background: rgba(204, 26, 26, .4);
-      transform: rotate(15deg)
+      background: var(--red);
+      border-color: var(--red);
+      transform: rotate(12deg)
     }
 
     .nav {
       background: var(--nav);
       display: flex;
-      gap: 2px;
-      padding: 6px 14px;
+      gap: 3px;
+      padding: 7px 12px;
       overflow-x: auto;
-      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar {
+      display: none
     }
 
     .nb {
-      padding: 7px 12px;
-      border: none;
+      padding: 8px 13px;
+      border: 1px solid transparent;
       background: transparent;
-      color: rgba(255, 255, 255, .55);
+      color: rgba(255, 255, 255, .5);
       font-family: var(--font);
-      font-size: 13px;
+      font-size: 12.5px;
+      font-weight: 600;
       cursor: pointer;
-      border-radius: 8px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
-      gap: 5px;
-      transition: all .15s;
+      gap: 6px;
+      transition: all .18s;
       white-space: nowrap;
       flex-shrink: 0;
     }
 
-    .nb.active,
     .nb:hover {
-      background: #cc1a1a;
-      color: white
+      background: rgba(255, 255, 255, .06);
+      color: rgba(255, 255, 255, .85)
+    }
+
+    .nb.active {
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: white;
+      box-shadow: 0 4px 14px rgba(196, 30, 30, .35);
     }
 
     /* ── Content ── */
@@ -426,7 +491,8 @@
     }
 
     .content.show {
-      display: block
+      display: block;
+      animation: fadeUp .35s both;
     }
 
     #tab-add {
@@ -435,21 +501,23 @@
 
     .card {
       background: var(--surface);
-      border: 0.5px solid var(--border2);
-      border-radius: 14px;
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
       padding: 18px;
       margin-bottom: 14px;
-      transition: background .3s, border-color .3s;
+      box-shadow: var(--shadow-sm);
+      transition: background .3s, border-color .3s, box-shadow .2s;
     }
 
     .sec-title {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 13.5px;
+      font-weight: 700;
       color: var(--text);
       margin-bottom: 14px;
       display: flex;
       align-items: center;
-      gap: 7px
+      gap: 8px;
+      letter-spacing: .1px;
     }
 
     /* Stats */
@@ -462,29 +530,49 @@
 
     .stat {
       background: var(--surface);
-      border: 0.5px solid var(--border2);
-      border-radius: 12px;
-      padding: 14px;
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      padding: 14px 10px;
       text-align: center;
-      transition: background .3s;
+      box-shadow: var(--shadow-sm);
+      transition: background .3s, transform .15s, box-shadow .15s;
+    }
+
+    .stat:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
 
     .stat-n {
-      font-size: 26px;
-      font-weight: 700
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .stat-n::before {
+      content: '';
+      display: block;
+      width: 22px;
+      height: 3px;
+      border-radius: 3px;
+      background: currentColor;
+      opacity: .55;
+      margin: 0 auto 8px;
     }
 
     .stat-l {
-      font-size: 11px;
+      font-size: 10.5px;
+      font-weight: 600;
       color: var(--text2);
-      margin-top: 3px
+      margin-top: 4px;
+      letter-spacing: .1px;
     }
 
     /* Form */
     .fg {
       display: flex;
       flex-direction: column;
-      gap: 4px
+      gap: 5px
     }
 
     .form-grid {
@@ -498,69 +586,83 @@
     }
 
     label {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text2);
-      font-weight: 500
+      font-weight: 600;
+      letter-spacing: .1px;
     }
 
     input,
     select {
-      padding: 8px 10px;
-      border: 0.5px solid var(--border);
-      border-radius: 9px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
       font-family: var(--font);
       font-size: 13px;
       background: var(--surface);
       color: var(--text);
       direction: rtl;
       width: 100%;
-      transition: background .3s, color .3s, border-color .2s;
+      transition: background .3s, color .3s, border-color .2s, box-shadow .2s;
     }
 
     input:focus,
     select:focus {
       outline: none;
-      border-color: #cc1a1a;
-      box-shadow: 0 0 0 3px rgba(204, 26, 26, .1)
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(196, 30, 30, .1)
+    }
+
+    input::placeholder {
+      color: var(--text2);
+      opacity: .7;
     }
 
     /* Buttons */
     .btn-p {
-      background: linear-gradient(135deg, #cc1a1a, #8b0000);
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
       color: white;
       border: none;
-      padding: 9px 20px;
-      border-radius: 9px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
       font-family: var(--font);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 2px 12px rgba(204, 26, 26, .3);
-      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 16px rgba(196, 30, 30, .28);
+      transition: transform .15s, box-shadow .15s, filter .15s;
     }
 
     .btn-p:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(204, 26, 26, .4)
+      box-shadow: 0 6px 20px rgba(196, 30, 30, .38)
+    }
+
+    .btn-p:active {
+      transform: translateY(0);
+      filter: brightness(.96);
     }
 
     .btn-s {
-      background: transparent;
+      background: var(--surface);
       color: var(--text2);
-      border: 0.5px solid var(--border);
-      padding: 7px 14px;
-      border-radius: 9px;
+      border: 1px solid var(--border);
+      padding: 8px 15px;
+      border-radius: var(--radius-sm);
       font-family: var(--font);
       font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background .15s;
+      transition: background .15s, border-color .15s, color .15s;
     }
 
     .btn-s:hover {
-      background: var(--surface2)
+      background: var(--surface2);
+      border-color: var(--text2);
+      color: var(--text);
     }
 
     /* Filter */
@@ -572,26 +674,34 @@
     }
 
     .fb {
-      padding: 5px 12px;
-      border: 0.5px solid var(--border);
+      padding: 6px 13px;
+      border: 1px solid var(--border);
       border-radius: 20px;
-      background: transparent;
+      background: var(--surface);
       font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
       color: var(--text2);
       font-family: var(--font);
       transition: all .15s;
     }
 
+    .fb:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
     .fb.active {
-      background: #cc1a1a;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
       color: white;
-      border-color: #cc1a1a
+      border-color: transparent;
+      box-shadow: 0 3px 10px rgba(196, 30, 30, .3);
     }
 
     /* Table */
     .tbl-wrap {
-      overflow-x: auto
+      overflow-x: auto;
+      border-radius: 12px;
     }
 
     table.st {
@@ -602,21 +712,35 @@
     }
 
     table.st th {
-      padding: 9px 10px;
+      padding: 10px 10px;
       text-align: right;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text2);
-      border-bottom: 0.5px solid var(--border2);
-      font-size: 11px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border2);
+      font-size: 10.5px;
+      letter-spacing: .3px;
+    }
+
+    table.st th:first-child {
+      border-top-right-radius: 10px;
+    }
+
+    table.st th:last-child {
+      border-top-left-radius: 10px;
     }
 
     table.st td {
-      padding: 9px 10px;
-      border-bottom: 0.5px solid var(--border2);
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border2);
       color: var(--text);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    table.st tbody tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--surface2) 45%, transparent);
     }
 
     table.st tr:hover td {
@@ -624,46 +748,58 @@
     }
 
     .badge {
-      display: inline-block;
-      padding: 2px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px 3px 9px;
       border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .1px;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: currentColor;
     }
 
     .b-act {
-      background: #e8f5e0;
-      color: #2a6b10
+      background: var(--green-light);
+      color: var(--green)
     }
 
     .b-exp {
-      background: #fce8e8;
-      color: #a01414
+      background: var(--red-light);
+      color: var(--red-dark)
     }
 
     .b-soon {
-      background: #fef3e0;
-      color: #7a4a08
+      background: var(--gold-light);
+      color: var(--gold)
     }
 
     .b-m {
-      background: #e4f0fc;
-      color: #1455a0
+      background: var(--blue-light);
+      color: var(--blue)
     }
 
     .b-f {
-      background: #fce8f4;
-      color: #922858
+      background: var(--pink-light);
+      color: var(--pink)
     }
 
     .b-frozen {
-      background: #e0f2f7;
-      color: #1a6ba0
+      background: var(--blue-light);
+      color: var(--blue)
     }
 
     .b-stopped {
-      background: #f0e8f8;
-      color: #6a1a9a
+      background: var(--purple-light);
+      color: var(--purple)
     }
 
     /* Belt */
@@ -675,36 +811,39 @@
     }
 
     .belt-opt {
-      border: 0.5px solid var(--border);
-      border-radius: 9px;
-      padding: 7px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 9px;
       cursor: pointer;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       background: var(--surface);
       color: var(--text);
       transition: all .12s;
     }
 
     .belt-opt:hover {
-      border-color: #cc1a1a
+      border-color: var(--red);
+      transform: translateY(-1px);
     }
 
     .belt-opt.sel {
-      border-color: #cc1a1a;
-      background: #fff0f0;
-      color: #8b0000
+      border-color: var(--red);
+      background: var(--red-light);
+      color: var(--red-dark);
+      box-shadow: 0 2px 8px rgba(196, 30, 30, .15);
     }
 
     .sort-opt {
-      padding: 10px 16px;
+      padding: 11px 16px;
       font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
       color: var(--text);
-      border-bottom: 0.5px solid var(--border2);
+      border-bottom: 1px solid var(--border2);
       transition: background .1s;
     }
 
@@ -718,7 +857,7 @@
 
     .sort-opt.active {
       font-weight: 700;
-      color: #cc1a1a
+      color: var(--red)
     }
 
     /* Actions */
@@ -728,10 +867,10 @@
     }
 
     .ib {
-      background: transparent;
-      border: 0.5px solid var(--border2);
+      background: var(--surface);
+      border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 4px 7px;
+      padding: 5px 8px;
       cursor: pointer;
       color: var(--text2);
       font-size: 13px;
@@ -739,54 +878,81 @@
     }
 
     .ib:hover {
-      border-color: #cc1a1a;
-      color: #cc1a1a
+      border-color: var(--red);
+      color: var(--red);
+      background: var(--red-light);
     }
 
     .ib.del:hover {
-      color: #a01414;
-      border-color: #f09595
+      color: var(--red-dark);
+      border-color: var(--red-dark);
+      background: var(--red-light);
     }
 
     .empty {
       text-align: center;
-      padding: 40px;
+      padding: 44px 20px;
       color: var(--text2);
       font-size: 13px
     }
 
     .divider {
       border: none;
-      border-top: 0.5px solid var(--border2);
-      margin: 14px 0
+      border-top: 1px solid var(--border2);
+      margin: 16px 0
     }
 
     /* Modal */
     .modal-bg {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, .6);
+      background: rgba(15, 12, 8, .55);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
       z-index: 100;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(5px);
     }
 
     .modal-bg.show {
-      display: flex
+      display: flex;
+      animation: modalBgIn .2s both;
+    }
+
+    @keyframes modalBgIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
     }
 
     .modal {
       background: var(--surface);
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 22px;
       width: 100%;
       max-width: 560px;
       max-height: 90vh;
       overflow-y: auto;
+      box-shadow: var(--shadow-lg);
       transition: background .3s;
+      animation: modalIn .25s cubic-bezier(.2, .9, .3, 1.2) both;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(.97)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
     }
 
     .modal-hdr {
@@ -797,20 +963,31 @@
     }
 
     .close-btn {
-      background: none;
+      background: var(--surface2);
       border: none;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
       color: var(--text2);
-      padding: 2px 6px
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+    }
+
+    .close-btn:hover {
+      background: var(--red-light);
+      color: var(--red);
     }
 
     /* Detail rows */
     .detail-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 0.5px solid var(--border2);
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border2);
       font-size: 13px;
       color: var(--text);
     }
@@ -820,7 +997,8 @@
     }
 
     .dk {
-      color: var(--text2)
+      color: var(--text2);
+      font-weight: 500;
     }
 
     /* Toast */
@@ -833,24 +1011,26 @@
     }
 
     .toast {
-      background: #0d0d0d;
+      background: var(--header);
       color: white;
-      padding: 10px 18px;
-      border-radius: 9px;
+      padding: 11px 18px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
+      font-weight: 600;
       display: none;
       align-items: center;
-      gap: 7px;
-      border-left: 3px solid #1a7a1a;
+      gap: 8px;
+      border-right: 3px solid var(--green);
+      box-shadow: var(--shadow-md);
     }
 
     .toast.show {
-      display: inline-flex
+      display: inline-flex;
+      animation: fadeUp .25s both;
     }
 
     .toast.err {
-      background: #6b0a0a;
-      border-left-color: #cc1a1a
+      border-right-color: var(--red)
     }
 
     @media(max-width:480px) {
@@ -906,9 +1086,215 @@
         box-shadow: none;
       }
 
-      body {
-        background: white;
-        color: black;
+    /* ══════════════ Motion System ══════════════ */
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    /* Smoother, springier transitions on interactive elements */
+    .card,
+    .stat,
+    .btn-p,
+    .btn-s,
+    .fb,
+    .nb,
+    .ib,
+    .icon-btn,
+    .belt-opt,
+    input,
+    select,
+    table.st tr td {
+      transition-timing-function: var(--ease);
+    }
+
+    /* Ripple feedback */
+    .btn-p, .btn-s, .fb, .nb, .ib, .icon-btn, .lock-btn, .pwa-btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: .28;
+      transform: scale(0);
+      animation: rippleAnim .55s var(--ease) forwards;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: scale(2.6);
+        opacity: 0;
+      }
+    }
+
+    /* Card & stat lift */
+    .card {
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Staggered entrance for cards inside a shown tab */
+    .content.show > .card {
+      animation: fadeUp .45s var(--ease) both;
+    }
+
+    .content.show > .card:nth-of-type(1) { animation-delay: .02s }
+    .content.show > .card:nth-of-type(2) { animation-delay: .07s }
+    .content.show > .card:nth-of-type(3) { animation-delay: .12s }
+
+    .content.show > .stats-grid {
+      animation: fadeUp .4s var(--ease) both;
+    }
+
+    .stats-grid .stat:nth-child(1) { animation: fadeUp .4s var(--ease) .02s both }
+    .stats-grid .stat:nth-child(2) { animation: fadeUp .4s var(--ease) .06s both }
+    .stats-grid .stat:nth-child(3) { animation: fadeUp .4s var(--ease) .1s both }
+    .stats-grid .stat:nth-child(4) { animation: fadeUp .4s var(--ease) .14s both }
+    .stats-grid .stat:nth-child(5) { animation: fadeUp .4s var(--ease) .18s both }
+    .stats-grid .stat:nth-child(6) { animation: fadeUp .4s var(--ease) .22s both }
+
+    .stat {
+      transition: transform .25s var(--ease-spring), box-shadow .25s var(--ease);
+    }
+
+    /* Table row stagger (driven by --i custom property set inline) */
+    table.st tbody tr {
+      animation: rowIn .4s var(--ease) backwards;
+      animation-delay: calc(var(--i, 0) * 28ms);
+      transition: transform .18s var(--ease);
+    }
+
+    @keyframes rowIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Buttons: spring press */
+    .btn-p:active, .btn-s:active, .fb:active, .ib:active {
+      transform: scale(.95);
+    }
+
+    .btn-p, .btn-s, .fb, .ib {
+      transition: transform .18s var(--ease-spring), box-shadow .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
+    }
+
+    .nb {
+      transition: all .3s var(--ease-spring);
+    }
+
+    .nb.active {
+      animation: navPop .35s var(--ease-spring);
+    }
+
+    @keyframes navPop {
+      0% { transform: scale(.9) }
+      60% { transform: scale(1.05) }
+      100% { transform: scale(1) }
+    }
+
+    /* Icon button hover flourish */
+    .ib:hover i, .icon-btn:hover i {
+      animation: iconWiggle .35s var(--ease-spring);
+    }
+
+    @keyframes iconWiggle {
+      0%, 100% { transform: scale(1) }
+      50% { transform: scale(1.25) }
+    }
+
+    /* Belt option selection pop */
+    .belt-opt {
+      transition: transform .2s var(--ease-spring), border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+    }
+
+    .belt-opt.sel {
+      animation: beltSel .3s var(--ease-spring);
+    }
+
+    @keyframes beltSel {
+      0% { transform: scale(.94) }
+      60% { transform: scale(1.04) }
+      100% { transform: scale(1) }
+    }
+
+    /* Badge subtle pop when re-rendered */
+    .badge {
+      animation: badgeIn .25s var(--ease) both;
+    }
+
+    @keyframes badgeIn {
+      from { opacity: 0; transform: scale(.85) }
+      to { opacity: 1; transform: scale(1) }
+    }
+
+    /* Tab content transition (slide + fade) */
+    .content {
+      transition: none;
+    }
+
+    .content.show {
+      animation: contentIn .38s var(--ease) both;
+    }
+
+    @keyframes contentIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Toast spring bounce */
+    .toast.show {
+      animation: toastIn .4s var(--ease-spring) both;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(.94);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Modal refined spring */
+    .modal {
+      animation: modalIn .32s var(--ease-spring) both;
+    }
+
+    /* Input focus glow pulse */
+    input:focus, select:focus {
+      transition: border-color .2s var(--ease), box-shadow .25s var(--ease);
+    }
+
+    /* Reduced motion accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
       }
     }
   </style>
@@ -947,6 +1333,20 @@
     <button class="pwa-close" onclick="document.getElementById('pwa-banner').classList.remove('show')">×</button>
   </div>
 
+  <!-- ── Storage Warning Modal ── -->
+  <div class="modal-bg" id="storage-warning-bg">
+    <div class="modal" style="max-width:380px;text-align:center">
+      <div style="width:58px;height:58px;border-radius:50%;background:var(--gold-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <i class="ti ti-alert-triangle" style="font-size:26px;color:var(--gold)"></i>
+      </div>
+      <h3 style="font-size:16px;font-weight:800;margin-bottom:8px;color:var(--text)">Storage Almost Full</h3>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:22px">
+        The Firebase database is almost out of space. Please back up your data soon.
+      </p>
+      <button class="btn-p" style="width:100%;justify-content:center" onclick="closeStorageWarning()">OK</button>
+    </div>
+  </div>
+
   <div class="app" id="main-app" style="display:none">
     <div class="header">
       <!-- Header Logo (smaller) -->
@@ -978,27 +1378,27 @@
     <div class="content show" id="tab-students">
       <div class="stats-grid">
         <div class="stat">
-          <div class="stat-n" id="st-total" style="color:#52F3FF">0</div>
+          <div class="stat-n" id="st-total" style="color:var(--text)">0</div>
           <div class="stat-l">إجمالي الطلاب</div>
         </div>
         <div class="stat">
-          <div class="stat-n" id="st-act" style="color:#2a6b10">0</div>
+          <div class="stat-n" id="st-act" style="color:var(--green)">0</div>
           <div class="stat-l">اشتراك فعال</div>
         </div>
         <div class="stat">
-          <div class="stat-n" id="st-soon" style="color:#7a4a08">0</div>
+          <div class="stat-n" id="st-soon" style="color:var(--gold)">0</div>
           <div class="stat-l">ينتهي قريباً</div>
         </div>
         <div class="stat">
-          <div class="stat-n" id="st-exp" style="color:#a01414">0</div>
+          <div class="stat-n" id="st-exp" style="color:var(--red-dark)">0</div>
           <div class="stat-l">منتهي</div>
         </div>
         <div class="stat">
-          <div class="stat-n" id="st-frozen" style="color:#1a6ba0">0</div>
+          <div class="stat-n" id="st-frozen" style="color:var(--blue)">0</div>
           <div class="stat-l">مجمد</div>
         </div>
         <div class="stat">
-          <div class="stat-n" id="stat-stopped" style="color:#800517">0</div>
+          <div class="stat-n" id="stat-stopped" style="color:var(--purple)">0</div>
           <div class="stat-l">متوقف</div>
         </div>
       </div>
@@ -1035,7 +1435,7 @@
           <div onclick="setSort('belt-asc')" class="sort-opt" data-key="belt-asc">🥋 الحزام (أبيض → أسود)</div>
           <div onclick="setSort('belt-desc')" class="sort-opt" data-key="belt-desc">🥋 الحزام (أسود → أبيض)</div>
           <div onclick="setSort(null)" class="sort-opt" data-key="none"
-            style="color:#a01414;border-top:0.5px solid var(--border2)">✕ إلغاء الترتيب</div>
+            style="color:var(--red-dark);border-top:0.5px solid var(--border2)">✕ إلغاء الترتيب</div>
         </div>
         <div class="tbl-wrap" id="students-list"></div>
       </div>
@@ -1044,7 +1444,7 @@
     <!-- Add Tab -->
     <div class="content" id="tab-add">
       <div class="card">
-        <div class="sec-title"><i class="ti ti-user-plus" style="color:#cc1a1a"></i> <span id="form-title">تسجيل طالب
+        <div class="sec-title"><i class="ti ti-user-plus" style="color:var(--red)"></i> <span id="form-title">تسجيل طالب
             جديد</span></div>
         <div class="form-grid">
           <div class="fg full"><label>اسم الطالب الكامل *</label><input id="f-name" type="text"
@@ -1059,7 +1459,7 @@
           <div class="fg"><label>تاريخ الميلاد</label><input id="f-dob" type="date"></div>
         </div>
         <hr class="divider">
-        <div class="sec-title" style="font-size:13px"><i class="ti ti-phone" style="color:#cc1a1a"></i> معلومات التواصل
+        <div class="sec-title" style="font-size:13px"><i class="ti ti-phone" style="color:var(--red)"></i> معلومات التواصل
         </div>
         <div class="form-grid">
           <div class="fg"><label>رقم هاتف </label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr">
@@ -1069,11 +1469,11 @@
           </div>
         </div>
         <hr class="divider">
-        <div class="sec-title" style="font-size:13px"><i class="ti ti-medal" style="color:#cc1a1a"></i> الحزام
+        <div class="sec-title" style="font-size:13px"><i class="ti ti-medal" style="color:var(--red)"></i> الحزام
         </div>
         <div class="belt-grid" id="belt-grid"></div>
         <hr class="divider">
-        <div class="sec-title" style="font-size:13px"><i class="ti ti-calendar" style="color:#cc1a1a"></i> الاشتراك
+        <div class="sec-title" style="font-size:13px"><i class="ti ti-calendar" style="color:var(--red)"></i> الاشتراك
         </div>
         <div class="form-grid">
           <div class="fg"><label>تاريخ التسجيل *</label><input id="f-start" type="date"></div>
@@ -1093,20 +1493,20 @@
                 </select>
               </div>
               <div class="fg" style="justify-content: flex-end;">
-                <button class="btn-p" onclick="freezeSubscription()" style="background: #1a7a1a;">تجميد
+                <button class="btn-p" onclick="freezeSubscription()" style="background: var(--green);">تجميد
                   الاشتراك</button>
               </div>
             </div>
             <div class="fg" style="margin-top: 10px;">
-              <button class="btn-s" onclick="unfreezeSubscription()" style="color: #cc1a1a; border-color: #cc1a1a;">فك
+              <button class="btn-s" onclick="unfreezeSubscription()" style="color: var(--red); border-color: var(--red);">فك
                 التجميد</button>
             </div>
           </div>
           <div class="card">
-            <div class="sec-title"><i class="ti ti-shirt" style="color:#cc1a1a"></i> البدلة</div>
+            <div class="sec-title"><i class="ti ti-shirt" style="color:var(--red)"></i> البدلة</div>
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer">
-                <input type="checkbox" id="f-suit-received" style="width:auto;accent-color:#cc1a1a"
+                <input type="checkbox" id="f-suit-received" style="width:auto;accent-color:var(--red)"
                   onchange="toggleSuitSize()"> استلم بدلة
               </label>
               <div id="suit-size-wrap" style="display:none;align-items:center;gap:8px">
@@ -1119,9 +1519,9 @@
             </div>
             <div id="stop-reactivate-btns" style="display:none;gap:8px">
               <button class="btn-s" id="btn-stop-student" onclick="stopStudent()"
-                style="color:#6a1a9a;border-color:#6a1a9a"><i class="ti ti-player-stop"></i> إيقاف عن النادي</button>
+                style="color:var(--purple);border-color:var(--purple)"><i class="ti ti-player-stop"></i> إيقاف عن النادي</button>
               <button class="btn-s" id="btn-reactivate-student" onclick="reactivateStudent()"
-                style="color:#1a7a1a;border-color:#1a7a1a;display:none"><i class="ti ti-refresh"></i> إعادة
+                style="color:var(--green);border-color:var(--green);display:none"><i class="ti ti-refresh"></i> إعادة
                 تفعيل</button>
             </div>
           </div>
@@ -1141,13 +1541,13 @@
     <!-- Suits Tab -->
     <div class="content" id="tab-suits">
       <div class="card" style="margin-bottom:14px">
-        <div class="sec-title"><i class="ti ti-shirt" style="color:#cc1a1a"></i> مخزون البدلات</div>
+        <div class="sec-title"><i class="ti ti-shirt" style="color:var(--red)"></i> مخزون البدلات</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="suits-grid">
           <!-- rendered by JS -->
         </div>
       </div>
       <div class="card">
-        <div class="sec-title"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل البدلات الموزعة</div>
+        <div class="sec-title"><i class="ti ti-history" style="color:var(--red)"></i> سجل البدلات الموزعة</div>
         <div class="tbl-wrap" id="suits-log"></div>
       </div>
     </div>
@@ -1155,7 +1555,7 @@
     <!-- Search Tab -->
     <div class="content" id="tab-search">
       <div class="card">
-        <div class="sec-title"><i class="ti ti-search" style="color:#cc1a1a"></i> بحث عن طالب</div>
+        <div class="sec-title"><i class="ti ti-search" style="color:var(--red)"></i> بحث عن طالب</div>
         <input type="text" id="search-inp" placeholder="ابحث بالاسم أو رقم الهاتف..." oninput="doSearch()"
           style="margin-bottom:12px">
         <div class="tbl-wrap" id="search-results"></div>
@@ -1176,7 +1576,7 @@
 
         <!-- Search Section (separate tab) -->
         <div id="pay-search-section" style="display:none">
-          <div class="sec-title"><i class="ti ti-calendar-search" style="color:#cc1a1a"></i> بحث بالتاريخ</div>
+          <div class="sec-title"><i class="ti ti-calendar-search" style="color:var(--red)"></i> بحث بالتاريخ</div>
           <div class="form-grid" style="margin-bottom:14px">
             <div class="fg">
               <label>من تاريخ</label>
@@ -1202,7 +1602,7 @@
             style="background:var(--surface2);border:1.5px solid var(--border2);border-radius:14px;padding:16px;margin-bottom:18px">
             <div
               style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-              <i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة
+              <i class="ti ti-cash" style="color:var(--red)"></i> تسجيل دفعة
             </div>
 
 
@@ -1239,20 +1639,20 @@
                 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="pay-reasons-wrap">
                   <label
                     style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="اشتراك شهري" style="width:auto;accent-color:#cc1a1a"> اشتراك شهري</label>
+                      type="checkbox" value="اشتراك شهري" style="width:auto;accent-color:var(--red)"> اشتراك شهري</label>
                   <label
                     style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="رسوم المواصلات" style="width:auto;accent-color:#cc1a1a"> رسوم
+                      type="checkbox" value="رسوم المواصلات" style="width:auto;accent-color:var(--red)"> رسوم
                     المواصلات</label>
                   <label
                     style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="رسوم البدلة" style="width:auto;accent-color:#cc1a1a"> رسوم البدلة</label>
+                      type="checkbox" value="رسوم البدلة" style="width:auto;accent-color:var(--red)"> رسوم البدلة</label>
                   <label
                     style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="فحص حزام" style="width:auto;accent-color:#cc1a1a"> فحص حزام</label>
+                      type="checkbox" value="فحص حزام" style="width:auto;accent-color:var(--red)"> فحص حزام</label>
                   <label
                     style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="أخرى" style="width:auto;accent-color:#cc1a1a"> أخرى</label>
+                      type="checkbox" value="أخرى" style="width:auto;accent-color:var(--red)"> أخرى</label>
                 </div>
               </div>
               <div class="fg full">
@@ -1265,17 +1665,17 @@
             <div style="margin-bottom:12px">
               <label
                 style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 12px;width:fit-content">
-                <input type="checkbox" id="pay-renew-toggle" style="width:auto;accent-color:#1a7a1a"
+                <input type="checkbox" id="pay-renew-toggle" style="width:auto;accent-color:var(--green)"
                   onchange="toggleRenewFields()">
-                <i class="ti ti-refresh" style="color:#1a7a1a"></i> دفع اشتراك — تجديد تاريخ الانتهاء
+                <i class="ti ti-refresh" style="color:var(--green)"></i> دفع اشتراك — تجديد تاريخ الانتهاء
               </label>
             </div>
 
             <!-- Renewal fields -->
             <div id="pay-renew-fields"
-              style="display:none;background:var(--surface);border:1px solid #1a7a1a55;border-radius:10px;padding:12px;margin-bottom:12px">
+              style="display:none;background:var(--green-light);border:1px solid var(--green);border-radius:10px;padding:12px;margin-bottom:12px">
               <div style="font-size:12px;color:var(--text2);margin-bottom:8px">الانتهاء الحالي: <span
-                  id="pay-renew-current" style="font-weight:600;color:#a01414"></span></div>
+                  id="pay-renew-current" style="font-weight:600;color:var(--red-dark)"></span></div>
               <div>
                 <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">تاريخ الانتهاء الجديد
                   *</label>
@@ -1287,7 +1687,7 @@
             </div>
 
             <hr class="divider">
-            <div class="sec-title" style="margin-bottom:8px"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل الدفعات</div>
+            <div class="sec-title" style="margin-bottom:8px"><i class="ti ti-history" style="color:var(--red)"></i> سجل الدفعات</div>
             <div style="position:relative;margin-bottom:10px">
               <input id="pay-history-search" type="text" placeholder="🔍 ابحث باسم الطالب لعرض كل دفعاته..." autocomplete="off"
                 oninput="renderPayments()"
@@ -1304,7 +1704,7 @@
     <!-- Trainers Tab -->
     <div class="content" id="tab-trainers">
       <div class="card" style="margin-bottom:14px">
-        <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة لمدرب</div>
+        <div class="sec-title"><i class="ti ti-cash" style="color:var(--red)"></i> تسجيل دفعة لمدرب</div>
         <div class="form-grid">
           <div class="fg">
             <label>اسم المدرب *</label>
@@ -1329,7 +1729,7 @@
       </div>
 
       <div class="card">
-        <div class="sec-title"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات المدربين</div>
+        <div class="sec-title"><i class="ti ti-history" style="color:var(--red)"></i> سجل دفعات المدربين</div>
         <div class="tbl-wrap" id="tpayments-list"></div>
       </div>
     </div>
@@ -1364,12 +1764,21 @@
         mainApp.style.display = 'block';
         err.classList.add('hide');
         try { sessionStorage.setItem('shalloul_unlocked', '1'); } catch (e) { }
+        setTimeout(showStorageWarning, 500);
       } else {
         err.classList.remove('hide');
         document.getElementById('lock-inp').value = '';
         document.getElementById('lock-inp').classList.add('shake');
         setTimeout(() => document.getElementById('lock-inp').classList.remove('shake'), 500);
       }
+    }
+
+    function showStorageWarning() {
+      document.getElementById('storage-warning-bg').classList.add('show');
+    }
+
+    function closeStorageWarning() {
+      document.getElementById('storage-warning-bg').classList.remove('show');
     }
 
     function lockApp() {
@@ -1427,7 +1836,7 @@
     const manifestData = {
       name: "مركز الشلول للتايكوندو", short_name: "الشلول",
       start_url: ".", display: "standalone",
-      background_color: "#0d0d0d", theme_color: "#cc1a1a",
+      background_color: "#0d0d0d", theme_color: "var(--red)",
       dir: "rtl", lang: "ar",
       icons: [{ src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230d0d0d'/><circle cx='50' cy='50' r='45' fill='%23cc1a1a' opacity='.2'/></svg>", sizes: "512x512", type: "image/svg+xml" }]
     };
@@ -1532,15 +1941,33 @@
 
     function fmtDate(d) { if (!d) return '—'; const p = d.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
 
+    function animateStat(id, val) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const from = parseInt(el.textContent, 10) || 0;
+      const to = val;
+      if (from === to) { el.textContent = to; return; }
+      const dur = 420;
+      const start = performance.now();
+      function step(now) {
+        const p = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(from + (to - from) * eased);
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = to;
+      }
+      requestAnimationFrame(step);
+    }
+
     function updateStats() {
       const activeStudents = students.filter(s => !isStudentStopped(s));
-      document.getElementById('st-total').textContent = students.length;
-      document.getElementById('st-act').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active').length;
-      document.getElementById('st-soon').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon').length;
-      document.getElementById('st-exp').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired').length;
-      document.getElementById('st-frozen').textContent = activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen').length;
+      animateStat('st-total', students.length);
+      animateStat('st-act', activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active').length);
+      animateStat('st-soon', activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon').length);
+      animateStat('st-exp', activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired').length);
+      animateStat('st-frozen', activeStudents.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen').length);
       const stStopped = document.getElementById('stat-stopped');
-      if (stStopped) stStopped.textContent = students.filter(s => isStudentStopped(s)).length;
+      if (stStopped) animateStat('stat-stopped', students.filter(s => isStudentStopped(s)).length);
     }
 
     function renderTable(list, cid) {
@@ -1549,21 +1976,21 @@
       let h = `<table class="st"><thead><tr>
     <th style="width:18%">الاسم</th><th style="width:8%">الجنس</th><th style="width:12%">الحزام</th><th style="width:14%">رقم الهاتف</th><th style="width:12%">ينتهي</th><th style="width:12%">الحالة</th><th style="width:10%">الباقي</th><th style="width:14%">إجراءات</th>
   </tr></thead><tbody>`;
-      list.forEach(s => {
+      list.forEach((s, idx) => {
         const i = students.indexOf(s);
         const remaining = getStudentRemaining(s.name);
-        h += `<tr>
+        h += `<tr style="--i:${idx}">
       <td style="font-weight:600">${s.name}</td>
       <td>${gBadge(s.gender)}</td>
       <td>${beltBadge(s.belt)}</td>
       <td dir="ltr">${s.dad || '—'}</td>
       <td>${(isStudentStopped(s) || getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen') ? '—' : fmtDate(s.end)}</td>
       <td style="white-space:normal;line-height:1.6">${sBadge(s)}</td>
-      <td>${remaining > 0 ? `<span class="badge" style="background:#fce8e8;color:#a01414;display:inline-block">${remaining} د.أ</span>` : '<span style="color:var(--text2);font-size:12px">—</span>'}</td>
+      <td>${remaining > 0 ? `<span class="badge" style="background:#fce8e8;color:var(--red-dark);display:inline-block">${remaining} د.أ</span>` : '<span style="color:var(--text2);font-size:12px">—</span>'}</td>
       <td><div class="act-btns">
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
-        ${remaining > 0 ? `<button class="ib" style="color:#1a7a1a" onclick="settleRemaining(${i})" title="تسديد الباقي"><i class="ti ti-cash"></i></button>` : ''}
+        ${remaining > 0 ? `<button class="ib" style="color:var(--green)" onclick="settleRemaining(${i})" title="تسديد الباقي"><i class="ti ti-cash"></i></button>` : ''}
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
       </div></td>
     </tr>`;
@@ -1945,7 +2372,7 @@
       document.getElementById('modal-title').textContent = 'تسديد الباقي - ' + s.name;
       document.getElementById('modal-body').innerHTML = `
     <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px">
-      الباقي الحالي: <b style="color:#cc1a1a">${remaining} د.أ</b>
+      الباقي الحالي: <b style="color:var(--red)">${remaining} د.أ</b>
     </div>
     <div class="form-grid" style="margin-bottom:6px">
       <div class="fg full">
@@ -2250,16 +2677,16 @@
       el.innerHTML = '';
       SUIT_SIZES.forEach(size => {
         const qty = suitsInventory[String(size)] || 0;
-        const color = qty === 0 ? '#a01414' : qty <= 2 ? '#7a4a08' : '#2a6b10';
+        const color = qty === 0 ? 'var(--red-dark)' : qty <= 2 ? 'var(--gold)' : 'var(--green)';
         const div = document.createElement('div');
         div.style.cssText = 'background:var(--surface2);border:0.5px solid var(--border2);border-radius:12px;padding:14px;text-align:center';
         div.innerHTML = `
           <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">${size}</div>
           <div style="font-size:24px;font-weight:700;color:${color};margin-bottom:10px">${qty}</div>
           <div style="display:flex;gap:6px;justify-content:center">
-            <button onclick="changeSuitQty(${size}, -1)" style="background:var(--surface);border:0.5px solid var(--border2);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:16px;color:#a01414;display:flex;align-items:center;justify-content:center" title="نقص">−</button>
+            <button onclick="changeSuitQty(${size}, -1)" style="background:var(--surface);border:0.5px solid var(--border2);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:16px;color:var(--red-dark);display:flex;align-items:center;justify-content:center" title="نقص">−</button>
             <button onclick="editSuitQty(${size}, ${qty})" style="background:var(--surface);border:0.5px solid var(--border2);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:12px;color:var(--text2);display:flex;align-items:center;justify-content:center" title="تعديل"><i class="ti ti-edit"></i></button>
-            <button onclick="changeSuitQty(${size}, 1)" style="background:var(--surface);border:0.5px solid var(--border2);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:16px;color:#1a7a1a;display:flex;align-items:center;justify-content:center" title="أضف">+</button>
+            <button onclick="changeSuitQty(${size}, 1)" style="background:var(--surface);border:0.5px solid var(--border2);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:16px;color:var(--green);display:flex;align-items:center;justify-content:center" title="أضف">+</button>
           </div>`;
         el.appendChild(div);
       });
@@ -2299,13 +2726,13 @@
         <th style="width:26%">الطالب</th><th style="width:14%">المقاس</th><th style="width:18%">العملية</th><th style="width:22%">التاريخ</th><th style="width:10%"></th>
       </tr></thead><tbody>`;
       suitsLog.forEach(log => {
-        const color = log.action === 'صرف' ? '#a01414' : '#2a6b10';
+        const color = log.action === 'صرف' ? 'var(--red-dark)' : 'var(--green)';
         h += `<tr>
           <td style="font-weight:600">${log.studentName}</td>
-          <td><span style="background:#e8f5e0;color:#2a6b10;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${log.size}</span></td>
+          <td><span style="background:#e8f5e0;color:var(--green);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${log.size}</span></td>
           <td><span style="color:${color};font-weight:600">${log.action}</span></td>
           <td>${fmtDate(log.date)}</td>
-          <td><button onclick="deleteSuitLogEntry('${log._id}')" style="background:none;border:none;cursor:pointer;color:#a01414;font-size:16px" title="حذف"><i class="ti ti-trash"></i></button></td>
+          <td><button onclick="deleteSuitLogEntry('${log._id}')" style="background:none;border:none;cursor:pointer;color:var(--red-dark);font-size:16px" title="حذف"><i class="ti ti-trash"></i></button></td>
         </tr>`;
       });
       h += '</tbody></table>';
@@ -2340,7 +2767,7 @@
   </tr></thead><tbody>`;
       list.forEach(p => {
         const details = isStudent ? (p.reason || '—') : 'راتب مدرب';
-        const amountColor = isStudent ? '#2a6b10' : '#a01414';
+        const amountColor = isStudent ? 'var(--green)' : 'var(--red-dark)';
         const actions = isStudent
           ? `<button class="ib" onclick="printInvoice(${p._idx})" title="طباعة"><i class="ti ti-printer"></i></button>
          <button class="ib del" onclick="delPaymentFromSearch('student',${p._idx})" title="حذف"><i class="ti ti-trash"></i></button>`
@@ -2348,7 +2775,7 @@
         h += `<tr>
       <td style="font-weight:600">${p.name || p.trainer}</td>
       <td><span style="color:${amountColor};font-weight:700">${p.amount} د.أ</span></td>
-      ${isStudent ? `<td>${p.remaining && parseFloat(p.remaining) > 0 ? '<span style="color:#cc1a1a;font-weight:700">' + p.remaining + ' د.أ</span>' : '—'}</td>` : ''}
+      ${isStudent ? `<td>${p.remaining && parseFloat(p.remaining) > 0 ? '<span style="color:var(--red);font-weight:700">' + p.remaining + ' د.أ</span>' : '—'}</td>` : ''}
       <td>${details}</td>
       <td>${fmtDate(p.date)}</td>
       <td>${p.notes || '—'}</td>
@@ -2392,7 +2819,7 @@
       const income = studentList.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
       const expenses = trainerList.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
       const net = income - expenses;
-      const netColor = net >= 0 ? '#2a6b10' : '#a01414';
+      const netColor = net >= 0 ? 'var(--green)' : 'var(--red-dark)';
 
       if (!studentList.length && !trainerList.length) {
         el.innerHTML = `<div class="empty"><i class="ti ti-search-off" style="font-size:32px;display:block;margin-bottom:8px"></i>لا توجد دفعات في الفترة ${rangeLabel}</div>`;
@@ -2406,10 +2833,10 @@
     <span style="font-size:12px;color:var(--text2);align-self:center">${rangeLabel}</span>
   </div>`;
 
-      h += `<div class="sec-title" style="font-size:13px;margin-top:4px"><i class="ti ti-arrow-down-left" style="color:#2a6b10"></i> إيرادات الطلاب (${studentList.length})</div>`;
+      h += `<div class="sec-title" style="font-size:13px;margin-top:4px"><i class="ti ti-arrow-down-left" style="color:var(--green)"></i> إيرادات الطلاب (${studentList.length})</div>`;
       h += `<div class="tbl-wrap" style="margin-bottom:16px">${renderSearchPaymentTable(studentList, 'student')}</div>`;
 
-      h += `<div class="sec-title" style="font-size:13px"><i class="ti ti-arrow-up-right" style="color:#a01414"></i> مصروفات المدربين (${trainerList.length})</div>`;
+      h += `<div class="sec-title" style="font-size:13px"><i class="ti ti-arrow-up-right" style="color:var(--red-dark)"></i> مصروفات المدربين (${trainerList.length})</div>`;
       h += `<div class="tbl-wrap">${renderSearchPaymentTable(trainerList, 'trainer')}</div>`;
 
       el.innerHTML = h;
@@ -2532,8 +2959,8 @@
       const lbl = document.getElementById('sort-label');
       lbl.textContent = mode && SORT_LABELS[mode] ? SORT_LABELS[mode] : 'ترتيب';
       const btn = document.getElementById('sort-toggle-btn');
-      btn.style.borderColor = mode ? '#cc1a1a' : '';
-      btn.style.color = mode ? '#cc1a1a' : '';
+      btn.style.borderColor = mode ? 'var(--red)' : '';
+      btn.style.color = mode ? 'var(--red)' : '';
       renderStudents();
     }
 
@@ -2736,8 +3163,8 @@
           const totalRemaining = list.reduce((sum, p) => sum + (parseFloat(p.remaining) || 0), 0);
           summaryEl.innerHTML = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
             <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">عدد الدفعات: <b>${list.length}</b></div>
-            <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">إجمالي المدفوع: <b style="color:#2a6b10">${totalPaid.toFixed(2)} د.أ</b></div>
-            ${totalRemaining > 0 ? `<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">إجمالي الباقي: <b style="color:#cc1a1a">${totalRemaining.toFixed(2)} د.أ</b></div>` : ''}
+            <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">إجمالي المدفوع: <b style="color:var(--green)">${totalPaid.toFixed(2)} د.أ</b></div>
+            ${totalRemaining > 0 ? `<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;font-size:13px">إجمالي الباقي: <b style="color:var(--red)">${totalRemaining.toFixed(2)} د.أ</b></div>` : ''}
           </div>`;
         } else {
           summaryEl.innerHTML = '';
@@ -2752,8 +3179,8 @@
         const i = payments.indexOf(p);
         h += `<tr>
       <td style="font-weight:600">${p.name}</td>
-      <td><span style="color:#2a6b10;font-weight:700">${p.amount} د.أ</span></td>
-      <td>${p.remaining && parseFloat(p.remaining) > 0 ? '<span style="color:#cc1a1a;font-weight:700">' + p.remaining + ' د.أ</span>' : '—'}</td>
+      <td><span style="color:var(--green);font-weight:700">${p.amount} د.أ</span></td>
+      <td>${p.remaining && parseFloat(p.remaining) > 0 ? '<span style="color:var(--red);font-weight:700">' + p.remaining + ' د.أ</span>' : '—'}</td>
       <td>${p.reason}</td>
       <td>${fmtDate(p.date)}</td>
       <td>${p.notes || '—'}</td>
@@ -2804,32 +3231,32 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#fff;direction:rtl;padding:20px;color:#111}
-    .receipt{border:2.5px solid #1a1a6e;border-radius:4px;padding:0;max-width:650px;margin:0 auto;background:#fffde7}
-    .header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;border-bottom:1.5px solid #1a1a6e}
-    .logo-circle{width:72px;height:72px;border:2px solid #1a1a6e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#1a1a6e;font-weight:700;text-align:center;padding:4px;flex-shrink:0}
+    .receipt{border:2.5px solid #16130e;border-radius:4px;padding:0;max-width:650px;margin:0 auto;background:#fffbf2}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;border-bottom:1.5px solid #16130e}
+    .logo-circle{width:72px;height:72px;border:2px solid #16130e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#16130e;font-weight:700;text-align:center;padding:4px;flex-shrink:0}
     .center-title{text-align:center;flex:1}
-    .center-title h1{font-size:22px;font-weight:900;color:#1a1a6e;letter-spacing:1px}
-    .center-title h2{font-size:14px;color:#1a1a6e;font-weight:600;margin-top:2px}
-    .branches{font-size:9.5px;color:#1a1a6e;text-align:center;margin-top:6px;line-height:1.6}
-    .phones{display:flex;justify-content:space-between;font-size:10.5px;color:#1a1a6e;font-weight:600;margin-top:4px}
-    .title-bar{background:#1a1a6e;color:#fff;text-align:center;font-size:18px;font-weight:700;padding:6px;letter-spacing:2px}
-    .number-date{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #1a1a6e}
-    .receipt-num{color:#cc1a1a;font-size:16px;font-weight:700;font-family:monospace}
-    .amount-box{border:1.5px solid #1a1a6e;display:inline-flex;text-align:center}
-    .amount-box .lbl{border-left:1px solid #1a1a6e;padding:4px 14px;font-size:12px;font-weight:600;color:#1a1a6e;background:#e8eaf6}
-    .amount-box .val{padding:4px 18px;font-size:15px;font-weight:700;color:#1a1a6e}
-    .date-label{font-size:12px;font-weight:600;color:#1a1a6e}
+    .center-title h1{font-size:22px;font-weight:900;color:#16130e;letter-spacing:1px}
+    .center-title h2{font-size:14px;color:#16130e;font-weight:600;margin-top:2px}
+    .branches{font-size:9.5px;color:#16130e;text-align:center;margin-top:6px;line-height:1.6}
+    .phones{display:flex;justify-content:space-between;font-size:10.5px;color:#16130e;font-weight:600;margin-top:4px}
+    .title-bar{background:#16130e;color:#fff;text-align:center;font-size:18px;font-weight:700;padding:6px;letter-spacing:2px}
+    .number-date{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #16130e}
+    .receipt-num{color:#c41e1e;font-size:16px;font-weight:700;font-family:monospace}
+    .amount-box{border:1.5px solid #16130e;display:inline-flex;text-align:center}
+    .amount-box .lbl{border-left:1px solid #16130e;padding:4px 14px;font-size:12px;font-weight:600;color:#16130e;background:#faf0da}
+    .amount-box .val{padding:4px 18px;font-size:15px;font-weight:700;color:#16130e}
+    .date-label{font-size:12px;font-weight:600;color:#16130e}
     .body{padding:14px 18px}
     .field-row{display:flex;align-items:baseline;gap:8px;margin-bottom:14px;border-bottom:1px dashed #888;padding-bottom:4px}
-    .field-lbl{font-size:12.5px;font-weight:700;color:#1a1a6e;white-space:nowrap}
+    .field-lbl{font-size:12.5px;font-weight:700;color:#16130e;white-space:nowrap}
     .field-val{font-size:14px;font-weight:600;color:#111;flex:1;font-family:'Segoe UI',Tahoma,Arial}
-    .summary-table{border:1.5px solid #1a1a6e;border-collapse:collapse;width:100%;margin-top:14px}
-    .summary-table th,.summary-table td{border:1px solid #1a1a6e;padding:6px 12px;text-align:center;font-size:13px}
-    .summary-table th{background:#e8eaf6;font-weight:700;color:#1a1a6e}
+    .summary-table{border:1.5px solid #16130e;border-collapse:collapse;width:100%;margin-top:14px}
+    .summary-table th,.summary-table td{border:1px solid #16130e;padding:6px 12px;text-align:center;font-size:13px}
+    .summary-table th{background:#faf0da;font-weight:700;color:#16130e}
     .summary-table td{font-weight:600}
     .footer-row{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 18px 10px}
     .sig{border-top:1px solid #333;width:160px;text-align:center;padding-top:4px;font-size:12px;color:#444}
-    @media print{button{display:none!important}.receipt{border:2px solid #1a1a6e}}
+    @media print{button{display:none!important}.receipt{border:2px solid #16130e}}
   </style></head><body>
   <div class="receipt">
     <div class="header">
@@ -2852,7 +3279,7 @@
       <div class="receipt-num">No. ${String(Date.now()).slice(-6)}</div>
       <div class="amount-box">
         <div class="lbl">فلس</div>
-        <div class="val" style="border-left:1px solid #1a1a6e">—</div>
+        <div class="val" style="border-left:1px solid #16130e">—</div>
         <div class="lbl" style="border-left:none">دينار</div>
         <div class="val">${p.amount}</div>
       </div>
@@ -2882,7 +3309,7 @@
     </div>
     <div class="footer-row">
       <div class="sig">توقيع المستلم<br><br><br></div>
-      <button onclick="window.print()" style="padding:9px 28px;background:#1a1a6e;color:#fff;border:none;border-radius:7px;font-size:14px;cursor:pointer">🖨 طباعة</button>
+      <button onclick="window.print()" style="padding:9px 28px;background:#16130e;color:#fff;border:none;border-radius:7px;font-size:14px;cursor:pointer">🖨 طباعة</button>
     </div>
   </div>
   </body></html>`);
@@ -2920,7 +3347,7 @@
       trainerPayments.forEach((p, i) => {
         h += `<tr>
       <td style="font-weight:600">${p.trainer}</td>
-      <td style="color:#2a6b10;font-weight:700">${p.amount} د.أ</td>
+      <td style="color:var(--green);font-weight:700">${p.amount} د.أ</td>
       <td>${fmtDate(p.date)}</td>
       <td>${p.notes || '—'}</td>
       <td><button class="ib del" onclick="delTrainerPayment(${i})"><i class="ti ti-trash"></i></button></td>
@@ -2945,6 +3372,21 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('pay-date').value = today;
     document.getElementById('tpay-date').value = today;
+
+    // Global ripple/press feedback for buttons
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn-p, .btn-s, .fb, .nb, .ib, .icon-btn, .lock-btn, .pwa-btn');
+      if (!btn) return;
+      const circle = document.createElement('span');
+      circle.className = 'ripple';
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      circle.style.width = circle.style.height = size + 'px';
+      circle.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      circle.style.top = (e.clientY - rect.top - size / 2) + 'px';
+      btn.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
+    });
 
   </script>
 </body>
