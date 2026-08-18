@@ -1366,30 +1366,11 @@
   <script>
     const PASSWORD = '1122';
 
-    // Set to true to block all access behind a "storage full" message instead of the password screen.
-    // Set back to false to restore normal login.
-    const BLOCK_ACCESS = true;
-
     // ── Lock / Unlock ──────────────────────────────────────────
     const lockScreen = document.getElementById('lock-screen');
     const mainApp = document.getElementById('main-app');
 
-    if (BLOCK_ACCESS) {
-      const lockBox = document.querySelector('.lock-box');
-      if (lockBox) {
-        lockBox.innerHTML = `
-          <div style="width:58px;height:58px;border-radius:50%;background:rgba(169,116,31,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
-            <i class="ti ti-alert-triangle" style="font-size:26px;color:#e0a542"></i>
-          </div>
-          <div style="color:white;font-size:15px;font-weight:800;text-align:center;margin-bottom:8px">Storage Almost Full</div>
-          <div style="color:rgba(255,255,255,.55);font-size:12.5px;text-align:center;line-height:1.8">
-            The Firebase database is almost out of space.<br>Access is temporarily unavailable until this is resolved.
-          </div>`;
-      }
-    }
-
     function tryUnlock() {
-      if (BLOCK_ACCESS) return;
       const val = document.getElementById('lock-inp').value;
       const err = document.getElementById('lock-err');
       if (val === PASSWORD) {
@@ -1422,19 +1403,15 @@
       document.getElementById('lock-err').classList.add('hide');
     }
 
-    if (document.getElementById('lock-inp')) {
-      document.getElementById('lock-inp').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
-    }
+    document.getElementById('lock-inp').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 
     // Auto-unlock if session active
-    if (!BLOCK_ACCESS) {
-      try {
-        if (sessionStorage.getItem('shalloul_unlocked') === '1') {
-          lockScreen.classList.add('hide');
-          mainApp.style.display = 'block';
-        }
-      } catch (e) { }
-    }
+    try {
+      if (sessionStorage.getItem('shalloul_unlocked') === '1') {
+        lockScreen.classList.add('hide');
+        mainApp.style.display = 'block';
+      }
+    } catch (e) { }
 
     function toggleEye() {
       const inp = document.getElementById('lock-inp');
