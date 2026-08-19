@@ -8,13 +8,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="الشلول للتايكوندو">
-  <meta name="description" content="نام إدارة طلاب مركز الشلول للتايكوندو">
+  <meta name="description" content="نظام إدارة طلاب مركز الشلول للتايكوندو">
   <title>مركز الشلول للتايكوندو</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-  <style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">  <style>
     :root {
       --bg: #f2f2f7;
       --surface: #ffffff;
@@ -1573,6 +1572,7 @@
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
         ${remaining > 0 ? `<button class="ib" style="color:#1a7a1a" onclick="settleRemaining(${i})" title="تسديد الباقي"><i class="ti ti-cash"></i></button>` : ''}
+                <button class="ib" style="color:#cc1a1a" onclick="addRemaining(${i})" title="إضافة باقي"><i class="ti ti-plus"></i></button>
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
       </div></td>
     </tr>`;
@@ -1998,6 +1998,64 @@
         remaining: newRemaining > 0 ? newRemaining : '',
         reason: 'تسديد الباقي', notes
       };
+          function addRemaining(i) {
+      const s = students[i];
+      const currentRemaining = getStudentRemaining(s.name);
+      document.getElementById('modal-title').textContent = 'إضافة باقي - ' + s.name;
+      document.getElementById('modal-body').innerHTML = `
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px">
+      الباقي الحالي: <b style="color:#cc1a1a">${currentRemaining} د.أ</b>
+    </div>
+    <div class="form-grid" style="margin-bottom:6px">
+      <div class="fg full">
+        <label>المبلغ المراد إضافته للباقي (دينار) *</label>
+        <input id="addrem-amount" type="number" min="0" step="0.5">
+      </div>
+      <div class="fg full">
+        <label>التاريخ *</label>
+        <input id="addrem-date" type="date" value="${new Date().toISOString().split('T')[0]}">
+      </div>
+      <div class="fg full">
+        <label>السبب</label>
+        <input id="addrem-reason" type="text" placeholder="سبب الباقي..." value="إضافة باقي">
+      </div>
+      <div class="fg full">
+        <label>ملاحظات</label>
+        <input id="addrem-notes" type="text" placeholder="ملاحظات إضافية...">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-s" onclick="closeModal()">إلغاء</button>
+      <button class="btn-p" onclick="confirmAddRemaining(${i}, ${currentRemaining})"><i class="ti ti-check"></i> تأكيد الإضافة</button>
+    </div>`;
+      document.getElementById('modal-bg').classList.add('show');
+    }
+
+    async function confirmAddRemaining(i, oldRemaining) {
+      const s = students[i];
+      const addAmountStr = document.getElementById('addrem-amount').value.trim();
+      const date = document.getElementById('addrem-date').value;
+      const reason = document.getElementById('addrem-reason').value.trim() || 'إضافة باقي';
+      const notes = document.getElementById('addrem-notes').value.trim();
+      const addAmount = parseFloat(addAmountStr);
+      if (!addAmountStr || isNaN(addAmount) || addAmount <= 0) { toast('يرجى إدخال مبلغ صحيح', true); return; }
+      if (!date) { toast('يرجى تحديد التاريخ', true); return; }
+      const newRemaining = +(oldRemaining + addAmount).toFixed(2);
+      const ts = Date.now();
+      const p = {
+        _id: 'p_' + ts + '_' + Math.random().toString(36).substr(2, 5),
+        id: ts, name: s.name, amount: '0', date,
+        remaining: newRemaining,
+        reason, notes
+      };
+      payments.unshift(p);
+      renderPayments();
+      renderStudents();
+      closeModal();
+      toast('تم إضافة الباقي، الباقي الحالي الآن ' + newRemaining + ' د.أ ✓');
+      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
+      await fbSaveDoc('payments', p._id, p);
+    }
       payments.unshift(p);
       renderPayments();
       renderStudents();
@@ -2687,20 +2745,27 @@
       if (doRenew && !newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
       const notes = (doRenew && newEnd ? 'تجديد حتى ' + fmtDate(newEnd) + (document.getElementById('pay-notes').value.trim() ? ' | ' : '') : '') + document.getElementById('pay-notes').value.trim();
 
-      // Build payments for all selected students — unique _id per payment
+      /      // Build payments for all selected students — unique _id per payment
+      // Split the total amount equally between all selected students
       const ts = Date.now();
+      const totalAmountNum = parseFloat(amount) || 0;
+      const splitCount = paySelectedStudents.length;
+      const perStudentAmount = splitCount > 1 ? +(totalAmountNum / splitCount).toFixed(2) : totalAmountNum;
+      const perStudentAmountStr = String(perStudentAmount);
+
       const newPayments = paySelectedStudents.map((ps, idx) => ({
         _id: 'p_' + (ts + idx) + '_' + Math.random().toString(36).substr(2, 5),
-        id: ts + idx, name: ps.name, amount, date, remaining, reason, notes
+        id: ts + idx, name: ps.name, amount: perStudentAmountStr, date, remaining, reason,
+        notes: (splitCount > 1 ? '(حصة من مبلغ إجمالي ' + totalAmountNum + ' د.أ مقسوم على ' + splitCount + ' طلاب) ' : '') + notes
       }));
-
       // Add to array and render IMMEDIATELY
       newPayments.forEach(p => payments.unshift(p));
       renderPayments();
       renderStudents();
-      toast('تم تسجيل الدفعة ✓');
-
-      // Renew subscription for ALL selected students if checked
+      toast(splitCount > 1
+        ? 'تم تسجيل الدفعة وتقسيمها: ' + perStudentAmountStr + ' د.أ لكل طالب (' + splitCount + ' طلاب) ✓'
+        : 'تم تسجيل الدفعة ✓');
+      
       if (doRenew && newEnd && paySelectedStudents.length > 0) {
         for (const ps of paySelectedStudents) {
           const s = students[ps.idx];
