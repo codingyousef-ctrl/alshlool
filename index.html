@@ -699,6 +699,265 @@
       color: #8b0000
     }
 
+    /* ── Professional form sections (registration / payments) ── */
+    .form-section {
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+      transition: background .3s, border-color .3s;
+    }
+
+    .form-section+.form-section {
+      margin-top: 0
+    }
+
+    .fs-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .fs-badge {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #cc1a1a, #8b0000);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      box-shadow: 0 2px 8px rgba(204, 26, 26, .25);
+    }
+
+    .fs-badge.alt {
+      background: linear-gradient(135deg, #1a7a1a, #0d4d0d);
+      box-shadow: 0 2px 8px rgba(26, 122, 26, .25);
+    }
+
+    .fs-badge i {
+      font-size: 17px
+    }
+
+    .fs-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .fs-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .fs-sub {
+      font-size: 11.5px;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+
+    .req-mark {
+      color: #cc1a1a;
+      font-weight: 700;
+      margin-inline-start: 2px;
+    }
+
+    .field-hint {
+      font-size: 10.5px;
+      color: var(--text2);
+      margin-top: 3px;
+      opacity: .85;
+    }
+
+    /* Refined inputs for a more polished feel */
+    .fg label {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-bottom: 1px;
+    }
+
+    input,
+    select {
+      padding: 10px 12px;
+      border-radius: 10px;
+    }
+
+    input:hover,
+    select:hover {
+      border-color: #cc1a1a88;
+    }
+
+    /* Chip-style multi-select (payment reasons, etc.) */
+    .chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text2);
+      cursor: pointer;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 7px 14px;
+      transition: all .15s;
+      user-select: none;
+    }
+
+    .chip:hover {
+      border-color: #cc1a1a88;
+      color: var(--text);
+    }
+
+    .chip input {
+      display: none;
+    }
+
+    .chip:has(input:checked) {
+      background: #cc1a1a;
+      border-color: #cc1a1a;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(204, 26, 26, .3);
+    }
+
+    /* Toggle-card (suit received / renewal switch) */
+    .toggle-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px;
+      transition: all .2s;
+      width: fit-content;
+    }
+
+    .toggle-card:hover {
+      border-color: #1a7a1a88;
+    }
+
+    .toggle-card .tc-switch {
+      position: relative;
+      width: 38px;
+      height: 22px;
+      flex-shrink: 0;
+      border-radius: 20px;
+      background: var(--border);
+      transition: background .2s;
+    }
+
+    .toggle-card .tc-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+      transition: transform .2s;
+    }
+
+    .toggle-card input {
+      display: none;
+    }
+
+    .toggle-card:has(input:checked) {
+      background: #eaf6ea;
+      border-color: #1a7a1a;
+      color: #0d4d0d;
+    }
+
+    [data-theme="dark"] .toggle-card:has(input:checked) {
+      background: #0f2a08;
+      color: #5ec43e;
+    }
+
+    .toggle-card:has(input:checked) .tc-switch {
+      background: #1a7a1a;
+    }
+
+    .toggle-card:has(input:checked) .tc-switch::after {
+      transform: translateX(-16px);
+    }
+
+    /* Divider label used to separate sub-blocks inside a form-section */
+    .fs-block-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 4px 0 10px;
+    }
+
+    .fs-block-title .n {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #cc1a1a;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .fs-block-title.alt .n {
+      background: #1a7a1a;
+    }
+
+    .payment-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .payment-summary .ps-box {
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .payment-summary .ps-n {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .payment-summary .ps-l {
+      font-size: 10px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
     .sort-opt {
       padding: 10px 16px;
       font-size: 13px;
@@ -746,6 +1005,101 @@
     .ib.del:hover {
       color: #a01414;
       border-color: #f09595
+    }
+
+    .ib.wa {
+      color: #25D366;
+      border-color: #b7ecc9;
+    }
+
+    .ib.wa:hover {
+      color: #fff;
+      background: #25D366;
+      border-color: #25D366;
+    }
+
+    .phone-code-picker {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .phone-code-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      height: 100%;
+      min-height: 38px;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      background: var(--surface2);
+      cursor: pointer;
+      min-width: 92px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    .phone-code-btn:hover {
+      border-color: var(--border);
+    }
+
+    .phone-code-btn img {
+      width: 20px;
+      height: 15px;
+      border-radius: 2px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .phone-code-list {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+      max-height: 260px;
+      overflow-y: auto;
+      z-index: 60;
+      min-width: 210px;
+      padding: 4px;
+    }
+
+    .phone-code-list.show {
+      display: block;
+    }
+
+    .phone-code-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 9px;
+      cursor: pointer;
+      font-size: 13px;
+      border-radius: 7px;
+      color: var(--text);
+    }
+
+    .phone-code-item:hover {
+      background: var(--surface2);
+    }
+
+    .phone-code-item img {
+      width: 20px;
+      height: 15px;
+      border-radius: 2px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .phone-code-item .pc-code {
+      font-weight: 600;
+      min-width: 42px;
+      color: var(--text2);
+      font-size: 12px;
     }
 
     .empty {
@@ -958,6 +1312,8 @@
         <p>نظام إدارة الطلاب</p>
       </div>
       <div class="header-btns">
+        <button class="icon-btn" onclick="openUpdatesModal()" title="آخر التحديثات"><i class="ti ti-bell"></i></button>
+        <button class="icon-btn" onclick="openRequirementsModal()" title="متطلبات"><i class="ti ti-clipboard-list"></i></button>
         <button class="icon-btn" id="theme-toggle" title="تبديل المظهر"><i class="ti ti-moon"
             id="theme-icon"></i></button>
         <button class="icon-btn" onclick="lockApp()" title="قفل"><i class="ti ti-lock"></i></button>
@@ -972,6 +1328,7 @@
       <button class="nb" onclick="showTab('payments')" id="nb-payments"><i class="ti ti-cash"></i> الدفعات</button>
       <button class="nb" onclick="showTab('suits')" id="nb-suits"><i class="ti ti-shirt"></i> البدلات</button>
       <button class="nb" onclick="showTab('trainers')" id="nb-trainers"><i class="ti ti-medal"></i> المدربين</button>
+      <button class="nb" onclick="showTab('stopped')" id="nb-stopped"><i class="ti ti-player-stop"></i> متوقف</button>
     </div>
 
     <!-- Students Tab -->
@@ -997,7 +1354,7 @@
           <div class="stat-n" id="st-frozen" style="color:#1a6ba0">0</div>
           <div class="stat-l">مجمد</div>
         </div>
-        <div class="stat">
+        <div class="stat" style="cursor:pointer" onclick="showTab('stopped')">
           <div class="stat-n" id="stat-stopped" style="color:#800517">0</div>
           <div class="stat-l">متوقف</div>
         </div>
@@ -1010,7 +1367,6 @@
           <button class="fb" onclick="setFilter('soon',this)">ينتهي قريباً</button>
           <button class="fb" onclick="setFilter('expired',this)">منتهي</button>
           <button class="fb" onclick="setFilter('frozen',this)">مجمد</button>
-          <button class="fb" onclick="setFilter('stopped',this)">متوقف</button>
           <button class="fb" onclick="setFilter('m',this)">ذكر</button>
           <button class="fb" onclick="setFilter('f',this)">أنثى</button>
 
@@ -1043,13 +1399,20 @@
 
     <!-- Add Tab -->
     <div class="content" id="tab-add">
-      <div class="card">
-        <div class="sec-title"><i class="ti ti-user-plus" style="color:#cc1a1a"></i> <span id="form-title">تسجيل طالب
-            جديد</span></div>
+
+      <!-- Step 1: Basic info -->
+      <div class="form-section">
+        <div class="fs-head">
+          <div class="fs-badge"><i class="ti ti-user-plus"></i></div>
+          <div class="fs-titles">
+            <div class="fs-title" id="form-title">تسجيل طالب جديد</div>
+            <div class="fs-sub">البيانات الأساسية للطالب — الاسم والجنس وتاريخ الميلاد</div>
+          </div>
+        </div>
         <div class="form-grid">
-          <div class="fg full"><label>اسم الطالب الكامل *</label><input id="f-name" type="text"
+          <div class="fg full"><label>اسم الطالب الكامل <span class="req-mark">*</span></label><input id="f-name" type="text"
               placeholder="أدخل الاسم الكامل"></div>
-          <div class="fg"><label>الجنس *</label>
+          <div class="fg"><label>الجنس <span class="req-mark">*</span></label>
             <select id="f-gender">
               <option value="">اختر الجنس</option>
               <option value="m">ذكر</option>
@@ -1058,30 +1421,84 @@
           </div>
           <div class="fg"><label>تاريخ الميلاد</label><input id="f-dob" type="date"></div>
         </div>
-        <hr class="divider">
-        <div class="sec-title" style="font-size:13px"><i class="ti ti-phone" style="color:#cc1a1a"></i> معلومات التواصل
+      </div>
+
+      <!-- Step 2: Contact -->
+      <div class="form-section">
+        <div class="fs-head">
+          <div class="fs-badge"><i class="ti ti-phone"></i></div>
+          <div class="fs-titles">
+            <div class="fs-title">معلومات التواصل</div>
+            <div class="fs-sub">لتسهيل التواصل مع ولي الأمر عند الحاجة</div>
+          </div>
         </div>
         <div class="form-grid">
-          <div class="fg"><label>رقم هاتف </label><input id="f-dad" type="tel" placeholder="07XXXXXXXX" dir="ltr">
+          <div class="fg"><label>رقم هاتف</label>
+            <div style="display:flex;gap:6px;direction:ltr">
+              <div class="phone-code-picker" id="phone-code-picker">
+                <button type="button" class="phone-code-btn" id="phone-code-btn" onclick="togglePhoneCodeList(event)">
+                  <img id="phone-code-flag" src="https://flagcdn.com/24x18/jo.png" alt="">
+                  <span id="phone-code-label">+962</span>
+                  <i class="ti ti-chevron-down" style="font-size:11px;color:var(--text2)"></i>
+                </button>
+                <div class="phone-code-list" id="phone-code-list"></div>
+              </div>
+              <select id="f-dad-code" style="display:none">
+                <option value="+962">الأردن +962</option>
+                <option value="+966">السعودية +966</option>
+                <option value="+971">الإمارات +971</option>
+                <option value="+970">فلسطين +970</option>
+                <option value="+20">مصر +20</option>
+                <option value="+963">سوريا +963</option>
+                <option value="+964">العراق +964</option>
+                <option value="+961">لبنان +961</option>
+                <option value="+965">الكويت +965</option>
+                <option value="+974">قطر +974</option>
+                <option value="+973">البحرين +973</option>
+                <option value="+968">عمان +968</option>
+                <option value="+90">تركيا +90</option>
+                <option value="+1">أمريكا +1</option>
+                <option value="+44">بريطانيا +44</option>
+                <option value="other">دولة أخرى</option>
+              </select>
+              <input id="f-dad" type="tel" placeholder="7XXXXXXXX" dir="ltr" style="flex:1">
+            </div>
           </div>
           <div class="fg"><label>مكان السكن</label><input id="f-location" type="tel" placeholder="اربد..الحي الشرقي"
               dir="ltr">
           </div>
         </div>
-        <hr class="divider">
-        <div class="sec-title" style="font-size:13px"><i class="ti ti-medal" style="color:#cc1a1a"></i> الحزام
+      </div>
+
+      <!-- Step 3: Belt -->
+      <div class="form-section">
+        <div class="fs-head">
+          <div class="fs-badge"><i class="ti ti-medal"></i></div>
+          <div class="fs-titles">
+            <div class="fs-title">الحزام الحالي</div>
+            <div class="fs-sub">اختر مستوى الحزام الذي يحمله الطالب حاليًا</div>
+          </div>
         </div>
         <div class="belt-grid" id="belt-grid"></div>
-        <hr class="divider">
-        <div class="sec-title" style="font-size:13px"><i class="ti ti-calendar" style="color:#cc1a1a"></i> الاشتراك
+      </div>
+
+      <!-- Step 4: Subscription -->
+      <div class="form-section">
+        <div class="fs-head">
+          <div class="fs-badge"><i class="ti ti-calendar"></i></div>
+          <div class="fs-titles">
+            <div class="fs-title">الاشتراك</div>
+            <div class="fs-sub">فترة الاشتراك الحالية وتاريخ الانتهاء</div>
+          </div>
         </div>
         <div class="form-grid">
-          <div class="fg"><label>تاريخ التسجيل *</label><input id="f-start" type="date"></div>
-          <div class="fg"><label>تاريخ انتهاء الاشتراك *</label><input id="f-end" type="date"></div>
+          <div class="fg"><label>تاريخ التسجيل <span class="req-mark">*</span></label><input id="f-start" type="date"></div>
+          <div class="fg"><label>تاريخ انتهاء الاشتراك <span class="req-mark">*</span></label><input id="f-end" type="date"></div>
         </div>
-        <div class="form-grid">
-          <div class="card">
-            <div class="sec-title"><i class="ti ti-snowflake"></i> إعدادات التجميد</div>
+
+        <div class="form-grid" style="margin-top:14px">
+          <div>
+            <div class="fs-block-title"><span class="n"><i class="ti ti-snowflake" style="font-size:11px"></i></span> إعدادات التجميد</div>
             <div class="form-grid">
               <div class="fg">
                 <label>مدة التجميد</label>
@@ -1102,20 +1519,18 @@
                 التجميد</button>
             </div>
           </div>
-          <div class="card">
-            <div class="sec-title"><i class="ti ti-shirt" style="color:#cc1a1a"></i> البدلة</div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-              <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer">
-                <input type="checkbox" id="f-suit-received" style="width:auto;accent-color:#cc1a1a"
-                  onchange="toggleSuitSize()"> استلم بدلة
-              </label>
-              <div id="suit-size-wrap" style="display:none;align-items:center;gap:8px">
-                <label style="font-size:12px;color:var(--text2)">المقاس:</label>
-                <select id="f-suit-size" style="padding:5px 10px;font-size:13px;width:auto"
-                  onfocus="populateSuitSizeOptions()">
-                  <option value="">اختر المقاس</option>
-                </select>
-              </div>
+          <div>
+            <div class="fs-block-title"><span class="n"><i class="ti ti-shirt" style="font-size:11px"></i></span> البدلة</div>
+            <label class="toggle-card" style="margin-bottom:12px">
+              <input type="checkbox" id="f-suit-received" onchange="toggleSuitSize()">
+              <span class="tc-switch"></span> استلم بدلة
+            </label>
+            <div id="suit-size-wrap" style="display:none;align-items:center;gap:8px;margin-bottom:12px">
+              <label style="font-size:12px;color:var(--text2)">المقاس:</label>
+              <select id="f-suit-size" style="padding:5px 10px;font-size:13px;width:auto"
+                onfocus="populateSuitSizeOptions()">
+                <option value="">اختر المقاس</option>
+              </select>
             </div>
             <div id="stop-reactivate-btns" style="display:none;gap:8px">
               <button class="btn-s" id="btn-stop-student" onclick="stopStudent()"
@@ -1125,12 +1540,15 @@
                 تفعيل</button>
             </div>
           </div>
-          <div class="fg full"><label>ملاحظات</label><input id="f-notes" type="text" placeholder="أي ملاحظات إضافية...">
-          </div>
         </div>
+
+        <div class="fg full" style="margin-top:14px"><label>ملاحظات</label><input id="f-notes" type="text" placeholder="أي ملاحظات إضافية...">
+          <div class="field-hint">اختياري — أي معلومة إضافية تخص الطالب</div>
+        </div>
+
         <input type="hidden" id="f-belt" value="">
         <input type="hidden" id="f-edit-id" value="">
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
           <button class="btn-s" onclick="cancelEdit()">إلغاء</button>
           <button class="btn-p" onclick="saveStudent()"><i class="ti ti-check"></i> <span id="save-btn-lbl">حفظ
               التسجيل</span></button>
@@ -1159,6 +1577,17 @@
         <input type="text" id="search-inp" placeholder="ابحث بالاسم أو رقم الهاتف..." oninput="doSearch()"
           style="margin-bottom:12px">
         <div class="tbl-wrap" id="search-results"></div>
+      </div>
+    </div>
+
+
+    <!-- Stopped Students Tab -->
+    <div class="content" id="tab-stopped">
+      <div class="card">
+        <div class="sec-title"><i class="ti ti-player-stop" style="color:#800517"></i> الطلاب المتوقفين</div>
+        <input type="text" id="stopped-search-inp" placeholder="ابحث بالاسم أو رقم الهاتف..."
+          oninput="renderStoppedStudents()" style="margin-bottom:12px">
+        <div class="tbl-wrap" id="stopped-list"></div>
       </div>
     </div>
 
@@ -1198,61 +1627,55 @@
         <div id="pay-students-section">
 
           <!-- Unified Payment Box -->
-          <div
-            style="background:var(--surface2);border:1.5px solid var(--border2);border-radius:14px;padding:16px;margin-bottom:18px">
-            <div
-              style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-              <i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة
-            </div>
-
-
-            <!-- Student search - tags system -->
-            <label>الطلاب *</label>
-            <div id="pay-tags-wrap" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;min-height:0"></div>
-            <div style="position:relative;margin-bottom:10px">
-              <input id="pay-name" type="text" placeholder="🔍 اكتب اسم الطالب واضغط Enter..." autocomplete="off"
-                oninput="payNameSearch()" onclick="payNameSearch()"
-                onkeydown="if(event.key==='Escape'){document.getElementById('pay-name-dropdown').style.display='none'}"
-                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;box-sizing:border-box">
-              <div id="pay-name-dropdown"
-                style="display:none;position:fixed;z-index:9999;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px #0003;min-width:260px">
+          <div class="form-section" style="margin-bottom:18px">
+            <div class="fs-head">
+              <div class="fs-badge"><i class="ti ti-cash"></i></div>
+              <div class="fs-titles">
+                <div class="fs-title">تسجيل دفعة</div>
+                <div class="fs-sub">اختر الطالب، حدد المبلغ وسبب الدفع، وسجّل العملية</div>
               </div>
             </div>
 
-            <!-- Payment fields -->
-            <!-- Payment fields -->
-            <div class="form-grid" style="margin-bottom:10px">
+            <!-- Sub-block 1: student selection -->
+            <div class="fs-block-title"><span class="n">1</span> اختيار الطلاب</div>
+            <div class="fg full" style="margin-bottom:14px">
+              <label>الطلاب <span class="req-mark">*</span></label>
+              <div id="pay-tags-wrap" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;min-height:0"></div>
+              <div style="position:relative">
+                <input id="pay-name" type="text" placeholder="🔍 اكتب اسم الطالب واضغط Enter..." autocomplete="off"
+                  oninput="payNameSearch()" onclick="payNameSearch()"
+                  onkeydown="if(event.key==='Escape'){document.getElementById('pay-name-dropdown').style.display='none'}">
+                <div id="pay-name-dropdown"
+                  style="display:none;position:fixed;z-index:9999;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px #0003;min-width:260px">
+                </div>
+              </div>
+            </div>
+
+            <!-- Sub-block 2: payment details -->
+            <div class="fs-block-title"><span class="n">2</span> تفاصيل الدفعة</div>
+            <div class="form-grid" style="margin-bottom:14px">
               <div class="fg">
-                <label>المبلغ (دينار) *</label>
+                <label>المبلغ (دينار) <span class="req-mark">*</span></label>
                 <input id="pay-amount" type="number" placeholder="0.00" min="0" step="0.5">
               </div>
               <div class="fg">
-                <label>التاريخ *</label>
+                <label>التاريخ <span class="req-mark">*</span></label>
                 <input id="pay-date" type="date">
               </div>
               <div class="fg">
                 <label>الباقي (دينار)</label>
                 <input id="pay-remaining" type="number" placeholder="0.00" min="0" step="0.5">
+                <div class="field-hint">إن وُجد مبلغ متبقٍ على الطالب</div>
               </div>
               <div class="fg full">
-                <label>سبب الدفع * (يمكن اختيار أكثر من سبب)</label>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="pay-reasons-wrap">
-                  <label
-                    style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="اشتراك شهري" style="width:auto;accent-color:#cc1a1a"> اشتراك شهري</label>
-                  <label
-                    style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="رسوم المواصلات" style="width:auto;accent-color:#cc1a1a"> رسوم
-                    المواصلات</label>
-                  <label
-                    style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="رسوم البدلة" style="width:auto;accent-color:#cc1a1a"> رسوم البدلة</label>
-                  <label
-                    style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="فحص حزام" style="width:auto;accent-color:#cc1a1a"> فحص حزام</label>
-                  <label
-                    style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--text);cursor:pointer;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px"><input
-                      type="checkbox" value="أخرى" style="width:auto;accent-color:#cc1a1a"> أخرى</label>
+                <label>سبب الدفع <span class="req-mark">*</span></label>
+                <div class="field-hint" style="margin:-2px 0 4px">يمكن اختيار أكثر من سبب</div>
+                <div class="chip-wrap" id="pay-reasons-wrap">
+                  <label class="chip"><input type="checkbox" value="اشتراك شهري"><i class="ti ti-calendar-event" style="font-size:14px"></i> اشتراك شهري</label>
+                  <label class="chip"><input type="checkbox" value="رسوم المواصلات"><i class="ti ti-bus" style="font-size:14px"></i> رسوم المواصلات</label>
+                  <label class="chip"><input type="checkbox" value="رسوم البدلة"><i class="ti ti-shirt" style="font-size:14px"></i> رسوم البدلة</label>
+                  <label class="chip"><input type="checkbox" value="فحص حزام"><i class="ti ti-medal" style="font-size:14px"></i> فحص حزام</label>
+                  <label class="chip"><input type="checkbox" value="أخرى"><i class="ti ti-dots" style="font-size:14px"></i> أخرى</label>
                 </div>
               </div>
               <div class="fg full">
@@ -1261,37 +1684,41 @@
               </div>
             </div>
 
-            <!-- Renewal toggle -->
-            <div style="margin-bottom:12px">
-              <label
-                style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 12px;width:fit-content">
-                <input type="checkbox" id="pay-renew-toggle" style="width:auto;accent-color:#1a7a1a"
-                  onchange="toggleRenewFields()">
-                <i class="ti ti-refresh" style="color:#1a7a1a"></i> دفع اشتراك — تجديد تاريخ الانتهاء
-              </label>
-            </div>
+            <!-- Sub-block 3: renewal -->
+            <div class="fs-block-title alt"><span class="n">3</span> التجديد (اختياري)</div>
+            <label class="toggle-card" style="margin-bottom:12px">
+              <input type="checkbox" id="pay-renew-toggle" onchange="toggleRenewFields()">
+              <span class="tc-switch"></span>
+              <i class="ti ti-refresh" style="color:#1a7a1a"></i> دفع اشتراك — تجديد تاريخ الانتهاء
+            </label>
 
             <!-- Renewal fields -->
             <div id="pay-renew-fields"
-              style="display:none;background:var(--surface);border:1px solid #1a7a1a55;border-radius:10px;padding:12px;margin-bottom:12px">
+              style="display:none;background:var(--surface2);border:1px solid #1a7a1a55;border-radius:10px;padding:12px;margin-bottom:12px">
               <div style="font-size:12px;color:var(--text2);margin-bottom:8px">الانتهاء الحالي: <span
                   id="pay-renew-current" style="font-weight:600;color:#a01414"></span></div>
-              <div>
-                <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">تاريخ الانتهاء الجديد
-                  *</label>
-                <input id="renew-new-end" type="date" style="width:100%;box-sizing:border-box">
+              <div class="fg">
+                <label>تاريخ الانتهاء الجديد <span class="req-mark">*</span></label>
+                <input id="renew-new-end" type="date">
               </div>
             </div>
-            <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:16px">
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
               <button class="btn-p" onclick="savePayment()"><i class="ti ti-plus"></i> تسجيل دفعة</button>
             </div>
+          </div>
 
-            <hr class="divider">
-            <div class="sec-title" style="margin-bottom:8px"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل الدفعات</div>
+          <!-- Payment history -->
+          <div class="form-section">
+            <div class="fs-head">
+              <div class="fs-badge alt"><i class="ti ti-history"></i></div>
+              <div class="fs-titles">
+                <div class="fs-title">سجل الدفعات</div>
+                <div class="fs-sub">ابحث باسم الطالب لعرض كل دفعاته السابقة</div>
+              </div>
+            </div>
             <div style="position:relative;margin-bottom:10px">
               <input id="pay-history-search" type="text" placeholder="🔍 ابحث باسم الطالب لعرض كل دفعاته..." autocomplete="off"
-                oninput="renderPayments()"
-                style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;box-sizing:border-box">
+                oninput="renderPayments()">
             </div>
             <div id="pay-history-summary"></div>
             <div class="tbl-wrap" id="payments-list"></div>
@@ -1303,19 +1730,25 @@
 
     <!-- Trainers Tab -->
     <div class="content" id="tab-trainers">
-      <div class="card" style="margin-bottom:14px">
-        <div class="sec-title"><i class="ti ti-cash" style="color:#cc1a1a"></i> تسجيل دفعة لمدرب</div>
+      <div class="form-section" style="margin-bottom:14px">
+        <div class="fs-head">
+          <div class="fs-badge"><i class="ti ti-cash"></i></div>
+          <div class="fs-titles">
+            <div class="fs-title">تسجيل دفعة لمدرب</div>
+            <div class="fs-sub">أدخل بيانات المدرب والمبلغ المدفوع</div>
+          </div>
+        </div>
         <div class="form-grid">
           <div class="fg">
-            <label>اسم المدرب *</label>
+            <label>اسم المدرب <span class="req-mark">*</span></label>
             <input id="tpay-name" type="text" placeholder="اسم المدرب">
           </div>
           <div class="fg">
-            <label>المبلغ المدفوع (دينار) *</label>
+            <label>المبلغ المدفوع (دينار) <span class="req-mark">*</span></label>
             <input id="tpay-amount" type="number" placeholder="0.00" min="0" step="0.5">
           </div>
           <div class="fg">
-            <label>التاريخ *</label>
+            <label>التاريخ <span class="req-mark">*</span></label>
             <input id="tpay-date" type="date">
           </div>
           <div class="fg full">
@@ -1328,8 +1761,14 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="sec-title"><i class="ti ti-history" style="color:#cc1a1a"></i> سجل دفعات المدربين</div>
+      <div class="form-section">
+        <div class="fs-head">
+          <div class="fs-badge alt"><i class="ti ti-history"></i></div>
+          <div class="fs-titles">
+            <div class="fs-title">سجل دفعات المدربين</div>
+            <div class="fs-sub">جميع الدفعات المسجّلة للمدربين</div>
+          </div>
+        </div>
         <div class="tbl-wrap" id="tpayments-list"></div>
       </div>
     </div>
@@ -1572,6 +2011,7 @@
       <td><div class="act-btns">
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
+        <button class="ib wa" onclick="openWhatsApp(${i})" title="إرسال رسالة واتساب"><i class="ti ti-brand-whatsapp"></i></button>
         ${remaining > 0 ? `<button class="ib" style="color:#1a7a1a" onclick="settleRemaining(${i})" title="تسديد الباقي"><i class="ti ti-cash"></i></button>` : ''}
                 <button class="ib" style="color:#cc1a1a" onclick="addRemaining(${i})" title="إضافة باقي"><i class="ti ti-plus"></i></button>
         <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
@@ -1592,12 +2032,11 @@
     }
 
     function renderStudents() {
-      let list = [...students];
-      if (filter === 'active') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active');
-      else if (filter === 'soon') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon');
-      else if (filter === 'expired') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired');
-      else if (filter === 'frozen') list = list.filter(s => !isStudentStopped(s) && getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen');
-      else if (filter === 'stopped') list = list.filter(s => isStudentStopped(s));
+      let list = students.filter(s => !isStudentStopped(s));
+      if (filter === 'active') list = list.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'active');
+      else if (filter === 'soon') list = list.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'soon');
+      else if (filter === 'expired') list = list.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'expired');
+      else if (filter === 'frozen') list = list.filter(s => getStatus(s.end, s.isFrozen, s.freezeEnd) === 'frozen');
       else if (filter === 'm') list = list.filter(s => s.gender === 'm');
       else if (filter === 'f') list = list.filter(s => s.gender === 'f');
       list = currentSort ? applySort(list) : sortStudentsList(list);
@@ -1615,7 +2054,7 @@
     }
 
     function showTab(t) {
-      ['students', 'add', 'search', 'payments', 'suits', 'trainers'].forEach(x => {
+      ['students', 'add', 'search', 'payments', 'suits', 'trainers', 'stopped'].forEach(x => {
         const tab = document.getElementById('tab-' + x);
         const nb = document.getElementById('nb-' + x);
         if (tab) tab.classList.toggle('show', x === t);
@@ -1624,6 +2063,7 @@
       if (t === 'students') renderStudents();
       if (t === 'suits') renderSuitsTab();
       if (t === 'trainers') renderTrainerPayments();
+      if (t === 'stopped') renderStoppedStudents();
       if (t === 'payments') {
         document.getElementById('pay-students-section').style.display = 'block';
         document.getElementById('pay-search-section').style.display = 'none';
@@ -1651,6 +2091,79 @@
       });
     }
 
+    const PHONE_COUNTRIES = [
+      { code: '+962', iso: 'jo', name: 'الأردن' },
+      { code: '+966', iso: 'sa', name: 'السعودية' },
+      { code: '+971', iso: 'ae', name: 'الإمارات' },
+      { code: '+970', iso: 'ps', name: 'فلسطين' },
+      { code: '+20', iso: 'eg', name: 'مصر' },
+      { code: '+963', iso: 'sy', name: 'سوريا' },
+      { code: '+964', iso: 'iq', name: 'العراق' },
+      { code: '+961', iso: 'lb', name: 'لبنان' },
+      { code: '+965', iso: 'kw', name: 'الكويت' },
+      { code: '+974', iso: 'qa', name: 'قطر' },
+      { code: '+973', iso: 'bh', name: 'البحرين' },
+      { code: '+968', iso: 'om', name: 'عمان' },
+      { code: '+90', iso: 'tr', name: 'تركيا' },
+      { code: '+1', iso: 'us', name: 'أمريكا' },
+      { code: '+44', iso: 'gb', name: 'بريطانيا' },
+      { code: 'other', iso: '', name: 'دولة أخرى' }
+    ];
+
+    function buildPhoneCodeList() {
+      const listEl = document.getElementById('phone-code-list');
+      if (!listEl) return;
+      listEl.innerHTML = PHONE_COUNTRIES.map(c => `
+    <div class="phone-code-item" onclick="setPhoneCode('${c.code}')">
+      ${c.iso ? `<img src="https://flagcdn.com/24x18/${c.iso}.png" alt="">` : `<i class="ti ti-world" style="font-size:16px;width:20px;text-align:center;color:var(--text2)"></i>`}
+      <span class="pc-code">${c.code === 'other' ? '' : c.code}</span>
+      <span>${c.name}</span>
+    </div>`).join('');
+    }
+
+    function togglePhoneCodeList(e) {
+      e.stopPropagation();
+      document.getElementById('phone-code-list').classList.toggle('show');
+    }
+
+    document.addEventListener('click', function (e) {
+      const picker = document.getElementById('phone-code-picker');
+      const list = document.getElementById('phone-code-list');
+      if (picker && list && !picker.contains(e.target)) list.classList.remove('show');
+    });
+
+    function setPhoneCode(code) {
+      const c = PHONE_COUNTRIES.find(x => x.code === code) || PHONE_COUNTRIES[0];
+      document.getElementById('f-dad-code').value = code;
+      document.getElementById('phone-code-label').textContent = code === 'other' ? 'دولي' : code;
+      const flagImg = document.getElementById('phone-code-flag');
+      if (c.iso) { flagImg.src = `https://flagcdn.com/24x18/${c.iso}.png`; flagImg.style.display = ''; }
+      else { flagImg.style.display = 'none'; }
+      document.getElementById('f-dad').placeholder = code === 'other' ? 'أدخل الرقم كاملاً مع الرمز' : '7XXXXXXXX';
+      document.getElementById('phone-code-list').classList.remove('show');
+    }
+
+    buildPhoneCodeList();
+
+    function combinePhone(code, number) {
+      let num = (number || '').trim();
+      if (code === 'other' || !code) return num;
+      let digits = num.replace(/[^\d]/g, '');
+      if (digits.startsWith('0')) digits = digits.substring(1);
+      return code + digits;
+    }
+
+    function splitPhone(dad) {
+      if (!dad) return { code: '+962', number: '' };
+      const codes = ['+962', '+966', '+971', '+970', '+20', '+963', '+964', '+961', '+965', '+974', '+973', '+968', '+90', '+1', '+44'];
+      for (const c of codes) {
+        if (dad.startsWith(c)) return { code: c, number: dad.substring(c.length) };
+      }
+      if (dad.startsWith('+')) return { code: 'other', number: dad };
+      // Legacy numbers saved without a country code (assumed Jordan)
+      return { code: '+962', number: dad.startsWith('0') ? dad.substring(1) : dad };
+    }
+
     function saveStudent() {
       const name = document.getElementById('f-name').value.trim();
       const gender = document.getElementById('f-gender').value;
@@ -1676,7 +2189,7 @@
       const obj = {
         name, gender,
         dob: document.getElementById('f-dob').value,
-        dad: document.getElementById('f-dad').value.trim(),
+        dad: combinePhone(document.getElementById('f-dad-code').value, document.getElementById('f-dad').value.trim()),
         location: document.getElementById('f-location').value.trim(),
         start, end,
         notes: document.getElementById('f-notes').value.trim(),
@@ -1754,6 +2267,8 @@
       document.getElementById('form-title').textContent = 'تسجيل طالب جديد';
       document.getElementById('save-btn-lbl').textContent = 'حفظ التسجيل';
       ['f-name', 'f-gender', 'f-dob', 'f-dad', 'f-location', 'f-start', 'f-end', 'f-notes', 'f-belt'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-dad-code').value = '+962';
+      setPhoneCode('+962');
       document.getElementById('f-suit-received').checked = false;
       document.getElementById('f-suit-size').value = '';
       document.getElementById('suit-size-wrap').style.display = 'none';
@@ -1768,7 +2283,9 @@
       document.getElementById('f-name').value = s.name;
       document.getElementById('f-gender').value = s.gender;
       document.getElementById('f-dob').value = s.dob || '';
-      document.getElementById('f-dad').value = s.dad || '';
+      const phoneParts = splitPhone(s.dad || '');
+      setPhoneCode(phoneParts.code);
+      document.getElementById('f-dad').value = phoneParts.number;
       document.getElementById('f-location').value = s.location || '';
       document.getElementById('f-start').value = s.start || '';
       document.getElementById('f-end').value = s.end || '';
@@ -1792,12 +2309,63 @@
       showTab('add');
     }
 
+    function renderStoppedStudents() {
+      const searchEl = document.getElementById('stopped-search-inp');
+      const q = (searchEl ? searchEl.value : '').trim().toLowerCase();
+      let list = students.filter(s => isStudentStopped(s));
+      if (q) list = list.filter(s => s.name.toLowerCase().includes(q) || (s.dad && s.dad.includes(q)));
+      list = sortStudentsList(list);
+      const el = document.getElementById('stopped-list');
+      if (!el) return;
+      if (!list.length) { el.innerHTML = `<div class="empty"><i class="ti ti-player-stop" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب متوقفين</div>`; return; }
+      let h = `<table class="st"><thead><tr>
+    <th style="width:22%">الاسم</th><th style="width:10%">الجنس</th><th style="width:16%">الحزام</th><th style="width:18%">رقم الهاتف</th><th style="width:34%">إجراءات</th>
+  </tr></thead><tbody>`;
+      list.forEach(s => {
+        const i = students.indexOf(s);
+        h += `<tr>
+      <td style="font-weight:600">${s.name}</td>
+      <td>${gBadge(s.gender)}</td>
+      <td>${beltBadge(s.belt)}</td>
+      <td dir="ltr">${s.dad || '—'}</td>
+      <td><div class="act-btns" style="justify-content:flex-end">
+        <button class="ib" onclick="editStudent(${i})" title="تعديل معلومات"><i class="ti ti-edit"></i></button>
+        <button class="ib" style="color:#1a7a1a" onclick="reactivateToExpired(${i})" title="إرجاع لحالة منتهي"><i class="ti ti-refresh"></i> إرجاع لمنتهي</button>
+        <button class="ib del" onclick="delStudent(${i})" title="حذف"><i class="ti ti-trash"></i></button>
+      </div></td>
+    </tr>`;
+      });
+      h += '</tbody></table>';
+      el.innerHTML = h;
+    }
+
+    function reactivateToExpired(i) {
+      const s = students[i];
+      if (!confirm(`هل تريد إرجاع ${s.name} للقائمة الرئيسية بحالة "منتهي"؟`)) return;
+      s.isStopped = false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const endDate = s.end ? new Date(s.end) : null;
+      if (!endDate || isNaN(endDate.getTime()) || endDate >= today) {
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        s.end = yesterday.toISOString().split('T')[0];
+      }
+      save();
+      if (window.firebaseReady) {
+        window.firebaseSave(s, s._id || i);
+      }
+      toast(`تم إرجاع ${s.name} لحالة "منتهي" في القائمة الرئيسية`);
+      showTab('students');
+    }
+
     function delStudent(i) {
       if (!confirm(`هل تريد حذف ${students[i].name}؟`)) return;
       const deleted = students[i];
       students.splice(i, 1);
       save();
       renderStudents();
+      if (document.getElementById('tab-stopped') && document.getElementById('tab-stopped').classList.contains('show')) renderStoppedStudents();
       toast('تم الحذف');
       if (window.firebaseReady && deleted._id) {
         fetch(`${FB_URL}/${deleted._id}?key=${FB_KEY}`, { method: 'DELETE' })
@@ -1947,6 +2515,142 @@
     }
 
     function closeModal() { document.getElementById('modal-bg').classList.remove('show'); }
+
+    // ── آخر التحديثات / المتطلبات ────────────────────────────
+    let updatesList = [];
+    let requirementsList = [];
+    try { updatesList = JSON.parse(localStorage.getItem('shalloul_updates') || '[]'); } catch (e) { }
+    try { requirementsList = JSON.parse(localStorage.getItem('shalloul_requirements') || '[]'); } catch (e) { }
+
+    function renderNotesBox(kind) {
+      const isUpdates = kind === 'updates';
+      const list = isUpdates ? updatesList : requirementsList;
+      const sorted = [...list].sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      let h = `<div style="margin-bottom:12px;display:flex;justify-content:flex-end">
+        <button class="btn-p" onclick="addNoteItem('${kind}')"><i class="ti ti-plus"></i> إضافة ${isUpdates ? 'تحديث' : 'متطلب'}</button>
+      </div>`;
+      if (!sorted.length) {
+        h += `<div class="empty" style="padding:24px 0"><i class="ti ti-notes-off" style="font-size:28px;display:block;margin-bottom:6px"></i>لا يوجد ${isUpdates ? 'تحديثات' : 'متطلبات'} بعد</div>`;
+      } else {
+        h += `<div style="display:flex;flex-direction:column;gap:8px">`;
+        sorted.forEach(item => {
+          h += `<div style="background:var(--surface2);border:0.5px solid var(--border2);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13.5px;color:var(--text);white-space:pre-wrap;word-break:break-word">${(item.text || '').replace(/</g, '&lt;')}</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:4px">${item.date || ''}</div>
+            </div>
+            <button class="ib del" onclick="delNoteItem('${kind}','${item._id}')" title="حذف"><i class="ti ti-trash"></i></button>
+          </div>`;
+        });
+        h += `</div>`;
+      }
+      document.getElementById('modal-body').innerHTML = h;
+    }
+
+    function openUpdatesModal() {
+      document.getElementById('modal-title').textContent = 'آخر التحديثات';
+      renderNotesBox('updates');
+      document.getElementById('modal-bg').classList.add('show');
+    }
+
+    function openRequirementsModal() {
+      document.getElementById('modal-title').textContent = 'المتطلبات';
+      renderNotesBox('requirements');
+      document.getElementById('modal-bg').classList.add('show');
+    }
+
+    function addNoteItem(kind) {
+      const isUpdates = kind === 'updates';
+      const text = prompt(isUpdates ? 'اكتب آخر تحديث:' : 'اكتب المتطلب:');
+      if (!text || !text.trim()) return;
+      const ts = Date.now();
+      const item = {
+        _id: (isUpdates ? 'u_' : 'r_') + ts + '_' + Math.random().toString(36).substr(2, 5),
+        text: text.trim(),
+        date: new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }),
+        ts
+      };
+      if (isUpdates) { updatesList.unshift(item); try { localStorage.setItem('shalloul_updates', JSON.stringify(updatesList)); } catch (e) { } }
+      else { requirementsList.unshift(item); try { localStorage.setItem('shalloul_requirements', JSON.stringify(requirementsList)); } catch (e) { } }
+      fbSaveDoc(isUpdates ? 'updates' : 'requirements', item._id, item);
+      renderNotesBox(kind);
+      toast('تمت الإضافة');
+    }
+
+    function delNoteItem(kind, id) {
+      if (!confirm('حذف هذا العنصر؟')) return;
+      const isUpdates = kind === 'updates';
+      if (isUpdates) { updatesList = updatesList.filter(x => x._id !== id); try { localStorage.setItem('shalloul_updates', JSON.stringify(updatesList)); } catch (e) { } }
+      else { requirementsList = requirementsList.filter(x => x._id !== id); try { localStorage.setItem('shalloul_requirements', JSON.stringify(requirementsList)); } catch (e) { } }
+      fbDeleteDoc(isUpdates ? 'updates' : 'requirements', id);
+      renderNotesBox(kind);
+      toast('تم الحذف');
+    }
+
+    async function loadNotesFromCloud() {
+      try {
+        const [u, r] = await Promise.all([fbLoadCol('updates'), fbLoadCol('requirements')]);
+        if (u && u.length) { updatesList = mergeFresh(updatesList, u); try { localStorage.setItem('shalloul_updates', JSON.stringify(updatesList)); } catch (e) { } }
+        if (r && r.length) { requirementsList = mergeFresh(requirementsList, r); try { localStorage.setItem('shalloul_requirements', JSON.stringify(requirementsList)); } catch (e) { } }
+      } catch (e) { }
+    }
+
+    function formatPhoneForWa(phone) {
+      let p = (phone || '').replace(/[^\d+]/g, '');
+      if (p.startsWith('+')) p = p.substring(1);
+      if (p.startsWith('00')) p = p.substring(2);
+      if (p.startsWith('0')) p = '962' + p.substring(1);
+      if (!p.startsWith('962') && p.length === 9) p = '962' + p;
+      return p;
+    }
+
+    function buildWaMessage(s, remaining) {
+      const isFemale = s.gender === 'f';
+      const label = isFemale ? 'الطالبة المتميزة' : 'الطالب المتميز';
+      let msg = `السلام عليكم ورحمة الله وبركاته\n\nأهل ${label} (${s.name})`;
+      const status = getStatus(s.end, s.isFrozen, s.freezeEnd);
+      const dueSoonOrExpired = !isStudentStopped(s) && (status === 'soon' || status === 'expired');
+      if (remaining > 0) {
+        msg += `\n\nنود تذكيركم بوجود رسوم مستحقة بقيمة ${remaining} د.أ، نرجو التكرم بتسديدها في أقرب وقت ممكن.`;
+      } else if (dueSoonOrExpired) {
+        msg += `\n\nنود تذكيركم بوجود رسوم مستحقة بقيمة ____ د.أ، نرجو التكرم بتسديدها في أقرب وقت ممكن.`;
+      } else {
+        msg += `\n\nنود إعلامكم بأنه لا يوجد أي رسوم مستحقة حالياً، شكراً لالتزامكم.`;
+      }
+      msg += `\n\nمع تحياتنا\nإدارة مركز الشلول للتايكوندو`;
+      return msg;
+    }
+
+    function openWhatsApp(i) {
+      const s = students[i];
+      const remaining = getStudentRemaining(s.name);
+      const waPhone = formatPhoneForWa(s.dad);
+      document.getElementById('modal-title').textContent = 'إرسال رسالة واتساب - ' + s.name;
+      document.getElementById('modal-body').innerHTML = `
+    <div class="fg full" style="margin-bottom:10px">
+      <label>رقم الهاتف (للإرسال)</label>
+      <input id="wa-phone" type="tel" dir="ltr" value="${waPhone}" placeholder="9627XXXXXXXX">
+    </div>
+    <div class="fg full" style="margin-bottom:10px">
+      <label>نص الرسالة (يمكنك تعديله قبل الإرسال)</label>
+      <textarea id="wa-message" rows="7" style="width:100%;resize:vertical;font-family:inherit;padding:10px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text)">${buildWaMessage(s, remaining)}</textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-s" onclick="closeModal()">إلغاء</button>
+      <button class="btn-p" style="background:#25D366;border-color:#25D366" onclick="confirmSendWhatsApp()"><i class="ti ti-brand-whatsapp"></i> إرسال عبر واتساب</button>
+    </div>`;
+      document.getElementById('modal-bg').classList.add('show');
+    }
+
+    function confirmSendWhatsApp() {
+      const phone = document.getElementById('wa-phone').value.trim();
+      const message = document.getElementById('wa-message').value.trim();
+      if (!phone) { toast('يرجى إدخال رقم الهاتف', true); return; }
+      const cleanPhone = formatPhoneForWa(phone);
+      const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+      closeModal();
+    }
 
     function settleRemaining(i) {
       const s = students[i];
@@ -2551,6 +3255,7 @@
       [...tp2, ...tp3].forEach(r => { if (!allTp.find(x => x._id === r._id)) allTp.push(r); });
       payments = mergeFresh(payments, p);
       trainerPayments = mergeFresh(trainerPayments, allTp);
+      await loadNotesFromCloud();
     }
 
     function showPaySub(sub, btn) {
@@ -2849,8 +3554,25 @@
     function delPayment(i) {
       if (!confirm('حذف هذه الدفعة؟')) return;
       const p = payments[i];
+      // تحديد ما إذا كانت هذه الدفعة هي "آخر دفعة" لهذا الطالب (هي التي تتحكم بقيمة الباقي المعروضة حاليًا)
+      let wasLatest = false;
+      if (p.name) {
+        const matches = payments.filter(pp => pp.name === p.name);
+        matches.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        wasLatest = matches.length && matches[0] === p;
+      }
       if (p._id) fbDeleteDoc('payments', p._id);
       payments.splice(i, 1);
+      // إذا كانت الدفعة المحذوفة هي آخر دفعة (سواء كان فيها باقي أو كانت تسديد كامل)،
+      // لا نريد أن يرجع يظهر باقي قديم من دفعات سابقة لنفس الطالب — نصفّره نهائيًا
+      if (wasLatest && p.name) {
+        payments.forEach(pp => {
+          if (pp.name === p.name && pp.remaining && parseFloat(pp.remaining) > 0) {
+            pp.remaining = '';
+            if (pp._id) fbSaveDoc('payments', pp._id, pp);
+          }
+        });
+      }
       try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
       if (isPaySearchTab() || paySearchActive) searchPaymentsByDate();
       else renderPayments();
