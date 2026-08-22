@@ -2607,7 +2607,7 @@
     function buildWaMessage(s, remaining) {
       const isFemale = s.gender === 'f';
       const label = isFemale ? 'الطالبة المتميزة' : 'الطالب المتميز';
-      let msg = `السلام عليكم ورحمة الله وبركاته\n\nأهل ${label} (${s.name})`;
+      let msg = `السلام عليكم ورحمة الله وبركاته\n\nولي أمر  ${label} (${s.name})`;
       const status = getStatus(s.end, s.isFrozen, s.freezeEnd);
       const dueSoonOrExpired = !isStudentStopped(s) && (status === 'soon' || status === 'expired');
       if (remaining > 0) {
