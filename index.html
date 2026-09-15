@@ -3529,7 +3529,8 @@
       const searchInput = document.getElementById('pay-history-search');
       const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
       const visiblePayments = payments.filter(p => !p.adjOnly);
-      const list = q ? visiblePayments.filter(p => p.name && p.name.toLowerCase().includes(q)) : visiblePayments;
+      let list = q ? visiblePayments.filter(p => p.name && p.name.toLowerCase().includes(q)) : visiblePayments;
+      list = list.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
       if (summaryEl) {
         if (q && list.length) {
