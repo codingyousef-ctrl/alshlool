@@ -1281,6 +1281,8 @@
     <div class="lock-sub">نظام إدارة الطلاب</div>
 
     <div class="lock-box">
+      <label class="lock-label">الدخول كـ</label>
+      <select class="lock-inp" id="page-select" style="margin-bottom:10px;cursor:pointer"></select>
       <label class="lock-label">كلمة المرور</label>
       <div class="lock-input-wrap">
         <input class="lock-inp" id="lock-inp" type="password" placeholder="أدخل كلمة المرور"
@@ -1315,6 +1317,8 @@
         <button class="icon-btn" onclick="openUpdatesModal()" title="آخر التحديثات"><i class="ti ti-bell"></i></button>
         <button class="icon-btn" onclick="openRequirementsModal()" title="متطلبات"><i
             class="ti ti-clipboard-list"></i></button>
+        <button class="icon-btn" onclick="openChangePasswordModal()" title="تغيير كلمة المرور"><i
+            class="ti ti-key"></i></button>
         <button class="icon-btn" id="theme-toggle" title="تبديل المظهر"><i class="ti ti-moon"
             id="theme-icon"></i></button>
         <button class="icon-btn" onclick="lockApp()" title="قفل"><i class="ti ti-lock"></i></button>
@@ -1497,7 +1501,8 @@
           </div>
           <div class="fg"><label>تاريخ انتهاء الاشتراك <span class="req-mark">*</span></label><input id="f-end"
               type="date"></div>
-          <div class="fg"><label>مبلغ الاشتراك (دينار)</label><input id="f-sub-amount" type="number" min="0" step="0.5" placeholder="0.00"></div>
+          <div class="fg"><label>مبلغ الاشتراك (دينار)</label><input id="f-sub-amount" type="number" min="0" step="0.5"
+              placeholder="0.00"></div>
         </div>
 
         <div class="form-grid" style="margin-top:14px">
@@ -1789,6 +1794,42 @@
     </div>
   </div>
 
+  <!-- ── Developer Page ── -->
+  <div class="app" id="developer-page" style="display:none">
+    <div class="header">
+      <div class="logo-wrap"
+        style="display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)">
+        <i class="ti ti-code" style="font-size:20px"></i>
+      </div>
+      <div class="header-info">
+        <h1>صفحة المطوّر</h1>
+        <p>سجل التعديلات</p>
+      </div>
+      <div class="header-btns">
+        <button class="icon-btn" onclick="refreshDevLog()" title="تحديث"><i class="ti ti-refresh"></i></button>
+        <button class="icon-btn" onclick="openChangePasswordModal()" title="تغيير كلمة المرور"><i
+            class="ti ti-key"></i></button>
+        <button class="icon-btn" id="theme-toggle-dev" title="تبديل المظهر"><i class="ti ti-moon"
+            id="theme-icon-dev"></i></button>
+        <button class="icon-btn" onclick="lockApp()" title="خروج"><i class="ti ti-logout"></i></button>
+      </div>
+    </div>
+
+    <div class="content show">
+      <div class="card">
+        <div class="sec-title"><i class="ti ti-history"></i> سجل التعديلات</div>
+        <div class="filter-row">
+          <input id="dev-log-search" type="text" placeholder="ابحث في السجل..." oninput="renderDevLog()"
+            style="flex:1;min-width:180px">
+          <select id="dev-log-filter" onchange="renderDevLog()">
+            <option value="">كل الأقسام</option>
+          </select>
+        </div>
+        <div id="dev-log-list"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal -->
   <div class="modal-bg" id="modal-bg" onclick="closeModal()">
     <div class="modal" onclick="event.stopPropagation()">
@@ -1801,21 +1842,116 @@
   </div>
 
   <script>
-    const PASSWORD = '1122';
+    // ── Pages / Passwords ────────────────────────────────────────
+    // Add a new page by adding an entry here from the code — no other
+    // changes are required. `view` must match the id of the element
+    // to reveal on unlock ('main-app' for the admin panel, or any
+    // other top-level container such as 'developer-page').
+    const PAGES = [
+      { id: 'admin', name: 'Captain Tareq', password: '1122', view: 'main-app' },
+      { id: 'developer', name: 'Developer', password: 'dev1122', view: 'developer-page' },
+    ];
+
+    // ── Password overrides (stored locally, take priority over the defaults above) ──
+    let passwordOverrides = {};
+    try { passwordOverrides = JSON.parse(localStorage.getItem('shalloul_passwords') || '{}'); } catch (e) { }
+
+    function getPage(id) {
+      const p = PAGES.find(p => p.id === id);
+      if (!p) return p;
+      const eff = passwordOverrides[id];
+      return eff ? { ...p, password: eff } : p;
+    }
+
+    function changePassword(pageId, oldPass, newPass) {
+      const page = getPage(pageId);
+      if (!page) return { ok: false, msg: 'حساب غير معروف' };
+      if (oldPass !== page.password) return { ok: false, msg: 'كلمة المرور الحالية غير صحيحة' };
+      if (!newPass || newPass.length < 4) return { ok: false, msg: 'كلمة المرور الجديدة يجب أن تكون 4 أحرف على الأقل' };
+      passwordOverrides[pageId] = newPass;
+      try { localStorage.setItem('shalloul_passwords', JSON.stringify(passwordOverrides)); } catch (e) { }
+      return { ok: true };
+    }
+
+    function openChangePasswordModal() {
+      const pageId = sessionStorage.getItem('shalloul_unlocked_page') || 'admin';
+      const page = getPage(pageId);
+      document.getElementById('modal-title').textContent = 'تغيير كلمة المرور — ' + (page ? page.name : '');
+      document.getElementById('modal-body').innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <label style="font-size:12.5px;color:var(--text2);display:block;margin-bottom:4px">كلمة المرور الحالية</label>
+            <input type="password" id="cp-old" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)">
+          </div>
+          <div>
+            <label style="font-size:12.5px;color:var(--text2);display:block;margin-bottom:4px">كلمة المرور الجديدة</label>
+            <input type="password" id="cp-new" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)">
+          </div>
+          <div>
+            <label style="font-size:12.5px;color:var(--text2);display:block;margin-bottom:4px">تأكيد كلمة المرور الجديدة</label>
+            <input type="password" id="cp-new2" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)">
+          </div>
+          <div id="cp-err" style="display:none;color:var(--jordan-red);font-size:12.5px"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+          <button class="btn-s" onclick="closeModal()">إلغاء</button>
+          <button class="btn-p" onclick="submitChangePassword('${pageId}')"><i class="ti ti-key"></i> حفظ</button>
+        </div>`;
+      document.getElementById('modal-bg').classList.add('show');
+      const first = document.getElementById('cp-old');
+      if (first) setTimeout(() => first.focus(), 50);
+    }
+
+    function submitChangePassword(pageId) {
+      const oldPass = (document.getElementById('cp-old') || {}).value || '';
+      const newPass = (document.getElementById('cp-new') || {}).value || '';
+      const newPass2 = (document.getElementById('cp-new2') || {}).value || '';
+      const errBox = document.getElementById('cp-err');
+      const showErr = (m) => { if (errBox) { errBox.textContent = m; errBox.style.display = 'block'; } };
+      if (newPass !== newPass2) { showErr('كلمة المرور الجديدة وتأكيدها غير متطابقين'); return; }
+      const res = changePassword(pageId, oldPass, newPass);
+      if (!res.ok) { showErr(res.msg); return; }
+      closeModal();
+      toast('تم تغيير كلمة المرور بنجاح');
+    }
+
+    // Populate the page-select dropdown on the lock screen
+    (function populatePageSelect() {
+      const sel = document.getElementById('page-select');
+      sel.innerHTML = PAGES.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    })();
 
     // ── Lock / Unlock ──────────────────────────────────────────
     const lockScreen = document.getElementById('lock-screen');
     const mainApp = document.getElementById('main-app');
+    // All unlockable views, keyed by their element id, hidden by default.
+    const ALL_VIEWS = ['main-app', 'developer-page'];
+
+    function hideAllViews() {
+      ALL_VIEWS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    function showView(viewId) {
+      hideAllViews();
+      const el = document.getElementById(viewId);
+      if (el) el.style.display = viewId === 'main-app' ? 'block' : 'block';
+      if (viewId === 'developer-page') renderDevLog();
+    }
 
     function tryUnlock() {
+      const pageId = document.getElementById('page-select').value;
+      const page = getPage(pageId);
       const val = document.getElementById('lock-inp').value;
       const err = document.getElementById('lock-err');
-      if (val === PASSWORD) {
+      if (page && val === page.password) {
         lockScreen.classList.add('hide');
-        mainApp.style.display = 'block';
+        showView(page.view);
         err.classList.add('hide');
-        try { sessionStorage.setItem('shalloul_unlocked', '1'); } catch (e) { }
-        setTimeout(showStorageWarning, 500);
+        try { sessionStorage.setItem('shalloul_unlocked_page', pageId); } catch (e) { }
+        if (page.id === 'admin') setTimeout(showStorageWarning, 500);
       } else {
         err.classList.remove('hide');
         document.getElementById('lock-inp').value = '';
@@ -1833,8 +1969,8 @@
     }
 
     function lockApp() {
-      try { sessionStorage.removeItem('shalloul_unlocked'); } catch (e) { }
-      mainApp.style.display = 'none';
+      try { sessionStorage.removeItem('shalloul_unlocked_page'); } catch (e) { }
+      hideAllViews();
       lockScreen.classList.remove('hide');
       document.getElementById('lock-inp').value = '';
       document.getElementById('lock-err').classList.add('hide');
@@ -1844,9 +1980,12 @@
 
     // Auto-unlock if session active
     try {
-      if (sessionStorage.getItem('shalloul_unlocked') === '1') {
+      const savedPageId = sessionStorage.getItem('shalloul_unlocked_page');
+      const savedPage = savedPageId && getPage(savedPageId);
+      if (savedPage) {
+        document.getElementById('page-select').value = savedPage.id;
         lockScreen.classList.add('hide');
-        mainApp.style.display = 'block';
+        showView(savedPage.view);
       }
     } catch (e) { }
 
@@ -1873,13 +2012,17 @@
     const themeIcon = document.getElementById('theme-icon');
     let isDark = false;
     try { isDark = localStorage.getItem('shalloul_theme') === 'dark'; } catch (e) { }
+    const themeBtnDev = document.getElementById('theme-toggle-dev');
+    const themeIconDev = document.getElementById('theme-icon-dev');
     function applyTheme(dark) {
       root.setAttribute('data-theme', dark ? 'dark' : 'light');
       themeIcon.className = dark ? 'ti ti-sun' : 'ti ti-moon';
+      if (themeIconDev) themeIconDev.className = dark ? 'ti ti-sun' : 'ti ti-moon';
       try { localStorage.setItem('shalloul_theme', dark ? 'dark' : 'light'); } catch (e) { }
     }
     applyTheme(isDark);
     themeBtn.onclick = () => { isDark = !isDark; applyTheme(isDark); };
+    if (themeBtnDev) themeBtnDev.onclick = () => { isDark = !isDark; applyTheme(isDark); };
 
     // ── PWA ──────────────────────────────────────────────────
     let deferredPrompt = null;
@@ -1931,6 +2074,69 @@
     let filter = 'all';
 
     function save() { try { localStorage.setItem('shalloul_v2', JSON.stringify(students)); } catch (e) { } }
+
+    // ── Change Log (for the Developer page) ─────────────────────
+    let changeLog = [];
+    try { changeLog = JSON.parse(localStorage.getItem('shalloul_changelog') || '[]'); } catch (e) { }
+
+    function saveChangeLog() { try { localStorage.setItem('shalloul_changelog', JSON.stringify(changeLog)); } catch (e) { } }
+
+    // section: قسم عام يظهر في فلتر صفحة المطوّر (طلاب / دفعات / بدلات / مدربين / ملاحظات ...)
+    function logChange(section, action, details) {
+      const entry = {
+        _id: 'log_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+        time: new Date().toISOString(),
+        section, action, details: details || ''
+      };
+      changeLog.unshift(entry);
+      saveChangeLog();
+      if (typeof fbSaveDoc === 'function') fbSaveDoc('changeLog', entry._id, entry);
+      if (document.getElementById('developer-page') && document.getElementById('developer-page').style.display !== 'none') renderDevLog();
+    }
+
+    async function refreshDevLog() {
+      if (typeof fbLoadCol === 'function') {
+        const remote = await fbLoadCol('changeLog');
+        if (remote && remote.length) {
+          const merged = [...remote, ...changeLog];
+          const seen = new Set();
+          changeLog = merged.filter(c => { if (seen.has(c._id)) return false; seen.add(c._id); return true; });
+          changeLog.sort((a, b) => new Date(b.time) - new Date(a.time));
+          saveChangeLog();
+        }
+      }
+      renderDevLog();
+    }
+
+    function renderDevLog() {
+      const list = document.getElementById('dev-log-list');
+      if (!list) return;
+      const search = (document.getElementById('dev-log-search') || {}).value || '';
+      const sectionFilter = (document.getElementById('dev-log-filter') || {}).value || '';
+      // Populate the section filter dropdown dynamically from what's in the log
+      const filterSel = document.getElementById('dev-log-filter');
+      if (filterSel) {
+        const sections = [...new Set(changeLog.map(c => c.section))];
+        const current = filterSel.value;
+        filterSel.innerHTML = '<option value="">كل الأقسام</option>' + sections.map(s => `<option value="${s}">${s}</option>`).join('');
+        filterSel.value = current;
+      }
+      let entries = changeLog;
+      if (sectionFilter) entries = entries.filter(e => e.section === sectionFilter);
+      if (search.trim()) {
+        const q = search.trim();
+        entries = entries.filter(e => (e.action + ' ' + e.details + ' ' + e.section).includes(q));
+      }
+      if (!entries.length) { list.innerHTML = '<div class="empty">لا توجد تعديلات مسجّلة</div>'; return; }
+      list.innerHTML = entries.map(e => `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-weight:700;font-size:13px;color:var(--jordan-red)">${e.section || ''} — ${e.action || ''}</span>
+            <span style="font-size:11px;color:var(--text2)">${new Date(e.time).toLocaleString('ar-EG')}</span>
+          </div>
+          <div style="font-size:12.5px;color:var(--text)">${e.details || ''}</div>
+        </div>`).join('');
+    }
 
     function isStudentStopped(student) {
       return student && (student.isStopped === true || student.isStopped === 'true');
@@ -2214,6 +2420,7 @@
       };
       const eid = document.getElementById('f-edit-id').value;
       const isEdit = eid !== '';
+      logChange('طلاب', isEdit ? 'تعديل بيانات طالب' : 'تسجيل طالب جديد', name);
       let prevSuitReceived = false;
       let prevSuitSize = '';
       if (isEdit) {
@@ -2377,6 +2584,7 @@
     function delStudent(i) {
       if (!confirm(`هل تريد حذف ${students[i].name}؟`)) return;
       const deleted = students[i];
+      logChange('طلاب', 'حذف طالب', deleted.name);
       students.splice(i, 1);
       save();
       renderStudents();
@@ -2589,6 +2797,7 @@
       if (isUpdates) { updatesList.unshift(item); try { localStorage.setItem('shalloul_updates', JSON.stringify(updatesList)); } catch (e) { } }
       else { requirementsList.unshift(item); try { localStorage.setItem('shalloul_requirements', JSON.stringify(requirementsList)); } catch (e) { } }
       fbSaveDoc(isUpdates ? 'updates' : 'requirements', item._id, item);
+      logChange(isUpdates ? 'آخر التحديثات' : 'المتطلبات', 'إضافة', text.trim());
       renderNotesBox(kind);
       toast('تمت الإضافة');
     }
@@ -2598,6 +2807,7 @@
       const isUpdates = kind === 'updates';
       if (isUpdates) { updatesList = updatesList.filter(x => x._id !== id); try { localStorage.setItem('shalloul_updates', JSON.stringify(updatesList)); } catch (e) { } }
       else { requirementsList = requirementsList.filter(x => x._id !== id); try { localStorage.setItem('shalloul_requirements', JSON.stringify(requirementsList)); } catch (e) { } }
+      logChange(isUpdates ? 'آخر التحديثات' : 'المتطلبات', 'حذف', '');
       fbDeleteDoc(isUpdates ? 'updates' : 'requirements', id);
       renderNotesBox(kind);
       toast('تم الحذف');
@@ -3273,6 +3483,16 @@
       payments = mergeFresh(payments, p);
       trainerPayments = mergeFresh(trainerPayments, allTp);
       await loadNotesFromCloud();
+      try {
+        const remoteLog = await fbLoadCol('changeLog');
+        if (remoteLog && remoteLog.length) {
+          const merged = [...remoteLog, ...changeLog];
+          const seen = new Set();
+          changeLog = merged.filter(c => { if (seen.has(c._id)) return false; seen.add(c._id); return true; });
+          changeLog.sort((a, b) => new Date(b.time) - new Date(a.time));
+          saveChangeLog();
+        }
+      } catch (e) { }
     }
 
     function showPaySub(sub, btn) {
@@ -3486,6 +3706,7 @@
       }));
       // Add to array and render IMMEDIATELY
       newPayments.forEach(p => payments.unshift(p));
+      logChange('الدفعات', 'تسجيل دفعة', paySelectedStudents.map(ps => ps.name).join(', ') + ' — ' + amount + ' د.أ');
       renderPayments();
       renderStudents();
       toast(splitCount > 1
@@ -3572,6 +3793,7 @@
     function delPayment(i) {
       if (!confirm('حذف هذه الدفعة؟')) return;
       const p = payments[i];
+      logChange('الدفعات', 'حذف دفعة', (p.name || '') + ' — ' + (p.amount || '') + ' د.أ');
       // تحديد ما إذا كانت هذه الدفعة هي "آخر دفعة" لهذا الطالب (هي التي تتحكم بقيمة الباقي المعروضة حاليًا)
       let wasLatest = false;
       if (p.name) {
@@ -3721,6 +3943,7 @@
       };
       // Add to array and render IMMEDIATELY
       trainerPayments.unshift(newPayment);
+      logChange('دفعات المدربين', 'تسجيل دفعة', name + ' — ' + amount + ' د.أ');
       ['tpay-name', 'tpay-amount', 'tpay-notes'].forEach(id => document.getElementById(id).value = '');
       renderTrainerPayments();
       toast('تم تسجيل الدفعة ✓');
@@ -3752,6 +3975,7 @@
     function delTrainerPayment(i) {
       if (!confirm('حذف هذه الدفعة؟')) return;
       const p = trainerPayments[i];
+      logChange('دفعات المدربين', 'حذف دفعة', (p.trainer || '') + ' — ' + (p.amount || '') + ' د.أ');
       if (p._id) fbDeleteDoc('trainerPayments', p._id);
       trainerPayments.splice(i, 1);
       try { localStorage.setItem('shalloul_tpayments', JSON.stringify(trainerPayments)); } catch (e) { }
