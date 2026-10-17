@@ -1317,7 +1317,6 @@
         <button class="icon-btn" onclick="openUpdatesModal()" title="آخر التحديثات"><i class="ti ti-bell"></i></button>
         <button class="icon-btn" onclick="openRequirementsModal()" title="متطلبات"><i
             class="ti ti-clipboard-list"></i></button>
-
         </i></button>
         <button class="icon-btn" id="theme-toggle" title="تبديل المظهر"><i class="ti ti-moon"
             id="theme-icon"></i></button>
@@ -1807,8 +1806,8 @@
       </div>
       <div class="header-btns">
         <button class="icon-btn" onclick="refreshDevLog()" title="تحديث"><i class="ti ti-refresh"></i></button>
-        <button class="icon-btn" onclick="toggleTextPrivacy()" title="إظهار/إخفاء النصوص"><i
-            class="ti ti-eye-off privacy-toggle-icon"></i></button>
+        <button class="icon-btn" onclick="openChangePasswordModal()" title="تغيير كلمة المرور"><i
+            class="ti ti-key"></i></button>
         <button class="icon-btn" id="theme-toggle-dev" title="تبديل المظهر"><i class="ti ti-moon"
             id="theme-icon-dev"></i></button>
         <button class="icon-btn" onclick="lockApp()" title="خروج"><i class="ti ti-logout"></i></button>
@@ -1863,6 +1862,58 @@
       return eff ? { ...p, password: eff } : p;
     }
 
+    function changePassword(pageId, oldPass, newPass) {
+      const page = getPage(pageId);
+      if (!page) return { ok: false, msg: 'حساب غير معروف' };
+      if (oldPass !== page.password) return { ok: false, msg: 'كلمة المرور الحالية غير صحيحة' };
+      if (!newPass || newPass.length < 4) return { ok: false, msg: 'كلمة المرور الجديدة يجب أن تكون 4 أحرف على الأقل' };
+      passwordOverrides[pageId] = newPass;
+      try { localStorage.setItem('shalloul_passwords', JSON.stringify(passwordOverrides)); } catch (e) { }
+      return { ok: true };
+    }
+
+    function openChangePasswordModal() {
+      const pageId = sessionStorage.getItem('shalloul_unlocked_page') || 'admin';
+      const page = getPage(pageId);
+      document.getElementById('modal-title').textContent = 'تغيير كلمة المرور — ' + (page ? page.name : '');
+      document.getElementById('modal-body').innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <label style="font-size:12.5px;color:var(--text2);display:block;margin-bottom:4px">كلمة المرور الحالية</label>
+            <input type="password" id="cp-old" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)">
+          </div>
+          <div>
+            <label style="font-size:12.5px;color:var(--text2);display:block;margin-bottom:4px">كلمة المرور الجديدة</label>
+            <input type="password" id="cp-new" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)">
+          </div>
+          <div>
+            <label style="font-size:12.5px;color:var(--text2);display:block;margin-bottom:4px">تأكيد كلمة المرور الجديدة</label>
+            <input type="password" id="cp-new2" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)">
+          </div>
+          <div id="cp-err" style="display:none;color:var(--jordan-red);font-size:12.5px"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+          <button class="btn-s" onclick="closeModal()">إلغاء</button>
+          <button class="btn-p" onclick="submitChangePassword('${pageId}')"><i class="ti ti-key"></i> حفظ</button>
+        </div>`;
+      document.getElementById('modal-bg').classList.add('show');
+      const first = document.getElementById('cp-old');
+      if (first) setTimeout(() => first.focus(), 50);
+    }
+
+    function submitChangePassword(pageId) {
+      const oldPass = (document.getElementById('cp-old') || {}).value || '';
+      const newPass = (document.getElementById('cp-new') || {}).value || '';
+      const newPass2 = (document.getElementById('cp-new2') || {}).value || '';
+      const errBox = document.getElementById('cp-err');
+      const showErr = (m) => { if (errBox) { errBox.textContent = m; errBox.style.display = 'block'; } };
+      if (newPass !== newPass2) { showErr('كلمة المرور الجديدة وتأكيدها غير متطابقين'); return; }
+      const res = changePassword(pageId, oldPass, newPass);
+      if (!res.ok) { showErr(res.msg); return; }
+      closeModal();
+      toast('تم تغيير كلمة المرور بنجاح');
+    }
+
     // Populate the page-select dropdown on the lock screen
     (function populatePageSelect() {
       const sel = document.getElementById('page-select');
@@ -1898,7 +1949,7 @@
         lockScreen.classList.add('hide');
         showView(page.view);
         err.classList.add('hide');
-        try { localStorage.setItem('shalloul_unlocked_page', pageId); } catch (e) { }
+        try { sessionStorage.setItem('shalloul_unlocked_page', pageId); } catch (e) { }
         if (page.id === 'admin') setTimeout(showStorageWarning, 500);
       } else {
         err.classList.remove('hide');
@@ -1917,7 +1968,7 @@
     }
 
     function lockApp() {
-      try { localStorage.removeItem('shalloul_unlocked_page'); } catch (e) { }
+      try { sessionStorage.removeItem('shalloul_unlocked_page'); } catch (e) { }
       hideAllViews();
       lockScreen.classList.remove('hide');
       document.getElementById('lock-inp').value = '';
@@ -1928,7 +1979,7 @@
 
     // Auto-unlock if session active
     try {
-      const savedPageId = localStorage.getItem('shalloul_unlocked_page');
+      const savedPageId = sessionStorage.getItem('shalloul_unlocked_page');
       const savedPage = savedPageId && getPage(savedPageId);
       if (savedPage) {
         document.getElementById('page-select').value = savedPage.id;
@@ -3937,114 +3988,6 @@
     document.getElementById('pay-date').value = today;
     document.getElementById('tpay-date').value = today;
 
-  </script>
-
-  <script>
-    // ═══════════ وضع التمويه: إخفاء كل نصوص الموقع برموز عشوائية ═══════════
-    // يموّه كل النصوص المعروضة (عناوين، أزرار، جداول، أسماء، مبالغ...) دون
-    // المساس بالوظائف — الأزرار والمنطق تعمل كالمعتاد لأنها لا تعتمد على النص.
-    (function () {
-      const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA']);
-      const AR_POOL = 'ابتثجحخدذرزسشصضطظعغفقكلمنهويءىة';
-      const LAT_POOL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const NUM_POOL = '٠١٢٣٤٥٦٧٨٩';
-
-      function scrambleChar(ch) {
-        if (/[\u0621-\u064A]/.test(ch)) return AR_POOL[Math.floor(Math.random() * AR_POOL.length)];
-        if (/[a-zA-Z]/.test(ch)) return LAT_POOL[Math.floor(Math.random() * LAT_POOL.length)];
-        if (/[0-9\u0660-\u0669]/.test(ch)) return NUM_POOL[Math.floor(Math.random() * NUM_POOL.length)];
-        return ch; // المسافات وعلامات الترقيم والرموز تبقى كما هي للحفاظ على التنسيق
-      }
-      function scrambleText(txt) {
-        let out = '';
-        for (const ch of txt) out += scrambleChar(ch);
-        return out;
-      }
-
-      let mode = 'scrambled'; // الحالة الافتراضية: نص غير مفهوم
-      const nodeRegistry = new Map();   // عقدة نصية → {original, scrambled}
-      const attrRegistry = new Map();   // عنصر → {attr: {original, scrambled}}
-      const WATCH_ATTRS = ['placeholder', 'title'];
-
-      function isSkippable(textNode) {
-        const p = textNode.parentElement;
-        if (!p || SKIP_TAGS.has(p.tagName)) return true;
-        if (p.closest('#lock-screen')) return true; // شاشة تسجيل الدخول تبقى واضحة دائماً
-        return false;
-      }
-
-      function registerTextNode(node) {
-        if (nodeRegistry.has(node)) return;
-        const original = node.nodeValue;
-        if (!original || !original.trim()) return;
-        const scrambled = scrambleText(original);
-        nodeRegistry.set(node, { original, scrambled });
-        node.nodeValue = mode === 'scrambled' ? scrambled : original;
-      }
-
-      function registerAttr(attr, el) {
-        if (el.closest && el.closest('#lock-screen')) return; // شاشة تسجيل الدخول تبقى واضحة دائماً
-        const val = el.getAttribute(attr);
-        if (!val) return;
-        if (!attrRegistry.has(el)) attrRegistry.set(el, {});
-        const store = attrRegistry.get(el);
-        if (store[attr]) return;
-        store[attr] = { original: val, scrambled: scrambleText(val) };
-        el.setAttribute(attr, mode === 'scrambled' ? store[attr].scrambled : val);
-      }
-
-      function walk(root) {
-        if (root.nodeType === 3) {
-          if (!isSkippable(root)) registerTextNode(root);
-          return;
-        }
-        if (root.nodeType !== 1) return;
-        const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-        let n;
-        while ((n = tw.nextNode())) { if (!isSkippable(n)) registerTextNode(n); }
-        if (root.querySelectorAll) {
-          WATCH_ATTRS.forEach(a => root.querySelectorAll('[' + a + ']').forEach(el => registerAttr(a, el)));
-          if (root.hasAttribute) WATCH_ATTRS.forEach(a => { if (root.hasAttribute(a)) registerAttr(a, root); });
-        }
-      }
-
-      function applyMode() {
-        nodeRegistry.forEach((v, node) => { node.nodeValue = mode === 'scrambled' ? v.scrambled : v.original; });
-        attrRegistry.forEach((attrs, el) => {
-          Object.keys(attrs).forEach(a => el.setAttribute(a, mode === 'scrambled' ? attrs[a].scrambled : attrs[a].original));
-        });
-      }
-
-      window.toggleTextPrivacy = function () {
-        mode = mode === 'scrambled' ? 'clear' : 'scrambled';
-        applyMode();
-        document.querySelectorAll('.privacy-toggle-icon').forEach(ic => {
-          ic.className = 'ti ' + (mode === 'scrambled' ? 'ti-eye-off' : 'ti-eye');
-        });
-      };
-
-      function init() {
-        walk(document.body);
-        const mo = new MutationObserver(muts => {
-          muts.forEach(m => {
-            if (m.type === 'childList') {
-              m.addedNodes.forEach(n => walk(n));
-            } else if (m.type === 'characterData') {
-              if (!nodeRegistry.has(m.target) && !isSkippable(m.target)) registerTextNode(m.target);
-            } else if (m.type === 'attributes' && WATCH_ATTRS.includes(m.attributeName)) {
-              registerAttr(m.attributeName, m.target);
-            }
-          });
-        });
-        mo.observe(document.body, {
-          childList: true, subtree: true, characterData: true,
-          attributes: true, attributeFilter: WATCH_ATTRS
-        });
-      }
-
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-      else init();
-    })();
   </script>
 </body>
 
