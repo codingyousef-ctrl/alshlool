@@ -980,6 +980,16 @@
       color: #cc1a1a
     }
 
+    
+    .renew-box {
+      padding: 4px 10px; border: 1px solid #cc1a1a; background: #fce8e8; color: #a01414;
+      border-radius: 8px; font-family: var(--font); font-size: 11.5px; font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: background .15s;
+    }
+    .renew-box:hover { background: #cc1a1a; color: #fff; }
+    [data-theme="dark"] .renew-box { background: #2a0a0a; color: #f07070; border-color: #a01414; }
+    [data-theme="dark"] .renew-box:hover { background: #cc1a1a; color: #fff; }
+
     /* Actions */
     .act-btns {
       display: flex;
@@ -1010,6 +1020,23 @@
     .ib.wa {
       color: #25D366;
       border-color: #b7ecc9;
+    }
+
+    .grp-btn {
+      border: 1px solid #b7ecc9;
+      background: transparent;
+      color: #25D366;
+      border-radius: 6px;
+      padding: 1px 5px;
+      margin-inline-start: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    .grp-btn:hover {
+      background: #25D366;
+      color: #fff;
     }
 
     .ib.wa:hover {
@@ -2140,11 +2167,102 @@
       if (stStopped) stStopped.textContent = students.filter(s => isStudentStopped(s)).length;
     }
 
+    function renewalBox(s, i) {
+      if (isStudentStopped(s) || getStatus(s.end) !== 'expired') return '';
+      return `<button class="renew-box" onclick="renewFromBox(${i})" title="اضغط لتجديد الاشتراك">تجديد الاشتراك</button>`;
+    }
+
+    function qpDate(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    // بوكس مصغر للدفعة + التجديد بنفس الشاشة
+    function renewFromBox(i) {
+      const s = students[i];
+      const cur = getStudentRemaining(s.name);
+      const base = new Date(); base.setHours(0, 0, 0, 0);
+      const endD = s.end ? new Date(s.end) : null;
+      if (endD && !isNaN(endD)) base.setTime(endD.getTime());
+      base.setMonth(base.getMonth() + 1);
+      document.getElementById('modal-title').textContent = 'تجديد اشتراك - ' + s.name;
+      document.getElementById('modal-body').innerHTML = `
+        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;display:flex;gap:16px;flex-wrap:wrap">
+          <span>انتهى: <b style="color:#a01414">${fmtDate(s.end)}</b></span>
+          <span>الباقي الحالي: <b style="color:#cc1a1a">${cur > 0 ? cur + ' د.أ' : 'لا يوجد'}</b></span>
+        </div>
+        <div class="form-grid" style="margin-bottom:10px">
+          <div class="fg"><label>المبلغ (دينار) <span class="req-mark">*</span></label>
+            <input id="qp-amount" type="number" min="0" step="0.5" placeholder="0.00"></div>
+          <div class="fg"><label>التاريخ <span class="req-mark">*</span></label>
+            <input id="qp-date" type="date" value="${qpDate(new Date())}"></div>
+          <div class="fg"><label>الباقي بعد الدفعة (دينار)</label>
+            <input id="qp-remaining" type="number" min="0" step="0.5" placeholder="0.00" value="${cur > 0 ? cur : ''}"></div>
+          <div class="fg"><label>ملاحظات</label>
+            <input id="qp-notes" type="text" placeholder="ملاحظات إضافية..."></div>
+          <div class="fg full"><label>سبب الدفع <span class="req-mark">*</span></label>
+            <div class="chip-wrap" id="qp-reasons">
+              <label class="chip"><input type="checkbox" value="اشتراك شهري" checked><i class="ti ti-calendar-event" style="font-size:14px"></i> اشتراك شهري</label>
+              <label class="chip"><input type="checkbox" value="رسوم المواصلات"><i class="ti ti-bus" style="font-size:14px"></i> رسوم المواصلات</label>
+              <label class="chip"><input type="checkbox" value="رسوم البدلة"><i class="ti ti-shirt" style="font-size:14px"></i> رسوم البدلة</label>
+              <label class="chip"><input type="checkbox" value="فحص حزام"><i class="ti ti-medal" style="font-size:14px"></i> فحص حزام</label>
+              <label class="chip"><input type="checkbox" value="أخرى"><i class="ti ti-dots" style="font-size:14px"></i> أخرى</label>
+            </div></div>
+        </div>
+        <label class="toggle-card" style="margin-bottom:10px">
+          <input type="checkbox" id="qp-renew" checked onchange="document.getElementById('qp-renew-box').style.display=this.checked?'block':'none'">
+          <span class="tc-switch"></span>
+          <i class="ti ti-refresh" style="color:#1a7a1a"></i> تجديد تاريخ الانتهاء
+        </label>
+        <div id="qp-renew-box" style="margin-bottom:12px">
+          <div class="fg"><label>تاريخ الانتهاء الجديد <span class="req-mark">*</span></label>
+            <input id="qp-new-end" type="date" value="${qpDate(base)}"></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn-s" onclick="closeModal()">إلغاء</button>
+          <button class="btn-p" onclick="confirmQuickPay(${i})"><i class="ti ti-check"></i> حفظ</button>
+        </div>`;
+      document.getElementById('modal-bg').classList.add('show');
+      setTimeout(() => { const el = document.getElementById('qp-amount'); if (el) el.focus(); }, 50);
+    }
+
+    async function confirmQuickPay(i) {
+      const s = students[i];
+      const amount = document.getElementById('qp-amount').value.trim();
+      const date = document.getElementById('qp-date').value;
+      const remaining = document.getElementById('qp-remaining').value.trim();
+      const reason = [...document.querySelectorAll('#qp-reasons input:checked')].map(c => c.value).join(' + ');
+      const doRenew = document.getElementById('qp-renew').checked;
+      const newEnd = document.getElementById('qp-new-end').value;
+      if (!amount || !date || !reason) { toast('يرجى ملء الحقول المطلوبة *', true); return; }
+      if (doRenew && !newEnd) { toast('يرجى تحديد تاريخ الانتهاء الجديد', true); return; }
+      const userNotes = document.getElementById('qp-notes').value.trim();
+      const notes = (doRenew ? 'تجديد حتى ' + fmtDate(newEnd) + (userNotes ? ' | ' : '') : '') + userNotes;
+      const ts = Date.now();
+      const p = {
+        _id: 'p_' + ts + '_' + Math.random().toString(36).substr(2, 5),
+        id: ts, name: s.name, amount, date, remaining, reason, notes
+      };
+      payments.unshift(p);
+      logChange('الدفعات', 'تسجيل دفعة', s.name + ' — ' + amount + ' د.أ');
+      if (doRenew) {
+        s.end = newEnd;
+        if (s._id) pendingLocalEdits.set(s._id, Date.now());
+        save();
+        if (window.firebaseReady) window.firebaseSave(s, s._id || i);
+      }
+      try { localStorage.setItem('shalloul_payments', JSON.stringify(payments)); } catch (e) { }
+      closeModal();
+      renderPayments();
+      renderStudents();
+      toast(doRenew ? 'تم تسجيل الدفعة وتجديد الاشتراك حتى ' + fmtDate(newEnd) + ' ✓' : 'تم تسجيل الدفعة ✓');
+      await fbSaveDoc('payments', p._id, p);
+    }
+
     function renderTable(list, cid) {
       const el = document.getElementById(cid);
       if (!list.length) { el.innerHTML = `<div class="empty"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px"></i>لا يوجد طلاب</div>`; return; }
       let h = `<table class="st"><thead><tr>
-    <th style="width:22%">الاسم</th><th style="width:14%">الحزام</th><th style="width:16%">رقم الهاتف</th><th style="width:12%">ينتهي</th><th style="width:13%">الحالة</th><th style="width:10%">الباقي</th><th style="width:13%">إجراءات</th>
+    <th style="width:18%">الاسم</th><th style="width:12%">الحزام</th><th style="width:15%">رقم الهاتف</th><th style="width:12%">ينتهي</th><th style="width:12%">الحالة</th><th style="width:9%">الباقي</th><th style="width:22%">إجراءات</th>
   </tr></thead><tbody>`;
       list.forEach(s => {
         const i = students.indexOf(s);
@@ -2152,11 +2270,12 @@
         h += `<tr>
       <td style="font-weight:600">${s.name}</td>
       <td>${beltBadge(s.belt)}</td>
-      <td dir="ltr">${s.dad || '—'}</td>
+      <td dir="ltr">${phoneWithGroupBtn(s, i)}</td>
       <td>${isStudentStopped(s) ? '—' : fmtDate(s.end)}</td>
       <td style="white-space:normal;line-height:1.6">${sBadge(s)}</td>
       <td>${remaining > 0 ? `<span class="badge" style="background:#fce8e8;color:#a01414;display:inline-block">${remaining} د.أ</span>` : '<span style="color:var(--text2);font-size:12px">—</span>'}</td>
-      <td><div class="act-btns">
+      <td><div class="act-btns" style="align-items:center">
+        ${renewalBox(s, i)}
         <button class="ib" onclick="viewStudent(${i})" title="عرض"><i class="ti ti-eye"></i></button>
         <button class="ib" onclick="editStudent(${i})" title="تعديل"><i class="ti ti-edit"></i></button>
         <button class="ib wa" onclick="openWhatsApp(${i})" title="إرسال رسالة واتساب"><i class="ti ti-brand-whatsapp"></i></button>
@@ -2417,7 +2536,7 @@
         h += `<tr>
       <td style="font-weight:600">${s.name}</td>
       <td>${beltBadge(s.belt)}</td>
-      <td dir="ltr">${s.dad || '—'}</td>
+      <td dir="ltr">${phoneWithGroupBtn(s, i)}</td>
       <td><div class="act-btns" style="justify-content:flex-end">
         <button class="ib" onclick="editStudent(${i})" title="تعديل معلومات"><i class="ti ti-edit"></i></button>
         <button class="ib" style="color:#1a7a1a" onclick="reactivateToExpired(${i})" title="إرجاع لحالة منتهي"><i class="ti ti-refresh"></i> إرجاع لمنتهي</button>
@@ -2625,6 +2744,47 @@
       }
       msg += `\n\nمع تحياتنا\nإدارة مركز الشلول للتايكوندو`;
       return msg;
+    }
+
+    function phoneWithGroupBtn(s, i) {
+      if (!s.dad) return '—';
+      return `${s.dad}<button class="grp-btn" onclick="copyPhone(${i})" title="نسخ الرقم"><i class="ti ti-copy"></i></button><button class="grp-btn" onclick="openMyGroup()" oncontextmenu="changeGroupLink(event)" title="فتح القروب (اضغط مطولاً أو كليك يمين لتغيير الرابط)"><i class="ti ti-users-group"></i></button>`;
+    }
+
+    function getGroupLink() {
+      try { return localStorage.getItem('shalloul_group_link') || ''; } catch (e) { return ''; }
+    }
+
+    function copyPhone(i) {
+      const num = '+' + formatPhoneForWa(students[i].dad);
+      const ok = () => toast('تم نسخ الرقم: ' + num);
+      const fallback = () => {
+        const ta = document.createElement('textarea');
+        ta.value = num; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); ok(); } catch (e) { toast('تعذر النسخ', true); }
+        ta.remove();
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(num).then(ok, fallback);
+      else fallback();
+    }
+
+    function askGroupLink() {
+      const v = prompt('الصق رابط القروب (واتساب: معلومات القروب ← دعوة عبر رابط)', getGroupLink());
+      if (v === null) return '';
+      const link = v.trim();
+      try { localStorage.setItem('shalloul_group_link', link); } catch (e) { }
+      return link;
+    }
+
+    function openMyGroup() {
+      const link = getGroupLink() || askGroupLink();
+      if (!link) { toast('لم يتم إدخال رابط القروب', true); return; }
+      window.open(link, '_blank');
+    }
+
+    function changeGroupLink(e) {
+      e.preventDefault();
+      if (askGroupLink()) toast('تم حفظ رابط القروب');
     }
 
     function openWhatsApp(i) {
