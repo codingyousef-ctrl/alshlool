@@ -2751,8 +2751,10 @@
       return `${s.dad}<button class="grp-btn" onclick="copyPhone(${i})" title="نسخ الرقم"><i class="ti ti-copy"></i></button><button class="grp-btn" onclick="openMyGroup()" oncontextmenu="changeGroupLink(event)" title="فتح القروب (اضغط مطولاً أو كليك يمين لتغيير الرابط)"><i class="ti ti-users-group"></i></button>`;
     }
 
+    const DEFAULT_GROUP_LINK = 'https://chat.whatsapp.com/DeAcGBMMu9yEHZRabBnVSF';
+
     function getGroupLink() {
-      try { return localStorage.getItem('shalloul_group_link') || ''; } catch (e) { return ''; }
+      try { return localStorage.getItem('shalloul_group_link') || DEFAULT_GROUP_LINK; } catch (e) { return DEFAULT_GROUP_LINK; }
     }
 
     function copyPhone(i) {
